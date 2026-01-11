@@ -107,6 +107,8 @@ def download_image(request):
 
 # Add this to your views.py
 
+# Add this to your views.py
+
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .label_utils import crop_meesho_labels_to_pdf
@@ -148,19 +150,15 @@ def process_labels(request):
         
         print(f"Generated PDF size: {len(output_pdf_bytes)} bytes")
         
-        # Generate clean filename with timestamp
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        output_filename = f"meesho_labels_{timestamp}.pdf"
+        # Generate clean filename with time only
+        from datetime import datetime
+        timestamp = datetime.now().strftime('%H%M%S')
+        output_filename = f"avtools_crop_label_{timestamp}.pdf"
         
-        # Return PDF as automatic download with proper headers
+        # Return PDF as automatic download with simple headers
         response = HttpResponse(output_pdf_bytes, content_type='application/pdf')
-        # Use both filename and filename* for better browser compatibility
-        response['Content-Disposition'] = f'attachment; filename="{output_filename}"; filename*=UTF-8\'\'{output_filename}'
+        response['Content-Disposition'] = f'attachment; filename={output_filename}'
         response['Content-Length'] = str(len(output_pdf_bytes))
-        response['Content-Type'] = 'application/pdf'
-        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        response['Pragma'] = 'no-cache'
-        response['Expires'] = '0'
         
         print(f"Sending PDF: {output_filename}")
         return response
