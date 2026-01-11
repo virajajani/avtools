@@ -79,8 +79,8 @@ class MeeshoLabelCropper:
             if lines_above:
                 # Get the line closest to TAX INVOICE
                 line_y = max(lines_above)
-                # Crop AFTER this line to include it
-                crop_y = line_y + 3
+                # Crop AFTER this line with extra margin to ensure line is visible
+                crop_y = line_y + 5
                 
                 if self.debug:
                     print(f"  ✓ Found 'TAX INVOICE' at y = {tax_y:.1f}")
@@ -174,13 +174,16 @@ class MeeshoLabelCropper:
             final_width = self.LABEL_WIDTH_PT  # Always use full 3 inches
             final_height = clip_rect.height * scale
             
+            # Add small bottom margin to ensure border line is visible
+            final_height += 3
+            
             # If height exceeds 5 inches, scale down to fit
             if final_height > self.LABEL_HEIGHT_PT:
-                scale = self.LABEL_HEIGHT_PT / clip_rect.height
+                scale = self.LABEL_HEIGHT_PT / (clip_rect.height + 3)
                 final_width = clip_rect.width * scale
                 final_height = self.LABEL_HEIGHT_PT
             
-            # Create new page with actual content size (no fixed 5 inch)
+            # Create new page with actual content size
             new_page = output_pdf.new_page(
                 width=final_width,
                 height=final_height
