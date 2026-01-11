@@ -486,9 +486,9 @@ select:focus{
   </div>
   
   <div class="nav-links">
-    <a onclick="location.href='/'" style="cursor:pointer;">Dashboard</a>
-    <a onclick="location.href='/meesho-image-generator'" style="cursor:pointer;" class="active"> Image Generator</a>
-    <a href="#">Label Export</a>
+    <a href="{% url 'generator:home' %}">Dashboard</a>
+    <a href="{% url 'generator:meesho_image_generator' %}" class="active">Image Generator</a>
+    <a href="{% url 'generator:label_cropper' %}">Label Cropper</a>
   </div>
   
   <div class="user-menu">
@@ -503,7 +503,8 @@ select:focus{
   <div class="card">
     <h3>Create New Generation</h3>
     
-    <form id="generatorForm" method="POST" enctype="multipart/form-data">
+    <form id="generatorForm" method="POST" action="{% url 'generator:generate' %}" enctype="multipart/form-data">
+      {% csrf_token %}
       
       <div class="form-group">
         <label>Product Category</label>
@@ -520,7 +521,7 @@ select:focus{
 
       <div class="form-group">
         <label>Net Weight (grams)</label>
-        <input type="number" name="net_weight" placeholder="e.g. 120" min="1" required>
+        <input type="number" name="net_weight" placeholder="e.g. 120" min="1" step="0.01" required>
       </div>
 
       <div class="form-group">
@@ -540,25 +541,25 @@ select:focus{
 
       <div class="form-group">
         <label>Meesho Price (₹)</label>
-        <input type="number" name="meesho_price" placeholder="e.g. 199" min="1" required>
+        <input type="number" name="meesho_price" placeholder="e.g. 199" min="1" step="0.01" required>
       </div>
 
       <div class="form-group">
         <label>Wrong/Defective Returns Price (₹)</label>
-        <input type="number" name="return_price" placeholder="e.g. 150" min="0" required>
+        <input type="number" name="return_price" placeholder="e.g. 150" min="0" step="0.01" required>
       </div>
 
       <div class="form-group">
         <label>MRP (₹)</label>
-        <input type="number" name="mrp" placeholder="e.g. 299" min="1" required>
+        <input type="number" name="mrp" placeholder="e.g. 299" min="1" step="0.01" required>
       </div>
 
-      <div class="form-group">
+      {% comment %} <div class="form-group">
         <label>Number of Images</label>
-        <input type="number" name="num_images" value="56" min="12" max="100" required>
-      </div>
+        <input type="number" name="num_images" value="55" min="12" max="100" required>
+      </div> {% endcomment %}
 
-      <button type="submit" class="btn">
+      <button type="submit" class="btn" id="submitBtn">
         <span>⚡</span>
         <span>Generate Images</span>
       </button>
@@ -657,18 +658,24 @@ const fileInput = document.getElementById('fileInput');
 const filePreview = document.getElementById('filePreview');
 const fileName = document.getElementById('fileName');
 const removeFile = document.getElementById('removeFile');
+const submitBtn = document.getElementById('submitBtn');
+const generatorForm = document.getElementById('generatorForm');
 
+// Click to upload
 uploadArea.addEventListener('click', () => fileInput.click());
 
+// Drag over
 uploadArea.addEventListener('dragover', (e) => {
   e.preventDefault();
   uploadArea.classList.add('dragover');
 });
 
+// Drag leave
 uploadArea.addEventListener('dragleave', () => {
   uploadArea.classList.remove('dragover');
 });
 
+// Drop file
 uploadArea.addEventListener('drop', (e) => {
   e.preventDefault();
   uploadArea.classList.remove('dragover');
@@ -679,36 +686,76 @@ uploadArea.addEventListener('drop', (e) => {
   }
 });
 
+// File input change
 fileInput.addEventListener('change', (e) => {
   if (e.target.files.length) {
     handleFileSelect(e.target.files[0]);
   }
 });
 
+// Remove file
 removeFile.addEventListener('click', () => {
   fileInput.value = '';
   filePreview.classList.remove('show');
 });
 
+// Handle file selection
 function handleFileSelect(file) {
+  // Validate file size (10MB limit)
+  if (file.size > 10 * 1024 * 1024) {
+    alert('File size must be less than 10MB');
+    fileInput.value = '';
+    return;
+  }
+  
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    alert('Please upload an image file');
+    fileInput.value = '';
+    return;
+  }
+  
   fileName.textContent = file.name;
   filePreview.classList.add('show');
 }
 
-// Toggle between empty state and grid
+// Form submission
+generatorForm.addEventListener('submit', (e) => {
+  // Validate form before submission
+  const category = document.querySelector('select[name="category"]').value;
+  const netWeight = document.querySelector('input[name="net_weight"]').value;
+  const meeshoPrice = document.querySelector('input[name="meesho_price"]').value;
+  const returnPrice = document.querySelector('input[name="return_price"]').value;
+  const mrp = document.querySelector('input[name="mrp"]').value;
+  const numImages = document.querySelector('input[name="num_images"]').value;
+  
+  if (!category || !netWeight || !meeshoPrice || !returnPrice || !mrp || !numImages) {
+    e.preventDefault();
+    alert('Please fill in all fields');
+    return;
+  }
+  
+  if (!fileInput.files.length) {
+    e.preventDefault();
+    alert('Please upload a product image');
+    return;
+  }
+  
+  // Disable button and show loading state
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span>⏳</span><span>Generating...</span>';
+  
+  // Form will submit normally - no e.preventDefault()
+  console.log('Form is submitting...');
+});
+
+// Toggle between empty state and grid (for demo purposes)
 const emptyState = document.getElementById('emptyState');
 const recentGrid = document.getElementById('recentGrid');
 
-// Uncomment to show grid instead of empty state
+// Uncomment to show grid instead of empty state for testing
 // emptyState.style.display = 'none';
 // recentGrid.style.display = 'grid';
-
-// Form submission
-document.getElementById('generatorForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  // Add your form submission logic here
-  console.log('Form submitted');
-});
 </script>
 
 </body>

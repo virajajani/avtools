@@ -410,7 +410,7 @@ body{
   <div class="nav-links">
     <a onclick="location.href='/'" style="cursor:pointer;" class="active">Dashboard</a>
     <a onclick="location.href='/meesho-image-generator'" style="cursor:pointer;"> Image Generator</a>
-    <a href="#">Label Export</a>
+    <a href="{% url 'generator:label_cropper' %}">Label Cropper</a>
   </div>
   
   <div class="user-menu">
@@ -424,28 +424,6 @@ body{
   <div class="header">
     <h1>Welcome to AVTools</h1>
     <p>Powerful tools built specifically to help Meesho sellers reduce shipping costs and increase profits.</p>
-  </div>
-
-  <!-- STATS -->
-  <div class="stats-section">
-    <div class="stats-grid">
-      <div class="stat-item">
-        <span class="stat-number">1,247</span>
-        <span class="stat-label">Images Generated</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">₹8,450</span>
-        <span class="stat-label">Shipping Saved</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">150</span>
-        <span class="stat-label">Credits Remaining</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">32%</span>
-        <span class="stat-label">Avg. Cost Reduction</span>
-      </div>
-    </div>
   </div>
 
   <!-- TOOLS GRID -->

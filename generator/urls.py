@@ -4,18 +4,29 @@ from . import views
 app_name = 'generator'
 
 urlpatterns = [
-    # Pages
+    # ===============================
+    # PAGES
+    # ===============================
     path('', views.home, name='home'),
     path('landing/', views.landing, name='landing'),
     path('meesho-image-generator/', views.meesho_image_generator, name='meesho_image_generator'),
-
-    # Image generation actions
+    
+    # ===============================
+    # IMAGE GENERATION
+    # ===============================
     path('generate/', views.generate_images, name='generate'),
     path('download/', views.download_image, name='download'),
-
-    # Auth (frontend only)
+    
+    # ===============================
+    # LABEL CROPPER
+    # ===============================
+    path('label-cropper/', views.label_cropper, name='label_cropper'),
+    path('process-labels/', views.process_labels, name='process_labels'),
+  
+    # ===============================
+    # AUTH (FRONTEND ONLY)
+    # ===============================
     path('signin/', views.signin, name='signin'),
     path('signup/', views.signup, name='signup'),
     path('forgot-password/', views.forgot_password, name='forgot_password'),
-
 ]

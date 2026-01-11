@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generated Images | AVTools</title>
+<title>Cropped Labels | AVTools</title>
 <style>
 *{
   box-sizing:border-box;
@@ -49,7 +49,6 @@ body{
   font-weight:500;
   font-size:15px;
   transition:color 0.3s;
-  position:relative;
 }
 
 .nav-links a:hover{
@@ -61,39 +60,14 @@ body{
   font-weight:600;
 }
 
-.nav-links a.active::after{
-  content:'';
-  position:absolute;
-  bottom:-18px;
-  left:0;
-  right:0;
-  height:2px;
-  background:#3b82f6;
-}
-
-.user-menu{
-  display:flex;
-  align-items:center;
-  gap:16px;
-}
-
-.credits-badge{
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  color:#fff;
-  padding:8px 16px;
-  border-radius:20px;
-  font-size:13px;
-  font-weight:700;
-}
-
-/* MAIN CONTAINER */
+/* CONTAINER */
 .container{
   max-width:1400px;
   margin:0 auto;
   padding:48px 6%;
 }
 
-/* HEADER CARD */
+/* HEADER */
 .header-card{
   background:#fff;
   padding:32px;
@@ -114,6 +88,8 @@ body{
   font-size:13px;
   font-weight:700;
   margin-bottom:16px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
 }
 
 .header-card h1{
@@ -176,7 +152,7 @@ body{
   transform:translateY(-2px);
 }
 
-/* STATS BAR */
+/* STATS */
 .stats-bar{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
@@ -212,14 +188,14 @@ body{
 }
 
 /* GRID */
-.results-grid{
+.labels-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
   gap:28px;
 }
 
-/* CARD */
-.result-card{
+/* LABEL CARD */
+.label-card{
   background:#fff;
   border-radius:20px;
   overflow:hidden;
@@ -228,109 +204,69 @@ body{
   transition:all 0.3s ease;
 }
 
-.result-card:hover{
+.label-card:hover{
   transform:translateY(-6px);
   box-shadow:0 16px 48px rgba(0,0,0,0.12);
 }
 
-.card-image{
+.label-image-wrapper{
+  position:relative;
+  background:#f8fafc;
+  overflow:hidden;
+}
+
+.label-image{
   width:100%;
-  height:280px;
-  object-fit:cover;
-  background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
+  height:auto;
   display:block;
 }
 
-.card-body{
-  padding:24px;
-}
-
-.shipping-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  background:linear-gradient(135deg,#10b981,#059669);
+.label-badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
   color:#fff;
   padding:8px 14px;
   border-radius:20px;
   font-size:12px;
   font-weight:700;
-  margin-bottom:16px;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
 }
 
-/* INFO BOX */
-.info-box{
+.label-info{
+  padding:20px;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.info-item{
   background:#f8fafc;
-  padding:14px;
-  border-radius:12px;
-  margin-bottom:16px;
+  padding:12px;
+  border-radius:10px;
   border:1px solid #e2e8f0;
-}
-
-.info-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:13px;
-  color:#475569;
-  margin-bottom:6px;
-}
-
-.info-row:last-child{
-  margin-bottom:0;
 }
 
 .info-label{
-  font-weight:500;
+  font-size:11px;
+  color:#64748b;
+  margin-bottom:4px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  font-weight:600;
 }
 
 .info-value{
-  font-weight:700;
-  color:#1e293b;
-}
-
-/* PRICING */
-.pricing-box{
-  background:linear-gradient(135deg,#f8fafc,#f1f5f9);
-  padding:16px;
-  border-radius:14px;
-  margin-bottom:16px;
-  border:1px solid #e2e8f0;
-}
-
-.pricing-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
   font-size:14px;
-  margin-bottom:8px;
-  color:#475569;
-}
-
-.pricing-row:last-child{
-  margin-bottom:0;
-}
-
-.pricing-row.divider{
-  border-top:2px solid #e2e8f0;
-  padding-top:8px;
-  margin-top:8px;
-  font-weight:700;
   color:#1e293b;
-}
-
-.pricing-row.profit{
-  color:#10b981;
-  font-size:16px;
-}
-
-.pricing-value{
   font-weight:700;
 }
 
-/* DOWNLOAD BUTTON */
 .download-form{
   width:100%;
 }
@@ -356,10 +292,6 @@ body{
 .download-btn:hover{
   transform:translateY(-2px);
   box-shadow:0 10px 28px rgba(59,130,246,0.4);
-}
-
-.download-btn:active{
-  transform:translateY(0);
 }
 
 /* FOOTER */
@@ -397,21 +329,7 @@ body{
 }
 
 /* RESPONSIVE */
-@media(max-width:1024px){
-  .user-menu{
-    display:none;
-  }
-}
-
 @media(max-width:768px){
-  .navbar{
-    padding:14px 5%;
-  }
-  
-  .nav-links{
-    gap:16px;
-  }
-  
   .container{
     padding:32px 5%;
   }
@@ -433,13 +351,12 @@ body{
     grid-template-columns:1fr;
   }
   
-  .results-grid{
+  .labels-grid{
     grid-template-columns:1fr;
   }
   
-  .footer-content{
-    flex-direction:column;
-    text-align:center;
+  .info-grid{
+    grid-template-columns:1fr;
   }
 }
 </style>
@@ -449,118 +366,95 @@ body{
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="logo">
-    <img src="/static/images/avtools.png" alt="AVTools Logo">
+    <img src="/static/images/avtools.png" alt="AVTools">
   </div>
   
   <div class="nav-links">
     <a href="{% url 'generator:home' %}">Dashboard</a>
-    <a href="{% url 'generator:meesho_image_generator' %}" class="active">Image Generator</a>
-    <a href="#">Label Export</a>
-  </div>
-  
-  <div class="user-menu">
-    <div class="credits-badge">⚡ 149 Credits</div>
+    <a href="{% url 'generator:meesho_image_generator' %}">Image Generator</a>
+    <a href="{% url 'generator:label_cropper' %}" class="active">Label Cropper</a>
   </div>
 </nav>
 
-<!-- MAIN CONTAINER -->
+<!-- CONTAINER -->
 <div class="container">
   
-  <!-- HEADER CARD -->
+  <!-- HEADER -->
   <div class="header-card">
     <div class="success-badge">
       <span>✓</span>
-      <span>Generation Completed</span>
+      <span>Processing Complete</span>
     </div>
     
-    <h1>Your Images Are Ready! 🎉</h1>
+    <h1>Labels Successfully Cropped! 🎉</h1>
     <p class="subtitle">
-      Generated <strong>{{ total_images }} optimized images</strong> for <strong>{{ category }}</strong> with the best shipping rates
+      Extracted <strong>{{ total_labels }} labels</strong> from <strong>{{ pdf_name }}</strong>
     </p>
     
     <div class="actions">
-      <a href="{% url 'generator:meesho_image_generator' %}" class="btn btn-secondary">
+      <a href="{% url 'generator:label_cropper' %}" class="btn btn-secondary">
         <span>←</span>
-        <span>Generate More</span>
+        <span>Process Another PDF</span>
       </a>
-      <button class="btn btn-primary" onclick="downloadAll()">
-        <span>📥</span>
-        <span>Download All ({{ total_images }})</span>
-      </button>
+      <a href="{% url 'generator:download_all_labels' %}" class="btn btn-primary">
+        <span>📦</span>
+        <span>Download All as ZIP ({{ total_labels }})</span>
+      </a>
     </div>
   </div>
   
-  <!-- STATS BAR -->
+  <!-- STATS -->
   <div class="stats-bar">
     <div class="stat-card">
-      <div class="stat-label">Total Images</div>
-      <div class="stat-value">{{ total_images }}</div>
+      <div class="stat-label">Total Labels</div>
+      <div class="stat-value">{{ total_labels }}</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Category</div>
-      <div class="stat-value">{{ category }}</div>
+      <div class="stat-label">Label Size</div>
+      <div class="stat-value">4x6 in</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Status</div>
-      <div class="stat-value success">Complete</div>
+      <div class="stat-value success">Ready</div>
     </div>
   </div>
   
-  <!-- RESULTS GRID -->
-  <div class="results-grid">
-    {% for var in variations %}
-    <div class="result-card">
-      <img src="data:image/jpeg;base64,{{ var.image_data }}" alt="Generated Image" class="card-image">
+  <!-- LABELS GRID -->
+  <div class="labels-grid">
+    {% for label in labels %}
+    <div class="label-card">
+      <div class="label-image-wrapper">
+        <img src="data:image/jpeg;base64,{{ label.image_data }}" alt="Label {{ label.label_number }}" class="label-image">
+        <div class="label-badge">Label #{{ label.label_number }}</div>
+      </div>
       
-      <div class="card-body">
-        <span class="shipping-badge">
-          <span>🚚</span>
-          <span>₹{{ var.shipping_rate }} Shipping • {{ var.zone }}</span>
-        </span>
-        
-        {% comment %} {% if var.extra %}
-        <div class="info-box">
-          <div class="info-row">
-            <span class="info-label">Net Weight</span>
-            <span class="info-value">{{ var.extra.net_weight }}g</span>
+      <div class="label-info">
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Page</div>
+            <div class="info-value">{{ label.page_number }}</div>
           </div>
-          <div class="info-row">
-            <span class="info-label">MRP</span>
-            <span class="info-value">₹{{ var.extra.mrp }}</span>
+          <div class="info-item">
+            <div class="info-label">Position</div>
+            <div class="info-value">#{{ label.position }}</div>
           </div>
-          <div class="info-row">
-            <span class="info-label">Return Price</span>
-            <span class="info-value">₹{{ var.extra.return_price }}</span>
+          <div class="info-item">
+            <div class="info-label">Dimensions</div>
+            <div class="info-value">{{ label.dimensions }}</div>
           </div>
-        </div>
-        {% endif %} {% endcomment %}
-        
-        <div class="pricing-box">
-          <div class="pricing-row">
-            <span>Meesho Price</span>
-            <span class="pricing-value">₹{{ var.pricing.meesho_price }}</span>
-          </div>
-          <div class="pricing-row">
-            <span>Shipping</span>
-            <span class="pricing-value">₹{{ var.pricing.total_shipping|floatformat:2 }}</span>
-          </div>
-
-          <div class="pricing-row divider">
-            <span>Customer Pays</span>
-            <span class="pricing-value">₹{{ var.pricing.customer_price|floatformat:2 }}</span>
-          </div>
-          <div class="pricing-row profit">
-            <span>💰 Your Profit</span>
-            <span class="pricing-value">₹{{ var.pricing.profit|floatformat:2 }}</span>
+          <div class="info-item">
+            <div class="info-label">Size</div>
+            <div class="info-value">{{ label.size_inches }}</div>
           </div>
         </div>
         
-        <form method="POST" action="{% url 'generator:download' %}" class="download-form">
+        <form method="POST" action="{% url 'generator:download_label' %}" class="download-form">
           {% csrf_token %}
-          <input type="hidden" name="image_data" value="{{ var.image_data }}">
+          <input type="hidden" name="image_data" value="{{ label.image_data }}">
+          <input type="hidden" name="label_num" value="{{ label.label_number }}">
           <button type="submit" class="download-btn">
             <span>📥</span>
-            <span>Download Image</span>
+            <span>Download Label</span>
           </button>
         </form>
       </div>
@@ -581,21 +475,6 @@ body{
     </div>
   </div>
 </footer>
-
-<script>
-function downloadAll() {
-  const totalImages = {{ total_images }};
-  const downloadButtons = document.querySelectorAll('.download-btn');
-  
-  if (confirm(`Download all ${totalImages} images? This will download them one by one.`)) {
-    downloadButtons.forEach((btn, index) => {
-      setTimeout(() => {
-        btn.click();
-      }, index * 400);
-    });
-  }
-}
-</script>
 
 </body>
 </html>
