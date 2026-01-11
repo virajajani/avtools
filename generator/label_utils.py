@@ -57,12 +57,44 @@ class MeeshoLabelCropper:
             # Get the topmost TAX INVOICE occurrence
             tax_y = min(rect.y0 for rect in tax_invoice_rects)
             
-            # Crop 10 pixels ABOVE the TAX INVOICE text
-            crop_y = tax_y - 10
+            # Look for horizontal line ABOVE TAX INVOICE (within 5-30 pixels)
+            search_start = tax_y - 30
+            search_end = tax_y - 3
+            
+            drawings = page.get_drawings()
+            lines_above = []
+            
+            for drawing in drawings:
+                for item in drawing.get("items", []):
+                    if item[0] == "l":  # line
+                        p1, p2 = item[1], item[2]
+                        line_y = p1.y
+                        
+                        # Check if horizontal line above TAX INVOICE
+                        if abs(p1.y - p2.y) < 3 and search_start < line_y < search_end:
+                            line_width = abs(p2.x - p1.x)
+                            if line_width > page_rect.width * 0.7:
+                                lines_above.append(line_y)
+            
+            if lines_above:
+                # Get the line closest to TAX INVOICE
+                line_y = max(lines_above)
+                # Crop AFTER this line to include it
+                crop_y = line_y + 3
+                
+                if self.debug:
+                    print(f"  ✓ Found 'TAX INVOICE' at y = {tax_y:.1f}")
+                    print(f"  ✓ Found border line at y = {line_y:.1f}")
+                    print(f"  ✓ Cropping at y = {crop_y:.1f} (including line)")
+                
+                return crop_y
+            
+            # No line found, crop slightly above TAX INVOICE
+            crop_y = tax_y - 5
             
             if self.debug:
                 print(f"  ✓ Found 'TAX INVOICE' at y = {tax_y:.1f}")
-                print(f"  ✓ Cropping at y = {crop_y:.1f}")
+                print(f"  ⚠ No border line found, cropping at y = {crop_y:.1f}")
             
             return crop_y
         
@@ -136,33 +168,25 @@ class MeeshoLabelCropper:
             if self.debug:
                 print(f"  Cropped area: {clip_rect.width:.1f} x {clip_rect.height:.1f} pt")
             
-            # Scale to fit 3x5 inch paper
-            scale_w = self.LABEL_WIDTH_PT / clip_rect.width
-            scale_h = self.LABEL_HEIGHT_PT / clip_rect.height
+            # Scale to fit 3 inch width (fill the width completely)
+            scale = self.LABEL_WIDTH_PT / clip_rect.width
             
-            # Use smaller scale to fit within both dimensions
-            scale = min(scale_w, scale_h)
-            
-            final_width = clip_rect.width * scale
+            final_width = self.LABEL_WIDTH_PT  # Always use full 3 inches
             final_height = clip_rect.height * scale
             
-            # If content is smaller than 5 inches, use actual size
-            # If larger, scale down to fit
+            # If height exceeds 5 inches, scale down to fit
             if final_height > self.LABEL_HEIGHT_PT:
-                final_height = self.LABEL_HEIGHT_PT
-                scale = scale_h
+                scale = self.LABEL_HEIGHT_PT / clip_rect.height
                 final_width = clip_rect.width * scale
+                final_height = self.LABEL_HEIGHT_PT
             
-            # Center horizontally if needed
-            x_offset = (self.LABEL_WIDTH_PT - final_width) / 2 if final_width < self.LABEL_WIDTH_PT else 0
-            
-            # Create new page at 3x5 inch
+            # Create new page with actual content size (no fixed 5 inch)
             new_page = output_pdf.new_page(
-                width=self.LABEL_WIDTH_PT,
+                width=final_width,
                 height=final_height
             )
             
-            target_rect = fitz.Rect(x_offset, 0, x_offset + final_width, final_height)
+            target_rect = fitz.Rect(0, 0, final_width, final_height)
             
             # Copy content
             new_page.show_pdf_page(
