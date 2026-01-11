@@ -1,0 +1,345 @@
+{% comment %}
+============================================
+FILE: generator/templates/generator/results.html
+============================================
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Generated Images | AVTools</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f6f7fb;
+    color: #0f172a;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+    background: #ffffff;
+    padding: 14px 32px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    height: 34px;
+}
+
+.nav-links a {
+    margin-left: 24px;
+    text-decoration: none;
+    color: #475569;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.nav-links a.active {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+/* ================= PAGE ================= */
+.page {
+    padding: 24px;
+}
+
+/* HEADER CARD */
+.header {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.header h1 {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.actions {
+    margin-top: 14px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 18px;
+    background: #2563eb;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-right: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+}
+
+/* ================= GRID ================= */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+/* CARD */
+.card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: transform .2s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.card img {
+    width: 100%;
+    display: block;
+}
+
+/* CARD BODY */
+.card-body {
+    padding: 16px;
+}
+
+.shipping-badge {
+    display: inline-block;
+    background: #22c55e;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+/* EXTRA INFO */
+.info-box {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 12px;
+}
+
+.info-box span {
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* PRICING */
+.pricing {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+.pricing-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.pricing-row.total {
+    font-weight: 700;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 6px;
+    margin-top: 6px;
+}
+
+.profit {
+    color: #16a34a;
+}
+
+/* DOWNLOAD */
+.download-btn {
+    width: 100%;
+    padding: 12px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.download-btn:hover {
+    background: #1d4ed8;
+}
+
+/* ================= FOOTER ================= */
+.footer {
+    margin-top: 80px;
+    border-top: 1px solid #e5e7eb;
+    padding: 28px 32px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #64748b;
+    background: #ffffff;
+}
+
+.footer a {
+    margin-left: 16px;
+    color: #64748b;
+    text-decoration: none;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .btn {
+        margin-bottom: 8px;
+    }
+
+    .footer {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+    <div class="logo">
+        <img src="/static/images/avtools.png" alt="AVTools Logo">
+    </div>
+    <div class="nav-links">
+        <a href="{% url 'generator:home' %}">Home</a>
+        <a href="{% url 'generator:meesho_image_generator' %}" class="active">Image Generator</a>
+    </div>
+</div>
+
+<div class="page">
+
+<!-- ================= HEADER ================= -->
+<div class="header">
+    <h1>✅ Generation Results</h1>
+    <p class="subtitle">
+        Generated {{ total_images }} optimized images for <strong>{{ category }}</strong>
+    </p>
+
+    <div class="actions">
+        <a href="{% url 'generator:meesho_image_generator' %}" class="btn">
+            ← Generate More
+        </a>
+        <button class="btn" onclick="downloadAll()">📥 Download All</button>
+    </div>
+</div>
+
+<!-- ================= GRID ================= -->
+<div class="grid">
+{% for var in variations %}
+    <div class="card">
+        <img src="data:image/jpeg;base64,{{ var.image_data }}" alt="Generated Image">
+
+        <div class="card-body">
+
+            <span class="shipping-badge">
+                ₹{{ var.shipping_rate }} Shipping ({{ var.zone }})
+            </span>
+
+            {% if var.extra %}
+            <div class="info-box">
+                <span>Net Weight: {{ var.extra.net_weight }} g</span>
+                <span>MRP: ₹{{ var.extra.mrp }}</span>
+                <span>Return Price: ₹{{ var.extra.return_price }}</span>
+            </div>
+            {% endif %}
+
+            <div class="pricing">
+                <div class="pricing-row">
+                    <span>Meesho Price</span>
+                    <span>₹{{ var.pricing.meesho_price }}</span>
+                </div>
+
+                <div class="pricing-row">
+                    <span>Shipping + GST</span>
+                    <span>₹{{ var.pricing.total_shipping|floatformat:2 }}</span>
+                </div>
+
+                <div class="pricing-row">
+                    <span>Commission</span>
+                    <span>₹0</span>
+                </div>
+
+                <div class="pricing-row total">
+                    <span>Customer Pays</span>
+                    <span>₹{{ var.pricing.customer_price|floatformat:2 }}</span>
+                </div>
+
+                <div class="pricing-row total profit">
+                    <span>Your Profit</span>
+                    <span>₹{{ var.pricing.profit|floatformat:2 }}</span>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'generator:download' %}">
+                {% csrf_token %}
+                <input type="hidden" name="image_data" value="{{ var.image_data }}">
+                <button type="submit" class="download-btn">
+                    📥 Download Image
+                </button>
+            </form>
+
+        </div>
+    </div>
+{% endfor %}
+</div>
+
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="footer">
+    <div>© 2026 AVTools. All rights reserved.</div>
+    <div>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms</a>
+        <a href="#">Refund Policy</a>
+    </div>
+</div>
+
+<script>
+function downloadAll() {
+    alert('Downloading {{ total_images }} images...');
+    document.querySelectorAll('.download-btn').forEach((btn, i) => {
+        setTimeout(() => btn.click(), i * 350);
+    });
+}
+</script>
+
+</body>
+</html>

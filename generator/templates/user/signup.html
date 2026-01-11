@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create account | AVTools</title>
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  min-height:100vh;
+  padding:40px 20px;
+  position:relative;
+  overflow-y:auto;
+}
+
+body::before{
+  content:'';
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity:0.4;
+  z-index:0;
+}
+
+.auth-container{
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:480px;
+  margin:0 auto;
+}
+
+.auth-card{
+  background:rgba(255,255,255,0.98);
+  backdrop-filter:blur(20px);
+  border-radius:24px;
+  padding:40px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.15);
+  border:1px solid rgba(255,255,255,0.5);
+  animation:slideUp 0.6s ease;
+}
+
+@keyframes slideUp{
+  from{
+    opacity:0;
+    transform:translateY(30px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.logo{
+  display:flex;
+  justify-content:center;
+  margin-bottom:24px;
+}
+
+.logo img{
+  height:50px;
+}
+
+h1{
+  text-align:center;
+  font-size:26px;
+  font-weight:800;
+  margin-bottom:6px;
+  color:#1e293b;
+}
+
+.subtitle{
+  text-align:center;
+  font-size:14px;
+  color:#64748b;
+  margin-bottom:24px;
+}
+
+.social-btn{
+  width:100%;
+  padding:13px;
+  border-radius:12px;
+  border:2px solid #e2e8f0;
+  background:#fff;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  transition:all 0.3s ease;
+  color:#1e293b;
+}
+
+.social-btn:hover{
+  border-color:#3b82f6;
+  background:#f8fafc;
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(59,130,246,0.15);
+}
+
+.social-btn img{
+  width:20px;
+  height:20px;
+}
+
+.divider{
+  display:flex;
+  align-items:center;
+  margin:20px 0;
+  color:#94a3b8;
+  font-size:13px;
+  font-weight:500;
+}
+
+.divider::before,
+.divider::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#e2e8f0,transparent);
+}
+
+.divider span{
+  margin:0 14px;
+}
+
+.row{
+  display:flex;
+  gap:12px;
+}
+
+.row .form-group{
+  flex:1;
+}
+
+.form-group{
+  margin-bottom:16px;
+}
+
+label{
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:6px;
+  display:block;
+  color:#334155;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"]{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:2px solid #e2e8f0;
+  font-size:14px;
+  transition:all 0.3s ease;
+  background:#fff;
+  color:#1e293b;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus{
+  outline:none;
+  border-color:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+}
+
+input::placeholder{
+  color:#94a3b8;
+}
+
+.checkbox-group{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-bottom:20px;
+}
+
+.checkbox-group input[type="checkbox"]{
+  margin-top:3px;
+  width:16px;
+  height:16px;
+  cursor:pointer;
+  accent-color:#3b82f6;
+  flex-shrink:0;
+}
+
+.checkbox-group label{
+  font-size:13px;
+  font-weight:500;
+  color:#475569;
+  margin:0;
+  cursor:pointer;
+  line-height:1.5;
+}
+
+.checkbox-group a{
+  color:#3b82f6;
+  text-decoration:none;
+  font-weight:600;
+  transition:color 0.3s;
+}
+
+.checkbox-group a:hover{
+  color:#2563eb;
+}
+
+.btn-primary{
+  width:100%;
+  padding:14px;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 8px 24px rgba(59,130,246,0.3);
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(59,130,246,0.4);
+}
+
+.btn-primary:active{
+  transform:translateY(0);
+}
+
+.footer-text{
+  text-align:center;
+  margin-top:20px;
+  font-size:14px;
+  color:#64748b;
+}
+
+.footer-text a{
+  color:#3b82f6;
+  text-decoration:none;
+  font-weight:700;
+  transition:color 0.3s;
+}
+
+.footer-text a:hover{
+  color:#2563eb;
+}
+
+.secured{
+  text-align:center;
+  font-size:12px;
+  color:#94a3b8;
+  margin-top:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.secured::before{
+  content:'🔒';
+  font-size:13px;
+}
+
+.benefits{
+  background:#f8fafc;
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:20px;
+}
+
+.benefits h3{
+  font-size:13px;
+  font-weight:700;
+  color:#1e293b;
+  margin-bottom:10px;
+}
+
+.benefits ul{
+  list-style:none;
+  padding:0;
+}
+
+.benefits li{
+  font-size:13px;
+  color:#475569;
+  margin-bottom:6px;
+  padding-left:20px;
+  position:relative;
+}
+
+.benefits li::before{
+  content:'✓';
+  position:absolute;
+  left:0;
+  color:#3b82f6;
+  font-weight:700;
+}
+
+@media(max-width:480px){
+  body{
+    padding:20px 16px;
+  }
+  
+  .auth-card{
+    padding:28px 20px;
+  }
+  
+  h1{
+    font-size:22px;
+  }
+  
+  .subtitle{
+    font-size:13px;
+  }
+  
+  .row{
+    flex-direction:column;
+    gap:0;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="logo">
+      <img src="/static/images/avtools.png" alt="AVTools Logo">
+    </div>
+
+    <h1>Create your account</h1>
+    <p class="subtitle">Join thousands of Meesho sellers growing faster</p>
+
+    <button class="social-btn">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+      Continue with Google
+    </button>
+
+    <div class="divider"><span>or sign up with email</span></div>
+
+    <div class="benefits">
+      <h3>What you get:</h3>
+      <ul>
+        <li>10 free credits on signup</li>
+        <li>Advanced shipping optimization</li>
+        <li>Real-time profit calculator</li>
+      </ul>
+    </div>
+
+    <form>
+      <div class="row">
+        <div class="form-group">
+          <label>First name</label>
+          <input type="text" placeholder="John" required>
+        </div>
+        <div class="form-group">
+          <label>Last name</label>
+          <input type="text" placeholder="Doe" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" placeholder="you@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="Create a strong password" required>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="terms" required>
+        <label for="terms">
+          I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary">Create account →</button>
+    </form>
+
+    <p class="footer-text">
+      Already have an account? <a href="/signin">Sign in</a>
+    </p>
+
+    <p class="secured">Secured by AVTools</p>
+  </div>
+</div>
+
+</body>
+</html>

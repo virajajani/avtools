@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meesho Image Generator | AVTools</title>
+<meta name="description" content="Generate optimized Meesho product images and calculate shipping slabs to reduce costs and increase profits.">
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:#f8fafc;
+  color:#0f172a;
+  min-height:100vh;
+}
+
+/* NAVBAR */
+.navbar{
+  background:#fff;
+  border-bottom:1px solid #e2e8f0;
+  padding:16px 6%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);
+}
+
+.logo img{
+  height:36px;
+}
+
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap:32px;
+}
+
+.nav-links a{
+  text-decoration:none;
+  color:#64748b;
+  font-weight:500;
+  font-size:15px;
+  transition:color 0.3s;
+  position:relative;
+}
+
+.nav-links a:hover{
+  color:#3b82f6;
+}
+
+.nav-links a.active{
+  color:#3b82f6;
+  font-weight:600;
+}
+
+.nav-links a.active::after{
+  content:'';
+  position:absolute;
+  bottom:-18px;
+  left:0;
+  right:0;
+  height:2px;
+  background:#3b82f6;
+}
+
+.user-menu{
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+
+.credits-badge{
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff;
+  padding:8px 16px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:700;
+}
+
+/* MAIN LAYOUT */
+.wrapper{
+  max-width:1280px;
+  margin:0 auto;
+  padding:48px 6%;
+  display:grid;
+  grid-template-columns:440px 1fr;
+  gap:40px;
+}
+
+/* CARD */
+.card{
+  background:#fff;
+  padding:32px;
+  border-radius:20px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.06);
+  border:1px solid #e2e8f0;
+  height:fit-content;
+  position:sticky;
+  top:100px;
+}
+
+.card h3{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:24px;
+  color:#1e293b;
+}
+
+/* FORM */
+.form-group{
+  margin-bottom:20px;
+}
+
+label{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:8px;
+  display:block;
+  color:#334155;
+}
+
+input[type="number"],
+select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:2px solid #e2e8f0;
+  font-size:14px;
+  transition:all 0.3s ease;
+  background:#fff;
+  color:#1e293b;
+  font-family:inherit;
+}
+
+input:focus,
+select:focus{
+  outline:none;
+  border-color:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+}
+
+/* FILE UPLOAD */
+.upload-area{
+  border:2px dashed #cbd5e1;
+  border-radius:12px;
+  padding:32px;
+  text-align:center;
+  background:#f8fafc;
+  transition:all 0.3s ease;
+  cursor:pointer;
+  position:relative;
+}
+
+.upload-area:hover{
+  border-color:#3b82f6;
+  background:#f0f9ff;
+}
+
+.upload-area.dragover{
+  border-color:#3b82f6;
+  background:#eff6ff;
+  border-style:solid;
+}
+
+.upload-icon{
+  font-size:48px;
+  margin-bottom:12px;
+}
+
+.upload-text{
+  font-size:14px;
+  color:#64748b;
+  margin-bottom:8px;
+}
+
+.upload-text strong{
+  color:#3b82f6;
+}
+
+.upload-hint{
+  font-size:12px;
+  color:#94a3b8;
+}
+
+.file-input{
+  display:none;
+}
+
+.file-preview{
+  margin-top:16px;
+  padding:12px;
+  background:#f0fdf4;
+  border:1px solid #86efac;
+  border-radius:8px;
+  display:none;
+  align-items:center;
+  gap:12px;
+  font-size:14px;
+  color:#166534;
+}
+
+.file-preview.show{
+  display:flex;
+}
+
+.remove-file{
+  margin-left:auto;
+  background:none;
+  border:none;
+  color:#dc2626;
+  cursor:pointer;
+  font-size:18px;
+  padding:0 8px;
+}
+
+/* BUTTON */
+.btn{
+  width:100%;
+  padding:16px;
+  margin-top:8px;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 8px 24px rgba(59,130,246,0.3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(59,130,246,0.4);
+}
+
+.btn:active{
+  transform:translateY(0);
+}
+
+.btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.credit-info{
+  font-size:12px;
+  color:#64748b;
+  margin-top:12px;
+  text-align:center;
+  padding:12px;
+  background:#f8fafc;
+  border-radius:8px;
+}
+
+/* RIGHT SECTION */
+.right-section h3{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:24px;
+  color:#1e293b;
+}
+
+.empty-state{
+  text-align:center;
+  padding:80px 32px;
+  background:#fff;
+  border-radius:20px;
+  border:2px dashed #e2e8f0;
+}
+
+.empty-icon{
+  font-size:64px;
+  margin-bottom:16px;
+  opacity:0.5;
+}
+
+.empty-text{
+  font-size:16px;
+  color:#64748b;
+  margin-bottom:8px;
+}
+
+.empty-hint{
+  font-size:14px;
+  color:#94a3b8;
+}
+
+/* RECENT GRID */
+.recent-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:24px;
+}
+
+.generation-card{
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+  overflow:hidden;
+  transition:all 0.3s ease;
+  border:1px solid #e2e8f0;
+}
+
+.generation-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 36px rgba(0,0,0,0.12);
+}
+
+.gen-image{
+  width:100%;
+  height:180px;
+  background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:48px;
+  position:relative;
+}
+
+.gen-status{
+  position:absolute;
+  top:12px;
+  left:12px;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+.status-completed{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-processing{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.gen-info{
+  padding:16px;
+}
+
+.gen-category{
+  font-size:15px;
+  font-weight:700;
+  color:#1e293b;
+  margin-bottom:8px;
+}
+
+.gen-details{
+  font-size:13px;
+  color:#64748b;
+  margin-bottom:4px;
+}
+
+.gen-price{
+  font-size:18px;
+  font-weight:800;
+  color:#3b82f6;
+  margin-top:8px;
+}
+
+.gen-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.btn-small{
+  flex:1;
+  padding:8px;
+  border-radius:8px;
+  border:1px solid #e2e8f0;
+  background:#fff;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+
+.btn-small:hover{
+  background:#f8fafc;
+  border-color:#3b82f6;
+  color:#3b82f6;
+}
+
+/* FOOTER */
+.footer{
+  border-top:1px solid #e2e8f0;
+  padding:32px 6%;
+  margin-top:80px;
+  background:#fff;
+}
+
+.footer-content{
+  max-width:1280px;
+  margin:0 auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:16px;
+}
+
+.footer-links{
+  display:flex;
+  gap:24px;
+}
+
+.footer-links a{
+  color:#64748b;
+  text-decoration:none;
+  font-size:14px;
+  transition:color 0.3s;
+}
+
+.footer-links a:hover{
+  color:#3b82f6;
+}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .wrapper{
+    grid-template-columns:1fr;
+    gap:32px;
+  }
+  
+  .card{
+    position:relative;
+    top:0;
+  }
+  
+  .user-menu{
+    display:none;
+  }
+}
+
+@media(max-width:768px){
+  .navbar{
+    padding:14px 5%;
+  }
+  
+  .nav-links{
+    gap:16px;
+  }
+  
+  .wrapper{
+    padding:32px 5%;
+  }
+  
+  .recent-grid{
+    grid-template-columns:1fr;
+  }
+  
+  .footer-content{
+    flex-direction:column;
+    text-align:center;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">
+    <img src="/static/images/avtools.png" alt="AVTools">
+  </div>
+  
+  <div class="nav-links">
+    <a onclick="location.href='/'" style="cursor:pointer;">Dashboard</a>
+    <a onclick="location.href='/meesho-image-generator'" style="cursor:pointer;" class="active"> Image Generator</a>
+    <a href="#">Label Export</a>
+  </div>
+  
+  <div class="user-menu">
+    <div class="credits-badge">⚡ 150 Credits</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="wrapper">
+  
+  <!-- LEFT CARD -->
+  <div class="card">
+    <h3>Create New Generation</h3>
+    
+    <form id="generatorForm" method="POST" enctype="multipart/form-data">
+      
+      <div class="form-group">
+        <label>Product Category</label>
+        <select name="category" required>
+          <option value="">Select a category</option>
+          <option value="necklace">Necklaces & Chains</option>
+          <option value="earring">Earrings</option>
+          <option value="bracelet">Bracelets & Bangles</option>
+          <option value="ring">Rings</option>
+          <option value="anklet">Anklets</option>
+          <option value="pendant">Pendants</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Net Weight (grams)</label>
+        <input type="number" name="net_weight" placeholder="e.g. 120" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label>Product Image</label>
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-icon">📸</div>
+          <div class="upload-text"><strong>Click to upload</strong> or drag and drop</div>
+          <div class="upload-hint">PNG, JPG up to 10MB</div>
+          <input type="file" name="product_image" id="fileInput" class="file-input" accept="image/*" required>
+        </div>
+        <div class="file-preview" id="filePreview">
+          <span>📄</span>
+          <span id="fileName"></span>
+          <button type="button" class="remove-file" id="removeFile">×</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Meesho Price (₹)</label>
+        <input type="number" name="meesho_price" placeholder="e.g. 199" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label>Wrong/Defective Returns Price (₹)</label>
+        <input type="number" name="return_price" placeholder="e.g. 150" min="0" required>
+      </div>
+
+      <div class="form-group">
+        <label>MRP (₹)</label>
+        <input type="number" name="mrp" placeholder="e.g. 299" min="1" required>
+      </div>
+
+      <div class="form-group">
+        <label>Number of Images</label>
+        <input type="number" name="num_images" value="56" min="12" max="100" required>
+      </div>
+
+      <button type="submit" class="btn">
+        <span>⚡</span>
+        <span>Generate Images</span>
+      </button>
+
+      <div class="credit-info">
+        💡 Each generation uses 1 credit • Results in 30–60 seconds
+      </div>
+    </form>
+  </div>
+
+  <!-- RIGHT SECTION -->
+  <div class="right-section">
+    <h3>Recent Generations</h3>
+    
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🎨</div>
+      <div class="empty-text">No generations yet</div>
+      <div class="empty-hint">Your generated images will appear here</div>
+    </div>
+
+    <!-- Recent Grid (hidden initially) -->
+    <div class="recent-grid" id="recentGrid" style="display:none;">
+      
+      <div class="generation-card">
+        <div class="gen-image">
+          <span>💍</span>
+          <div class="gen-status status-completed">Completed</div>
+        </div>
+        <div class="gen-info">
+          <div class="gen-category">Necklaces & Chains</div>
+          <div class="gen-details">56 images • 120g net weight</div>
+          <div class="gen-details">Lowest Shipping Slab</div>
+          <div class="gen-price">₹63</div>
+          <div class="gen-actions">
+            <button class="btn-small">📥 Download</button>
+            <button class="btn-small">👁 View</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="generation-card">
+        <div class="gen-image">
+          <span>👂</span>
+          <div class="gen-status status-processing">Processing</div>
+        </div>
+        <div class="gen-info">
+          <div class="gen-category">Earrings</div>
+          <div class="gen-details">56 images • 85g net weight</div>
+          <div class="gen-details">Estimated: 45 seconds</div>
+          <div class="gen-price">₹58</div>
+          <div class="gen-actions">
+            <button class="btn-small" disabled>⏳ Processing...</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="generation-card">
+        <div class="gen-image">
+          <span>📿</span>
+          <div class="gen-status status-completed">Completed</div>
+        </div>
+        <div class="gen-info">
+          <div class="gen-category">Bracelets</div>
+          <div class="gen-details">56 images • 95g net weight</div>
+          <div class="gen-details">Lowest Shipping Slab</div>
+          <div class="gen-price">₹61</div>
+          <div class="gen-actions">
+            <button class="btn-small">📥 Download</button>
+            <button class="btn-small">👁 View</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <div>© 2026 AVTools. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/refund">Refund Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// File upload handling
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const filePreview = document.getElementById('filePreview');
+const fileName = document.getElementById('fileName');
+const removeFile = document.getElementById('removeFile');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+  uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadArea.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files.length) {
+    fileInput.files = files;
+    handleFileSelect(files[0]);
+  }
+});
+
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) {
+    handleFileSelect(e.target.files[0]);
+  }
+});
+
+removeFile.addEventListener('click', () => {
+  fileInput.value = '';
+  filePreview.classList.remove('show');
+});
+
+function handleFileSelect(file) {
+  fileName.textContent = file.name;
+  filePreview.classList.add('show');
+}
+
+// Toggle between empty state and grid
+const emptyState = document.getElementById('emptyState');
+const recentGrid = document.getElementById('recentGrid');
+
+// Uncomment to show grid instead of empty state
+// emptyState.style.display = 'none';
+// recentGrid.style.display = 'grid';
+
+// Form submission
+document.getElementById('generatorForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  // Add your form submission logic here
+  console.log('Form submitted');
+});
+</script>
+
+</body>
+</html>
