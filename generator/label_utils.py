@@ -1,6 +1,6 @@
 # ============================================
 # FILE: generator/label_utils.py
-# Meesho Label Cropper - Final Fixed Version
+# Meesho Label Cropper - PRINT SAFE FINAL
 # ============================================
 
 import fitz  # PyMuPDF
@@ -8,234 +8,191 @@ import fitz  # PyMuPDF
 
 class MeeshoLabelCropper:
     """
-    Crops Meesho shipping labels for 3 inch width thermal paper
-    Removes TAX INVOICE and extra pages
+    Crops Meesho shipping labels for 3-inch thermal printers
+    - Completely removes TAX INVOICE
+    - Prevents bottom cut during thermal printing
+    - Keeps all borders, barcodes & order numbers safe
     """
 
-    LABEL_WIDTH_PT = 216   # 3 inches at 72 DPI
-    LABEL_HEIGHT_PT = 360  # 5 inches at 72 DPI (maximum)
+    LABEL_WIDTH_PT = 216        # 3 inches @ 72 DPI
+    LABEL_HEIGHT_PT = 360       # 5 inches max
+    SAFETY_MARGIN = 6           # Prevents line clipping
+    PRINT_SCALE_FIX = 0.96      # Shrinks content slightly (thermal-safe)
+    BOTTOM_PADDING_PT = 10      # ~3.5mm bottom safety
 
     def __init__(self):
         self.labels_found = 0
         self.debug = True
 
+    # --------------------------------------------------
+    # Skip extra tax / terms pages
+    # --------------------------------------------------
     def should_skip_page(self, page: fitz.Page) -> bool:
-        """
-        Check if this page should be skipped (extra terms/tax page)
-        Returns True if page should be skipped
-        """
         text = page.get_text()
-        
-        # Skip pages that have these indicators of extra content
-        skip_indicators = [
+
+        skip_words = [
             "Tax is not payable on reverse charge",
             "This is a computer generated invoice",
+            "logistics fee",
             "applicable to your order",
-            "logistics fee"
         ]
-        
-        # If page has these terms but no Customer Address, it's an extra page
-        has_skip_text = any(indicator in text for indicator in skip_indicators)
-        has_customer = "Customer Address" in text
-        
-        if has_skip_text and not has_customer:
-            return True
-        
-        return False
 
+        has_skip = any(w in text for w in skip_words)
+        has_customer = "Customer Address" in text
+
+        return has_skip and not has_customer
+
+    # --------------------------------------------------
+    # Find crop Y ABOVE TAX INVOICE (text removed)
+    # --------------------------------------------------
     def find_crop_point(self, page: fitz.Page) -> float:
-        """
-        Find where to crop - before TAX INVOICE text
-        Returns Y coordinate
-        """
         page_rect = page.rect
-        
-        # Method 1: Search for "TAX INVOICE" text directly
-        tax_invoice_rects = page.search_for("TAX INVOICE")
-        
-        if tax_invoice_rects:
-            # Get the topmost TAX INVOICE occurrence
-            tax_y = min(rect.y0 for rect in tax_invoice_rects)
-            
-            # Look for horizontal line ABOVE TAX INVOICE (within 5-30 pixels)
-            search_start = tax_y - 30
-            search_end = tax_y - 3
-            
+
+        tax_rects = page.search_for("TAX INVOICE")
+
+        if tax_rects:
+            tax_y = min(r.y0 for r in tax_rects)
+
+            search_top = tax_y - 40
+            search_bottom = tax_y - 6
+
             drawings = page.get_drawings()
-            lines_above = []
-            
+            lines = []
+
             for drawing in drawings:
                 for item in drawing.get("items", []):
                     if item[0] == "l":  # line
                         p1, p2 = item[1], item[2]
-                        line_y = p1.y
-                        
-                        # Check if horizontal line above TAX INVOICE
-                        if abs(p1.y - p2.y) < 3 and search_start < line_y < search_end:
-                            line_width = abs(p2.x - p1.x)
-                            if line_width > page_rect.width * 0.7:
-                                lines_above.append(line_y)
-            
-            if lines_above:
-                # Get the line closest to TAX INVOICE
-                line_y = max(lines_above)
-                # Crop AFTER this line with extra margin to ensure line is visible
-                crop_y = line_y + 5
-                
-                if self.debug:
-                    print(f"  ✓ Found 'TAX INVOICE' at y = {tax_y:.1f}")
-                    print(f"  ✓ Found border line at y = {line_y:.1f}")
-                    print(f"  ✓ Cropping at y = {crop_y:.1f} (including line)")
-                
-                return crop_y
-            
-            # No line found, crop slightly above TAX INVOICE
-            crop_y = tax_y - 5
-            
-            if self.debug:
-                print(f"  ✓ Found 'TAX INVOICE' at y = {tax_y:.1f}")
-                print(f"  ⚠ No border line found, cropping at y = {crop_y:.1f}")
-            
-            return crop_y
-        
-        # Method 2: If no TAX INVOICE found, look for Product Details
-        product_details_rects = page.search_for("Product Details")
-        
-        if product_details_rects:
-            product_y = min(rect.y0 for rect in product_details_rects)
-            crop_y = product_y + 80  # Fixed offset
-            
-            if self.debug:
-                print(f"  ✓ Found 'Product Details' at y = {product_y:.1f}")
-                print(f"  ⚠ No TAX INVOICE, using offset, cropping at y = {crop_y:.1f}")
-            
-            return crop_y
-        
-        # Fallback
-        crop_y = page_rect.height * 0.50
-        if self.debug:
-            print(f"  ⚠ Using default crop at y = {crop_y:.1f}")
-        return crop_y
 
+                        if abs(p1.y - p2.y) < 2:
+                            if search_top < p1.y < search_bottom:
+                                if abs(p2.x - p1.x) > page_rect.width * 0.7:
+                                    lines.append(p1.y)
+
+            if lines:
+                line_y = max(lines)
+                crop_y = line_y + 3  # keep line, remove text
+
+                if self.debug:
+                    print(f"  ✓ Border line at y={line_y:.1f}")
+                    print(f"  ✓ TAX INVOICE removed, crop y={crop_y:.1f}")
+
+                return crop_y
+
+            # fallback if line not detected
+            return tax_y - 8
+
+        # Fallback: Product Details
+        prod_rects = page.search_for("Product Details")
+        if prod_rects:
+            return min(r.y0 for r in prod_rects) + 80
+
+        # Absolute fallback
+        return page_rect.height * 0.5
+
+    # --------------------------------------------------
+    # Main PDF processing
+    # --------------------------------------------------
     def create_label_pdf(self, pdf_file) -> bytes:
-        """Create PDF with cropped labels"""
-        
-        # Open input PDF
-        if hasattr(pdf_file, 'read'):
+
+        if hasattr(pdf_file, "read"):
             pdf_bytes = pdf_file.read()
             pdf_file.seek(0)
             input_doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         else:
             input_doc = fitz.open(pdf_file)
-        
-        if self.debug:
-            print(f"\n{'='*70}")
-            print(f"Processing PDF: {len(input_doc)} page(s)")
-            print(f"Target width: 3 inch ({self.LABEL_WIDTH_PT} pt)")
-            print(f"{'='*70}")
-        
+
         output_pdf = fitz.open()
-        
-        # Process each page
-        for page_num in range(len(input_doc)):
-            source_page = input_doc[page_num]
-            
-            if self.debug:
-                print(f"\nPage {page_num + 1}:")
-            
-            # Check if this page should be skipped
-            if self.should_skip_page(source_page):
+
+        if self.debug:
+            print("\n" + "=" * 70)
+            print(f"Processing {len(input_doc)} page(s)")
+            print("=" * 70)
+
+        for page_no in range(len(input_doc)):
+            page = input_doc[page_no]
+
+            if self.should_skip_page(page):
                 if self.debug:
-                    print(f"  ⚠ Skipping extra page (tax/terms content)")
+                    print("  ⚠ Skipped extra tax/terms page")
                 continue
-            
-            page_rect = source_page.rect
-            
-            if self.debug:
-                print(f"  Original: {page_rect.width:.1f} x {page_rect.height:.1f} pt")
-            
-            # Find crop point
-            crop_y = self.find_crop_point(source_page)
-            
+
+            crop_y = self.find_crop_point(page)
             if crop_y <= 0:
-                if self.debug:
-                    print(f"  ⚠ Invalid crop point, skipping page")
                 continue
-            
-            # Define crop area
-            clip_rect = fitz.Rect(0, 0, page_rect.width, crop_y)
-            
-            if self.debug:
-                print(f"  Cropped area: {clip_rect.width:.1f} x {clip_rect.height:.1f} pt")
-            
-            # Scale to fit 3 inch width (fill the width completely)
-            scale = self.LABEL_WIDTH_PT / clip_rect.width
-            
-            final_width = self.LABEL_WIDTH_PT  # Always use full 3 inches
-            final_height = clip_rect.height * scale
-            
-            # Add small bottom margin to ensure border line is visible
-            final_height += 3
-            
-            # If height exceeds 5 inches, scale down to fit
+
+            # Safe clipping
+            clip_rect = fitz.Rect(
+                0,
+                0,
+                page.rect.width,
+                crop_y + self.SAFETY_MARGIN
+            )
+
+            # 🔴 Thermal-safe scaling
+            scale = (self.LABEL_WIDTH_PT / clip_rect.width) * self.PRINT_SCALE_FIX
+
+            content_height = clip_rect.height * scale
+            final_height = content_height + self.BOTTOM_PADDING_PT
+
             if final_height > self.LABEL_HEIGHT_PT:
-                scale = self.LABEL_HEIGHT_PT / (clip_rect.height + 3)
-                final_width = clip_rect.width * scale
+                scale = (self.LABEL_HEIGHT_PT / clip_rect.height) * self.PRINT_SCALE_FIX
+                content_height = clip_rect.height * scale
                 final_height = self.LABEL_HEIGHT_PT
-            
-            # Create new page with actual content size
+
+            final_width = clip_rect.width * scale
+
             new_page = output_pdf.new_page(
                 width=final_width,
                 height=final_height
             )
-            
-            target_rect = fitz.Rect(0, 0, final_width, final_height)
-            
-            # Copy content
+
+            # 🔴 CENTER content vertically (prevents bottom cut)
+            y_offset = (final_height - content_height) / 2
+
+            target_rect = fitz.Rect(
+                0,
+                y_offset,
+                final_width,
+                y_offset + content_height
+            )
+
             new_page.show_pdf_page(
                 target_rect,
                 input_doc,
-                page_num,
+                page_no,
                 clip=clip_rect
             )
-            
+
             self.labels_found += 1
-            
+
             if self.debug:
-                print(f"  Scale: {scale:.3f}x")
-                print(f"  Final: {final_width:.1f} x {final_height:.1f} pt ({final_width/72:.2f} x {final_height/72:.2f} in)")
-        
-        if self.debug:
-            print(f"\n{'='*70}")
-            print(f"✓ Created {self.labels_found} label(s)")
-            print(f"{'='*70}\n")
-        
+                print(
+                    f"  ✓ Label size: "
+                    f"{final_width/72:.2f} x {final_height/72:.2f} inch"
+                )
+
         if self.labels_found == 0:
-            output_pdf.close()
             input_doc.close()
-            raise ValueError("No valid labels found in PDF")
-        
-        pdf_bytes = output_pdf.tobytes()
-        
+            output_pdf.close()
+            raise ValueError("No valid labels found")
+
+        result = output_pdf.tobytes()
+
         if self.debug:
-            print(f"Output PDF size: {len(pdf_bytes):,} bytes\n")
-        
-        output_pdf.close()
+            print("\n✓ Labels created:", self.labels_found)
+
         input_doc.close()
-        
-        return pdf_bytes
+        output_pdf.close()
+        return result
 
 
+# --------------------------------------------------
+# Django helper
+# --------------------------------------------------
 def crop_meesho_labels_to_pdf(pdf_file) -> bytes:
     """
-    Crop Meesho labels for 3 inch thermal paper
-    Removes TAX INVOICE sections and extra pages
-    
-    Args:
-        pdf_file: Django UploadedFile or file path
-    
-    Returns:
-        bytes: Cropped PDF as bytes
+    Crop Meesho shipping labels for thermal printers
+    (Print-safe, TAX INVOICE removed)
     """
-    cropper = MeeshoLabelCropper()
-    return cropper.create_label_pdf(pdf_file)
+    return MeeshoLabelCropper().create_label_pdf(pdf_file)
