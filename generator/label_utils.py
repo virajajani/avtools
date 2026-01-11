@@ -1,6 +1,6 @@
 # ============================================
 # FILE: generator/label_utils.py
-# Meesho Label Cropper - Crop and Resize
+# Meesho Label Cropper - 3x5 inch format
 # ============================================
 
 import fitz  # PyMuPDF
@@ -8,14 +8,13 @@ import fitz  # PyMuPDF
 
 class MeeshoLabelCropper:
     """
-    Crops Meesho shipping labels from PDF
-    Removes everything from "TAX INVOICE" onwards
-    Resizes to standard 4x6 inch if needed
+    Crops Meesho shipping labels for 3x5 inch thermal paper
+    Removes everything from TAX INVOICE onwards
+    Scales to fit 3x5 inch (216 x 360 pt)
     """
 
-    LABEL_WIDTH_PT = 288   # 4 inches at 72 DPI
-    LABEL_HEIGHT_PT = 432  # 6 inches at 72 DPI
-    MAX_HEIGHT_PT = 500    # Maximum height before resizing
+    LABEL_WIDTH_PT = 216   # 3 inches at 72 DPI
+    LABEL_HEIGHT_PT = 360  # 5 inches at 72 DPI
 
     def __init__(self):
         self.labels_found = 0
@@ -23,7 +22,7 @@ class MeeshoLabelCropper:
 
     def find_crop_point(self, page: fitz.Page) -> float:
         """
-        Find where to crop - at the line above TAX INVOICE
+        Find where to crop - include Product Details with bottom border
         Returns Y coordinate
         """
         page_rect = page.rect
@@ -32,58 +31,66 @@ class MeeshoLabelCropper:
         tax_invoice_rects = page.search_for("TAX INVOICE")
         
         if tax_invoice_rects:
-            # Get the topmost occurrence of TAX INVOICE
             tax_y = min(rect.y0 for rect in tax_invoice_rects)
             
             if self.debug:
                 print(f"  ✓ Found 'TAX INVOICE' at y = {tax_y:.1f}")
             
-            # Look for horizontal line above TAX INVOICE
-            # Search in the area 20-50 pixels above the text
-            search_start = tax_y - 50
-            search_end = tax_y - 5
+            # Look for "Product Details" text
+            product_details_rects = page.search_for("Product Details")
             
-            drawings = page.get_drawings()
-            lines_found = []
+            if product_details_rects:
+                # Get the bottom of Product Details section
+                product_y = max(rect.y1 for rect in product_details_rects)
+                
+                # Search for horizontal lines after Product Details but before TAX INVOICE
+                search_start = product_y
+                search_end = tax_y
+                
+                drawings = page.get_drawings()
+                lines_found = []
+                
+                for drawing in drawings:
+                    for item in drawing.get("items", []):
+                        if item[0] == "l":  # line
+                            p1, p2 = item[1], item[2]
+                            line_y = p1.y
+                            
+                            # Check if horizontal line between Product Details and TAX INVOICE
+                            if abs(p1.y - p2.y) < 3 and search_start < line_y < search_end:
+                                line_width = abs(p2.x - p1.x)
+                                if line_width > page_rect.width * 0.4:
+                                    lines_found.append(line_y)
+                
+                if lines_found:
+                    # Get the last line (closest to TAX INVOICE)
+                    line_y = max(lines_found)
+                    crop_y = line_y + 5  # Include the line with margin
+                    if self.debug:
+                        print(f"  ✓ Found Product Details border at y = {line_y:.1f}")
+                        print(f"  ✓ Cropping at y = {crop_y:.1f}")
+                    return crop_y
+                else:
+                    # No line found, add margin after Product Details text
+                    crop_y = product_y + 60
+                    if self.debug:
+                        print(f"  ⚠ No border line, cropping at y = {crop_y:.1f}")
+                    return crop_y
             
-            for drawing in drawings:
-                for item in drawing.get("items", []):
-                    if item[0] == "l":  # line
-                        p1, p2 = item[1], item[2]
-                        line_y = p1.y
-                        
-                        # Check if it's a horizontal line in our search area
-                        if abs(p1.y - p2.y) < 3 and search_start < line_y < search_end:
-                            # Check if line spans significant width
-                            line_width = abs(p2.x - p1.x)
-                            if line_width > page_rect.width * 0.5:
-                                lines_found.append(line_y)
-            
-            if lines_found:
-                # Get the line closest to TAX INVOICE
-                line_y = max(lines_found)
-                # Add small margin to include the line itself
-                crop_y = line_y + 3
-                if self.debug:
-                    print(f"  ✓ Found separator line at y = {line_y:.1f}")
-                    print(f"  ✓ Cropping at y = {crop_y:.1f} (including line)")
-                return crop_y
-            
-            # No line found, use position just above TAX INVOICE
+            # Fallback: crop before TAX INVOICE
             crop_y = tax_y - 15
             if self.debug:
-                print(f"  ⚠ No line found, cropping at y = {crop_y:.1f}")
+                print(f"  ⚠ Using fallback, cropping at y = {crop_y:.1f}")
             return crop_y
         
-        # Fallback: 55% of page height
+        # Last fallback
         crop_y = page_rect.height * 0.55
         if self.debug:
-            print(f"  ⚠ Using default: 55% of page = {crop_y:.1f}")
-        
+            print(f"  ⚠ Using default crop at y = {crop_y:.1f}")
         return crop_y
 
     def create_label_pdf(self, pdf_file) -> bytes:
-        """Create PDF with cropped labels"""
+        """Create PDF with cropped and scaled labels for 3x5 inch paper"""
         
         # Open input PDF
         if hasattr(pdf_file, 'read'):
@@ -96,9 +103,9 @@ class MeeshoLabelCropper:
         if self.debug:
             print(f"\n{'='*70}")
             print(f"Processing PDF: {len(input_doc)} page(s)")
+            print(f"Target size: 3x5 inch ({self.LABEL_WIDTH_PT} x {self.LABEL_HEIGHT_PT} pt)")
             print(f"{'='*70}")
         
-        # Create output PDF
         output_pdf = fitz.open()
         
         # Process each page
@@ -108,49 +115,37 @@ class MeeshoLabelCropper:
             
             if self.debug:
                 print(f"\nPage {page_num + 1}:")
-                print(f"  Original size: {page_rect.width:.1f} x {page_rect.height:.1f} pt")
+                print(f"  Original: {page_rect.width:.1f} x {page_rect.height:.1f} pt")
             
-            # Find where to crop
+            # Find crop point (where to stop)
             crop_y = self.find_crop_point(source_page)
             
-            # Calculate cropped dimensions
-            cropped_width = page_rect.width
-            cropped_height = crop_y
+            # Define the area to crop (from top to crop point)
+            clip_rect = fitz.Rect(0, 0, page_rect.width, crop_y)
             
             if self.debug:
-                print(f"  Cropped size: {cropped_width:.1f} x {cropped_height:.1f} pt")
+                print(f"  Cropped area: {clip_rect.width:.1f} x {clip_rect.height:.1f} pt")
             
-            # Decide if we need to resize
-            needs_resize = cropped_height > self.MAX_HEIGHT_PT
+            # Create new page at 3 inch width, but with actual content height (no fixed 5 inch)
+            # Scale to 3 inch width
+            scale = self.LABEL_WIDTH_PT / clip_rect.width
+            final_width = self.LABEL_WIDTH_PT
+            final_height = clip_rect.height * scale
             
-            if needs_resize:
-                # Resize to fit 4x6 inch label
-                final_width = self.LABEL_WIDTH_PT
-                final_height = self.LABEL_HEIGHT_PT
-                
-                if self.debug:
-                    print(f"  ⚠ Too large! Resizing to: {final_width:.1f} x {final_height:.1f} pt (4x6 inch)")
-            else:
-                # Keep original cropped size
-                final_width = cropped_width
-                final_height = cropped_height
-                
-                if self.debug:
-                    print(f"  ✓ Size OK, keeping original dimensions")
-            
-            # Create new page
+            # Create page with actual content size (no white space)
             new_page = output_pdf.new_page(
                 width=final_width,
                 height=final_height
             )
             
-            # Define the area to copy (from top to crop point)
-            clip_rect = fitz.Rect(0, 0, cropped_width, crop_y)
-            
-            # Define where to place it (full new page)
             target_rect = fitz.Rect(0, 0, final_width, final_height)
             
-            # Copy content
+            if self.debug:
+                print(f"  Scale factor: {scale:.3f}x")
+                print(f"  Final page: {final_width:.1f} x {final_height:.1f} pt")
+                print(f"  ({final_width/72:.2f} x {final_height/72:.2f} inches)")
+            
+            # Copy the content
             new_page.show_pdf_page(
                 target_rect,
                 input_doc,
@@ -162,7 +157,7 @@ class MeeshoLabelCropper:
         
         if self.debug:
             print(f"\n{'='*70}")
-            print(f"✓ Processed {self.labels_found} label(s)")
+            print(f"✓ Created {self.labels_found} label(s) for 3x5 inch paper")
             print(f"{'='*70}\n")
         
         if self.labels_found == 0:
@@ -170,13 +165,11 @@ class MeeshoLabelCropper:
             input_doc.close()
             raise ValueError("No labels found in PDF")
         
-        # Convert to bytes
         pdf_bytes = output_pdf.tobytes()
         
         if self.debug:
             print(f"Output PDF size: {len(pdf_bytes):,} bytes\n")
         
-        # Close documents
         output_pdf.close()
         input_doc.close()
         
@@ -185,14 +178,13 @@ class MeeshoLabelCropper:
 
 def crop_meesho_labels_to_pdf(pdf_file) -> bytes:
     """
-    Crop Meesho labels - remove TAX INVOICE section
-    Resize to 4x6 inch if label is too large
+    Crop and resize Meesho labels for 3x5 inch thermal paper
     
     Args:
         pdf_file: Django UploadedFile or file path
     
     Returns:
-        bytes: Cropped PDF as bytes
+        bytes: PDF formatted for 3x5 inch paper
     """
     cropper = MeeshoLabelCropper()
     return cropper.create_label_pdf(pdf_file)
