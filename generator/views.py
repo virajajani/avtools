@@ -103,20 +103,21 @@ def download_image(request):
     response['Content-Disposition'] = 'attachment; filename="meesho_image.jpg"'
     return response
 
+# Add this to your views.py
 
+# Add this to your views.py
 
-# ===============================
-# LABEL CROPPER PAGE
-# ===============================
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from .label_utils import crop_meesho_labels_to_pdf
+import traceback
+from datetime import datetime
+
 
 def label_cropper(request):
     """Display the label cropper interface"""
     return render(request, 'crop/label_cropper.html')
 
-
-# ===============================
-# PROCESS LABELS AND AUTO-DOWNLOAD PDF
-# ===============================
 
 def process_labels(request):
     """Process uploaded PDF and automatically download cropped labels as PDF"""
@@ -137,21 +138,40 @@ def process_labels(request):
         return JsonResponse({'error': 'File too large. Max size is 50MB'}, status=400)
     
     try:
-        # Process the PDF and get cropped labels as PDF
+        print(f"Processing PDF: {pdf_file.name}, Size: {pdf_file.size} bytes")
+        
+        # Process the PDF - FIXED: removed use_simple_detection parameter
         output_pdf_bytes = crop_meesho_labels_to_pdf(pdf_file)
         
         if not output_pdf_bytes:
-            return JsonResponse({'error': 'No labels found in PDF'}, status=400)
+            return JsonResponse({'error': 'Failed to generate PDF'}, status=400)
         
-        # Generate filename
-        original_name = pdf_file.name.rsplit('.', 1)[0]
-        output_filename = f"{original_name}_cropped_labels.pdf"
+        print(f"Generated PDF size: {len(output_pdf_bytes)} bytes")
         
-        # Return PDF as automatic download
+        # Generate clean filename with timestamp
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        output_filename = f"meesho_labels_{timestamp}.pdf"
+        
+        # Return PDF as automatic download with proper headers
         response = HttpResponse(output_pdf_bytes, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{output_filename}"'
+        # Use both filename and filename* for better browser compatibility
+        response['Content-Disposition'] = f'attachment; filename="{output_filename}"; filename*=UTF-8\'\'{output_filename}'
+        response['Content-Length'] = str(len(output_pdf_bytes))
+        response['Content-Type'] = 'application/pdf'
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
         
+        print(f"Sending PDF: {output_filename}")
         return response
     
+    except ValueError as e:
+        # Specific errors (like no labels found)
+        print(f"ValueError: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=400)
+    
     except Exception as e:
+        # Log the full error for debugging
+        print(f"Error processing PDF: {str(e)}")
+        print(traceback.format_exc())
         return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)

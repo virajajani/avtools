@@ -1,183 +1,182 @@
 # ============================================
 # FILE: generator/label_utils.py
-# Meesho Shipping Label Crop Tool - PDF Output
+# Meesho Label Cropper - Crop and Resize
 # ============================================
 
-import io
 import fitz  # PyMuPDF
-import cv2
-import numpy as np
-from typing import List, Tuple
-from PIL import Image
 
 
 class MeeshoLabelCropper:
     """
-    Crops Meesho shipping labels from PDF and outputs as PDF
-    Standard Meesho label size: 4x6 inches (10.16 x 15.24 cm)
+    Crops Meesho shipping labels from PDF
+    Removes everything from "TAX INVOICE" onwards
+    Resizes to standard 4x6 inch if needed
     """
-    
-    # Standard label dimensions in points (72 points = 1 inch)
-    LABEL_WIDTH_PT = 288   # 4 inches * 72
-    LABEL_HEIGHT_PT = 432  # 6 inches * 72
-    
-    # Detection parameters
-    MIN_LABEL_AREA = 500000
-    BORDER_MARGIN = 20
-    
+
+    LABEL_WIDTH_PT = 288   # 4 inches at 72 DPI
+    LABEL_HEIGHT_PT = 432  # 6 inches at 72 DPI
+    MAX_HEIGHT_PT = 500    # Maximum height before resizing
+
     def __init__(self):
         self.labels_found = 0
-    
-    def pdf_to_images(self, pdf_file) -> List[Tuple[np.ndarray, fitz.Page]]:
+        self.debug = True
+
+    def find_crop_point(self, page: fitz.Page) -> float:
         """
-        Convert PDF pages to images while keeping page references
+        Find where to crop - at the line above TAX INVOICE
+        Returns Y coordinate
+        """
+        page_rect = page.rect
         
-        Args:
-            pdf_file: Django UploadedFile object or file path
+        # Search for "TAX INVOICE" text
+        tax_invoice_rects = page.search_for("TAX INVOICE")
+        
+        if tax_invoice_rects:
+            # Get the topmost occurrence of TAX INVOICE
+            tax_y = min(rect.y0 for rect in tax_invoice_rects)
             
-        Returns:
-            List of tuples (numpy array image, fitz page object)
-        """
-        images = []
+            if self.debug:
+                print(f"  ✓ Found 'TAX INVOICE' at y = {tax_y:.1f}")
+            
+            # Look for horizontal line above TAX INVOICE
+            # Search in the area 20-50 pixels above the text
+            search_start = tax_y - 50
+            search_end = tax_y - 5
+            
+            drawings = page.get_drawings()
+            lines_found = []
+            
+            for drawing in drawings:
+                for item in drawing.get("items", []):
+                    if item[0] == "l":  # line
+                        p1, p2 = item[1], item[2]
+                        line_y = p1.y
+                        
+                        # Check if it's a horizontal line in our search area
+                        if abs(p1.y - p2.y) < 3 and search_start < line_y < search_end:
+                            # Check if line spans significant width
+                            line_width = abs(p2.x - p1.x)
+                            if line_width > page_rect.width * 0.5:
+                                lines_found.append(line_y)
+            
+            if lines_found:
+                # Get the line closest to TAX INVOICE
+                line_y = max(lines_found)
+                # Add small margin to include the line itself
+                crop_y = line_y + 3
+                if self.debug:
+                    print(f"  ✓ Found separator line at y = {line_y:.1f}")
+                    print(f"  ✓ Cropping at y = {crop_y:.1f} (including line)")
+                return crop_y
+            
+            # No line found, use position just above TAX INVOICE
+            crop_y = tax_y - 15
+            if self.debug:
+                print(f"  ⚠ No line found, cropping at y = {crop_y:.1f}")
+            return crop_y
         
-        # Handle Django UploadedFile
+        # Fallback: 55% of page height
+        crop_y = page_rect.height * 0.55
+        if self.debug:
+            print(f"  ⚠ Using default: 55% of page = {crop_y:.1f}")
+        
+        return crop_y
+
+    def create_label_pdf(self, pdf_file) -> bytes:
+        """Create PDF with cropped labels"""
+        
+        # Open input PDF
         if hasattr(pdf_file, 'read'):
             pdf_bytes = pdf_file.read()
             pdf_file.seek(0)
-            doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+            input_doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         else:
-            doc = fitz.open(pdf_file)
+            input_doc = fitz.open(pdf_file)
         
-        for page_num in range(len(doc)):
-            page = doc[page_num]
-            
-            # Render page to image at 300 DPI for detection
-            mat = fitz.Matrix(300/72, 300/72)
-            pix = page.get_pixmap(matrix=mat)
-            
-            # Convert to numpy array
-            img = np.frombuffer(pix.samples, dtype=np.uint8)
-            img = img.reshape(pix.height, pix.width, pix.n)
-            
-            # Convert RGBA to RGB if needed
-            if pix.n == 4:
-                img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
-            
-            images.append((img, page))
+        if self.debug:
+            print(f"\n{'='*70}")
+            print(f"Processing PDF: {len(input_doc)} page(s)")
+            print(f"{'='*70}")
         
-        return images, doc
-    
-    def detect_labels(self, image: np.ndarray) -> List[Tuple[int, int, int, int]]:
-        """
-        Detect label boundaries in image
-        
-        Args:
-            image: Input image as numpy array
-            
-        Returns:
-            List of bounding boxes (x, y, width, height)
-        """
-        # Convert to grayscale
-        gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        
-        # Apply Gaussian blur
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        
-        # Edge detection
-        edges = cv2.Canny(blurred, 50, 150)
-        
-        # Dilate edges
-        kernel = np.ones((5, 5), np.uint8)
-        dilated = cv2.dilate(edges, kernel, iterations=2)
-        
-        # Find contours
-        contours, _ = cv2.findContours(
-            dilated, 
-            cv2.RETR_EXTERNAL, 
-            cv2.CHAIN_APPROX_SIMPLE
-        )
-        
-        labels = []
-        
-        for contour in contours:
-            x, y, w, h = cv2.boundingRect(contour)
-            area = w * h
-            
-            if area > self.MIN_LABEL_AREA:
-                aspect_ratio = h / w if w > 0 else 0
-                
-                # Meesho labels are typically 4:6 ratio
-                if 0.5 < aspect_ratio < 0.8 or 1.2 < aspect_ratio < 2.0:
-                    labels.append((x, y, w, h))
-        
-        # Sort by position
-        labels.sort(key=lambda box: (box[1], box[0]))
-        
-        return labels
-    
-    def create_label_pdf(self, pdf_file) -> bytes:
-        """
-        Process PDF and create new PDF with cropped labels
-        
-        Args:
-            pdf_file: Input PDF file
-            
-        Returns:
-            PDF bytes
-        """
-        images_and_pages, input_doc = self.pdf_to_images(pdf_file)
-        
-        # Create new PDF document
+        # Create output PDF
         output_pdf = fitz.open()
         
-        for page_num, (image, original_page) in enumerate(images_and_pages):
-            # Detect labels on this page
-            labels = self.detect_labels(image)
+        # Process each page
+        for page_num in range(len(input_doc)):
+            source_page = input_doc[page_num]
+            page_rect = source_page.rect
             
-            if not labels:
-                # If no labels detected, use entire page
-                h, w = image.shape[:2]
-                labels = [(0, 0, w, h)]
+            if self.debug:
+                print(f"\nPage {page_num + 1}:")
+                print(f"  Original size: {page_rect.width:.1f} x {page_rect.height:.1f} pt")
             
-            # Process each detected label
-            for label_idx, bbox in enumerate(labels):
-                x, y, w, h = bbox
+            # Find where to crop
+            crop_y = self.find_crop_point(source_page)
+            
+            # Calculate cropped dimensions
+            cropped_width = page_rect.width
+            cropped_height = crop_y
+            
+            if self.debug:
+                print(f"  Cropped size: {cropped_width:.1f} x {cropped_height:.1f} pt")
+            
+            # Decide if we need to resize
+            needs_resize = cropped_height > self.MAX_HEIGHT_PT
+            
+            if needs_resize:
+                # Resize to fit 4x6 inch label
+                final_width = self.LABEL_WIDTH_PT
+                final_height = self.LABEL_HEIGHT_PT
                 
-                # Add margins
-                x = max(0, x - self.BORDER_MARGIN)
-                y = max(0, y - self.BORDER_MARGIN)
-                w = min(image.shape[1] - x, w + 2 * self.BORDER_MARGIN)
-                h = min(image.shape[0] - y, h + 2 * self.BORDER_MARGIN)
+                if self.debug:
+                    print(f"  ⚠ Too large! Resizing to: {final_width:.1f} x {final_height:.1f} pt (4x6 inch)")
+            else:
+                # Keep original cropped size
+                final_width = cropped_width
+                final_height = cropped_height
                 
-                # Convert pixel coordinates to points (300 DPI to 72 DPI)
-                scale = 72 / 300
-                rect = fitz.Rect(
-                    x * scale,
-                    y * scale,
-                    (x + w) * scale,
-                    (y + h) * scale
-                )
-                
-                # Create new page with standard label size
-                new_page = output_pdf.new_page(
-                    width=self.LABEL_WIDTH_PT,
-                    height=self.LABEL_HEIGHT_PT
-                )
-                
-                # Copy the cropped area from original page
-                new_page.show_pdf_page(
-                    new_page.rect,
-                    input_doc,
-                    page_num,
-                    clip=rect
-                )
-                
-                self.labels_found += 1
+                if self.debug:
+                    print(f"  ✓ Size OK, keeping original dimensions")
+            
+            # Create new page
+            new_page = output_pdf.new_page(
+                width=final_width,
+                height=final_height
+            )
+            
+            # Define the area to copy (from top to crop point)
+            clip_rect = fitz.Rect(0, 0, cropped_width, crop_y)
+            
+            # Define where to place it (full new page)
+            target_rect = fitz.Rect(0, 0, final_width, final_height)
+            
+            # Copy content
+            new_page.show_pdf_page(
+                target_rect,
+                input_doc,
+                page_num,
+                clip=clip_rect
+            )
+            
+            self.labels_found += 1
         
-        # Get PDF bytes
+        if self.debug:
+            print(f"\n{'='*70}")
+            print(f"✓ Processed {self.labels_found} label(s)")
+            print(f"{'='*70}\n")
+        
+        if self.labels_found == 0:
+            output_pdf.close()
+            input_doc.close()
+            raise ValueError("No labels found in PDF")
+        
+        # Convert to bytes
         pdf_bytes = output_pdf.tobytes()
         
-        # Clean up
+        if self.debug:
+            print(f"Output PDF size: {len(pdf_bytes):,} bytes\n")
+        
+        # Close documents
         output_pdf.close()
         input_doc.close()
         
@@ -186,15 +185,14 @@ class MeeshoLabelCropper:
 
 def crop_meesho_labels_to_pdf(pdf_file) -> bytes:
     """
-    Main function to crop Meesho labels and return as PDF
+    Crop Meesho labels - remove TAX INVOICE section
+    Resize to 4x6 inch if label is too large
     
     Args:
-        pdf_file: Uploaded PDF file
-        
+        pdf_file: Django UploadedFile or file path
+    
     Returns:
-        PDF bytes with cropped labels
+        bytes: Cropped PDF as bytes
     """
     cropper = MeeshoLabelCropper()
-    pdf_bytes = cropper.create_label_pdf(pdf_file)
-    return pdf_bytes
-
+    return cropper.create_label_pdf(pdf_file)
