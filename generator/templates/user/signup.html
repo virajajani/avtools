@@ -345,7 +345,7 @@ input::placeholder{
     <h1>Create your account</h1>
     <p class="subtitle">Join thousands of Meesho sellers growing faster</p>
 
-    <button class="social-btn">
+    <button class="social-btn" type="button">
       <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
       Continue with Google
     </button>
@@ -361,33 +361,31 @@ input::placeholder{
       </ul>
     </div>
 
-    <form>
+    <form id="signupForm">
       <div class="row">
         <div class="form-group">
           <label>First name</label>
-          <input type="text" placeholder="John" required>
+          <input id="firstName" type="text" placeholder="John" required>
         </div>
         <div class="form-group">
           <label>Last name</label>
-          <input type="text" placeholder="Doe" required>
+          <input id="lastName" type="text" placeholder="Doe" required>
         </div>
       </div>
 
       <div class="form-group">
         <label>Email address</label>
-        <input type="email" placeholder="you@example.com" required>
+        <input id="signupEmail" type="email" placeholder="you@example.com" required>
       </div>
 
       <div class="form-group">
         <label>Password</label>
-        <input type="password" placeholder="Create a strong password" required>
+        <input id="signupPassword" type="password" placeholder="Create a strong password" required>
       </div>
 
       <div class="checkbox-group">
-        <input type="checkbox" id="terms" required>
-        <label for="terms">
-          I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>
-        </label>
+        <input type="checkbox" required>
+        <label>I agree to Terms & Privacy Policy</label>
       </div>
 
       <button type="submit" class="btn-primary">Create account →</button>
@@ -401,5 +399,69 @@ input::placeholder{
   </div>
 </div>
 
+<script>
+function getDeviceId() {
+  let id = localStorage.getItem("device_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("device_id", id);
+  }
+  return id;
+}
+
+document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    first_name: document.getElementById("firstName").value.trim(),
+    last_name: document.getElementById("lastName").value.trim(),
+    email: document.getElementById("signupEmail").value.trim(),
+    password: document.getElementById("signupPassword").value,
+    device_id: getDeviceId()
+  };
+
+  console.log("📤 Sending payload:", payload);
+
+  try {
+    const res = await fetch("/api/auth/register/", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    console.log("📥 Response:", data);
+
+    if (res.ok) {
+      localStorage.setItem("pending_email", payload.email);
+      alert("✅ OTP sent to your email!");
+      window.location.href = "/verify-otp";
+    } else {
+      // Handle different error types
+      let errorMessage = "Signup failed. Please try again.";
+      
+      if (data.error) {
+        // If backend sends {error: "message"}
+        if (typeof data.error === 'string') {
+          errorMessage = data.error;
+        } else if (data.error.email) {
+          errorMessage = data.error.email[0];  // "user with this email already exists."
+        }
+      } else if (data.email) {
+        // Direct field error
+        errorMessage = Array.isArray(data.email) ? data.email[0] : data.email;
+      }
+      
+      alert("❌ " + errorMessage);
+    }
+  } catch (error) {
+    console.error("Network error:", error);
+    alert("❌ Network error: " + error.message);
+  }
+});
+
+</script>
+
 </body>
+
 </html>

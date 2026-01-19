@@ -14,6 +14,8 @@ DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
+AUTH_USER_MODEL = 'accounts.User'
+
 # Applications
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -22,7 +24,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
     'generator',
+    'accounts',
 ]
 
 # Middleware
