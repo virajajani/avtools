@@ -336,7 +336,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
   if (res.ok) {
     localStorage.setItem("auth_token", data.token);
-    window.location.href = "/";
+    window.location.href = "/dashboard/";
   } else {
     alert(data.error || "Invalid credentials");
   }

@@ -7,8 +7,11 @@ urlpatterns = [
     # ===============================
     # PAGES
     # ===============================
-    path('', views.home, name='home'),
-    path('landing/', views.landing, name='landing'),
+
+
+    path('', views.landing, name='landing'),      # ✅ first open landing
+    path('dashboard/', views.home, name='home'),  # ✅ dashboard after login
+
     path('meesho-image-generator/', views.meesho_image_generator, name='meesho_image_generator'),
     
     # ===============================

@@ -1,30 +1,28 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
-from .models import User, EmailOTP, UserCredit
-from .utils import (
-    generate_otp,
-    otp_expiry_time,
-    credit_expiry_time,
-    send_otp_email
-)
+from .models import User, UserCredit
+from .utils import credit_expiry_time
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     device_id = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
         fields = ("first_name", "last_name", "email", "password", "device_id")
-        extra_kwargs = {
-            "password": {"write_only": True, "min_length": 6}
-        }
+        extra_kwargs = {"password": {"write_only": True, "min_length": 6}}
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email already registered")
         return value.lower()
 
+    def validate_password(self, value):
+        if len(value) < 6:
+            raise serializers.ValidationError("Password must be at least 6 characters")
+        return value
+
     def create(self, validated_data):
-        device_id = validated_data.pop("device_id")
-        print(f"🔑 Device ID: {device_id}")  # For logging
+        validated_data.pop("device_id")  # ✅ removed from serializer
 
         user = User.objects.create_user(
             username=validated_data["email"],
@@ -34,30 +32,18 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
 
-        # Initial credits
+        # ✅ No OTP verification
+        user.is_email_verified = True
+        user.save()
+
+        # ✅ Free credits
         UserCredit.objects.create(
             user=user,
             balance=10,
             expires_at=credit_expiry_time()
         )
 
-        # OTP
-        otp = generate_otp()
-        EmailOTP.objects.create(
-            user=user,
-            otp=otp,
-            expires_at=otp_expiry_time()
-        )
-
-        send_otp_email(user.email, otp)
-        print(f"✅ User created: {user.email}, OTP: {otp}")
-        
         return user
-
-
-class VerifyOTPSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    otp = serializers.CharField()
 
 
 class LoginSerializer(serializers.Serializer):

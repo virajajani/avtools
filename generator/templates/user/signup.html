@@ -361,35 +361,43 @@ input::placeholder{
       </ul>
     </div>
 
-    <form id="signupForm">
-      <div class="row">
-        <div class="form-group">
-          <label>First name</label>
-          <input id="firstName" type="text" placeholder="John" required>
-        </div>
-        <div class="form-group">
-          <label>Last name</label>
-          <input id="lastName" type="text" placeholder="Doe" required>
-        </div>
-      </div>
+   <form id="signupForm">
+  <div class="row">
+    <div class="form-group">
+      <label>First name</label>
+      <input id="firstName" type="text" placeholder="John" required>
+    </div>
 
-      <div class="form-group">
-        <label>Email address</label>
-        <input id="signupEmail" type="email" placeholder="you@example.com" required>
-      </div>
+    <div class="form-group">
+      <label>Last name</label>
+      <input id="lastName" type="text" placeholder="Doe" required>
+    </div>
+  </div>
 
-      <div class="form-group">
-        <label>Password</label>
-        <input id="signupPassword" type="password" placeholder="Create a strong password" required>
-      </div>
+  <div class="form-group">
+    <label>Email address</label>
+    <input id="signupEmail" type="email" placeholder="you@example.com" required>
+  </div>
 
-      <div class="checkbox-group">
-        <input type="checkbox" required>
-        <label>I agree to Terms & Privacy Policy</label>
-      </div>
+<div class="form-group">
+  <label>Password</label>
+  <input id="signupPassword" type="password" placeholder="Create a strong password" required>
 
-      <button type="submit" class="btn-primary">Create account →</button>
-    </form>
+  <p id="passwordError" style="color:red; font-size:13px; margin-top:6px; display:none;">
+    Please enter minimum 6 character password
+  </p>
+</div>
+
+  <div class="checkbox-group">
+    <input id="agreeTerms" type="checkbox" required>
+    <label for="agreeTerms">I agree to Terms & Privacy Policy</label>
+  </div>
+
+  <button id="signupBtn" type="submit" class="btn-primary">
+    Create account →
+  </button>
+</form>
+
 
     <p class="footer-text">
       Already have an account? <a href="/signin">Sign in</a>
@@ -400,67 +408,137 @@ input::placeholder{
 </div>
 
 <script>
-function getDeviceId() {
-  let id = localStorage.getItem("device_id");
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem("device_id", id);
-  }
-  return id;
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-document.getElementById("signupForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const payload = {
-    first_name: document.getElementById("firstName").value.trim(),
-    last_name: document.getElementById("lastName").value.trim(),
-    email: document.getElementById("signupEmail").value.trim(),
-    password: document.getElementById("signupPassword").value,
-    device_id: getDeviceId()
-  };
-
-  console.log("📤 Sending payload:", payload);
-
-  try {
-    const res = await fetch("/api/auth/register/", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    console.log("📥 Response:", data);
-
-    if (res.ok) {
-      localStorage.setItem("pending_email", payload.email);
-      alert("✅ OTP sent to your email!");
-      window.location.href = "/verify-otp";
-    } else {
-      // Handle different error types
-      let errorMessage = "Signup failed. Please try again.";
-      
-      if (data.error) {
-        // If backend sends {error: "message"}
-        if (typeof data.error === 'string') {
-          errorMessage = data.error;
-        } else if (data.error.email) {
-          errorMessage = data.error.email[0];  // "user with this email already exists."
-        }
-      } else if (data.email) {
-        // Direct field error
-        errorMessage = Array.isArray(data.email) ? data.email[0] : data.email;
-      }
-      
-      alert("❌ " + errorMessage);
+  function getDeviceId() {
+    let id = localStorage.getItem("device_id");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("device_id", id);
     }
-  } catch (error) {
-    console.error("Network error:", error);
-    alert("❌ Network error: " + error.message);
+    return id;
   }
-});
 
+  const API_REGISTER_URL = "http://127.0.0.1:8000/api/auth/register/";
+
+  const form = document.getElementById("signupForm");
+  const btn = document.getElementById("signupBtn");
+
+  const passwordInput = document.getElementById("signupPassword");
+  const passwordError = document.getElementById("passwordError");
+
+  const popup = document.getElementById("successPopup");
+
+  if (!form || !btn || !passwordInput || !passwordError || !popup) {
+    console.log("❌ Missing HTML IDs. Please check signupForm, signupBtn, signupPassword, passwordError, successPopup");
+    return;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // ✅ Hide error
+    passwordError.style.display = "none";
+
+    const payload = {
+      first_name: document.getElementById("firstName").value.trim(),
+      last_name: document.getElementById("lastName").value.trim(),
+      email: document.getElementById("signupEmail").value.trim(),
+      password: passwordInput.value,
+      device_id: getDeviceId()
+    };
+
+    // ✅ Password validation
+    if (payload.password.length < 6) {
+      passwordError.style.display = "block";
+      passwordInput.focus();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Creating account...";
+
+    try {
+      const res = await fetch(API_REGISTER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const text = await res.text();
+      let data = {};
+
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.log("❌ Backend not JSON:", text);
+        alert("❌ Server Error (not JSON response)");
+        return;
+      }
+
+      if (res.ok) {
+
+        // ✅ Save token
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+        // ✅ Show popup
+        popup.style.display = "block";
+
+        // ✅ Auto remove popup + redirect
+        setTimeout(() => {
+          popup.style.display = "none";
+          window.location.href = "/dashboard/";
+        }, 2000);
+
+      } else {
+        let errorMessage = "Signup failed. Please try again.";
+
+        if (data.error) {
+          if (typeof data.error === "string") errorMessage = data.error;
+          else if (data.error.email) errorMessage = data.error.email[0];
+          else if (data.error.password) errorMessage = data.error.password[0];
+        }
+
+        if (data.email) errorMessage = data.email[0];
+        if (data.password) errorMessage = data.password[0];
+
+        alert("❌ " + errorMessage);
+      }
+
+    } catch (err) {
+      console.log("❌ Network Error:", err);
+      alert("❌ Network Error: " + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Create account →";
+    }
+  });
+
+});
 </script>
+
+
+<!-- ✅ Success Popup -->
+<div id="successPopup" style="
+  display:none;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  background:white;
+  padding:18px 26px;
+  border-radius:14px;
+  box-shadow:0 15px 50px rgba(0,0,0,0.25);
+  font-size:16px;
+  font-weight:700;
+  color:#16a34a;
+  z-index:9999;
+  text-align:center;
+">
+  ✅ User created successfully!
+</div>
 
 </body>
 

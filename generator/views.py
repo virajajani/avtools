@@ -4,14 +4,7 @@ from .utils import generate_image_variations, calculate_pricing, CATEGORIES
 import base64
 
 from .label_utils import crop_meesho_labels_to_pdf
-
-
-# ===============================
-# HOME / DASHBOARD
-# ===============================
-
-def home(request):
-    return render(request, 'home.html')
+from django.contrib.auth.decorators import login_required
 
 
 #==============================
@@ -20,6 +13,14 @@ def home(request):
 
 def landing(request):
     return render(request, 'landing.html')
+
+# ===============================
+# HOME / DASHBOARD (AFTER LOGIN)
+# ===============================
+@login_required(login_url='generator:signin')
+def home(request):
+    return render(request, 'home.html')
+
 
 # ===============================
 # MEESHO IMAGE GENERATOR PAGE
