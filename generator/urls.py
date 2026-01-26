@@ -1,4 +1,5 @@
 from django.urls import path
+from accounts.views import contact_support
 from . import views
 
 app_name = 'generator'
@@ -26,6 +27,13 @@ urlpatterns = [
     path('label-cropper/', views.label_cropper, name='label_cropper'),
     path('process-labels/', views.process_labels, name='process_labels'),
   
+    # ===============================
+    # STATIC RIGHTS PAGES
+    # ===============================
+    path('terms/', views.terms, name='terms'),
+    path('privacy/', views.privacy, name='privacy'),
+    path("contact/", contact_support, name="contact"),
+
     # ===============================
     # AUTH (FRONTEND ONLY)
     # ===============================

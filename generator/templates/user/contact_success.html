@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Message Sent – AVTools</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --primary:#3b82f6;
+  --primary-dark:#2563eb;
+  --text:#1e293b;
+  --text-light:#64748b;
+  --bg-gray:#f8fafc;
+  --border:#e2e8f0;
+}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg-gray);
+}
+
+/* ================= HEADER ================= */
+.navbar{
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:18px 6%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.logo img{
+  height:36px;
+}
+
+.nav-links{
+  display:flex;
+  gap:28px;
+  align-items:center;
+}
+
+.nav-links a{
+  text-decoration:none;
+  color:var(--text);
+  font-weight:500;
+  font-size:15px;
+}
+
+.nav-links a:hover{
+  color:var(--primary);
+}
+
+.btn{
+  padding:10px 22px;
+  border-radius:10px;
+  font-weight:600;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+}
+
+/* ================= CONTENT ================= */
+.wrapper{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:70vh;
+  padding:40px 16px;
+}
+
+.box{
+  background:#fff;
+  padding:60px;
+  border-radius:20px;
+  text-align:center;
+  border:1px solid var(--border);
+  max-width:520px;
+}
+
+.box h1{
+  color:var(--primary);
+  margin-bottom:12px;
+  font-size:36px;
+}
+
+.box p{
+  color:var(--text-light);
+  font-size:16px;
+  line-height:1.6;
+}
+
+.back-btn{
+  margin-top:30px;
+  display:inline-block;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  padding:12px 26px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* ================= FOOTER ================= */
+.footer{
+  background:#1e293b;
+  color:rgba(255,255,255,0.7);
+  padding:40px 6%;
+}
+
+.footer-content{
+  max-width:1200px;
+  margin:0 auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:20px;
+}
+
+.footer-links{
+  display:flex;
+  gap:24px;
+}
+
+.footer-links a{
+  color:rgba(255,255,255,0.7);
+  text-decoration:none;
+}
+
+.footer-links a:hover{
+  color:#fff;
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:768px){
+  .nav-links{
+    display:none;
+  }
+  .box{
+    padding:40px 24px;
+  }
+  .footer-content{
+    flex-direction:column;
+    text-align:center;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<nav class="navbar">
+  <div class="logo">
+    <a href="/"><img src="/static/images/avtools.png" alt="AVTools"></a>
+  </div>
+  <div class="nav-links">
+    <a href="/#features">Features</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/contact">Contact</a>
+    <a href="/signin">Login</a>
+    <a href="/signup" class="btn btn-primary" style="color:#fff">Get Started</a>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="wrapper">
+  <div class="box">
+    <h1>Thank You!</h1>
+    <p>
+      Your message has been sent successfully.<br>
+      Our support team will contact you soon.
+    </p>
+    <a href="/" class="back-btn">Back to Home</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <div>© 2026 AVTools. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/contact">Contact</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

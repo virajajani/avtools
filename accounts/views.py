@@ -16,6 +16,8 @@ from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.conf import settings
 
+from django.shortcuts import render, redirect
+from .models import ContactSupport
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RegisterAPI(APIView):
@@ -192,3 +194,46 @@ class ResetPasswordAPI(APIView):
         request.session.pop("reset_otp", None)
 
         return Response({"message": "Password reset successful"}, status=status.HTTP_200_OK)
+
+
+def contact_support(request):
+    if request.method == "POST":
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        mobile = request.POST.get("mobile")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+
+        # Save to DB
+        ContactSupport.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            mobile_number=mobile,
+            email=email,
+            message=message
+        )
+
+        # Send Email
+        email_subject = "New Contact Support Message - AVTools"
+        email_body = f"""
+New support message received:
+
+Name: {first_name} {last_name}
+Mobile: {mobile}
+Email: {email}
+
+Message:
+{message}
+"""
+
+        send_mail(
+            email_subject,
+            email_body,
+            settings.DEFAULT_FROM_EMAIL,
+            ["avtools.in@gmail.com"],  # YOUR SUPPORT EMAIL
+            fail_silently=False,
+        )
+
+        return render(request, "user/contact_success.html")
+
+    return render(request, "user/contact.html")

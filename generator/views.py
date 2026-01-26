@@ -292,3 +292,17 @@ def process_labels(request):
         print(f"Error processing PDF: {str(e)}")
         print(traceback.format_exc())
         return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
+    
+
+# ===============================   
+# STATIC RIGHTS PAGES
+# ===============================
+
+def terms(request):
+    return render(request, 'rights/terms.html')
+
+def privacy(request):
+    return render(request, 'rights/privacy.html')
+
+def contact(request):
+    return render(request, 'rights/contact.html')
