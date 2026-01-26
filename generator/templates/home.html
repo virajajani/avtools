@@ -419,13 +419,19 @@ body{
     <a href="{% url 'generator:home' %}" class="active">Dashboard</a>
 <a href="{% url 'generator:meesho_image_generator' %}">Image Generator</a>
 <a href="{% url 'generator:label_cropper' %}">Label Cropper</a>
-
+  <!-- ✅ Logout -->
+  <a href="{% url 'generator:logout' %}" style="color:#ef4444; font-weight:700;">
+    Logout
+  </a>
 
   </div>
   
   <div class="user-menu">
-    <div class="credits-badge">⚡ 150 Credits</div>
-    <div class="user-avatar">JD</div>
+    <div class="credits-badge">⚡ {{ credits }} Credits</div>
+
+<div class="user-avatar">
+  {{ initials }}
+</div>
   </div>
 </nav>
 

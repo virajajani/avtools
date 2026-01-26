@@ -5,6 +5,16 @@ import base64
 
 from .label_utils import crop_meesho_labels_to_pdf
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect
+from .models import UserProfile
+from django.contrib.auth import logout
+from django.contrib import messages
+from django.shortcuts import redirect
+from .models import UserProfile, GenerationHistory
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 #==============================
@@ -17,20 +27,36 @@ def landing(request):
 # ===============================
 # HOME / DASHBOARD (AFTER LOGIN)
 # ===============================
+
 @login_required(login_url='generator:signin')
 def home(request):
-    return render(request, 'home.html')
+    profile, created = UserProfile.objects.get_or_create(user=request.user, defaults={"credits": 10})
+
+    full_name = request.user.get_full_name().strip()
+    if full_name:
+        parts = full_name.split()
+        initials = (parts[0][0] + (parts[-1][0] if len(parts) > 1 else "")).upper()
+    else:
+        initials = request.user.username[:2].upper()
+
+    return render(request, "home.html", {
+        "credits": profile.credits,
+        "initials": initials
+    })
 
 
 # ===============================
 # MEESHO IMAGE GENERATOR PAGE
 # ===============================
 
+@login_required(login_url='generator:signin')
 def meesho_image_generator(request):
-    context = {
-        'categories': CATEGORIES
-    }
-    return render(request, 'meesho_image_generator.html', context)
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    return render(request, "meesho_image_generator.html", {
+        "categories": CATEGORIES,
+        "credits": profile.credits,
+    })
 
 
 # ===============================
@@ -38,57 +64,149 @@ def meesho_image_generator(request):
 # ===============================
 
 def signin(request):
-    return render(request, 'user/signin.html')
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        # ✅ Try login with email field (custom user)
+        user = authenticate(request, email=email, password=password)
+
+        # ✅ If above fails, fallback to username method
+        if user is None:
+            user = authenticate(request, username=email, password=password)
+
+        if user is None:
+            messages.error(request, "Invalid email or password!")
+            return redirect("generator:signin")
+
+        login(request, user)
+
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        if created:
+            profile.credits = 10
+            profile.save()
+
+        return redirect("generator:home")
+
+    return render(request, "user/signin.html")
+
 
 
 def signup(request):
-    return render(request, 'user/signup.html')
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        if User.objects.filter(username=email).exists():
+            messages.error(request, "Account already exists with this email!")
+            return redirect("generator:signup")
+
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=name
+        )
+
+        UserProfile.objects.create(user=user, credits=10)
+
+        messages.success(request, "Account created successfully! You got 10 free credits.")
+        return redirect("generator:signin")
+
+    return render(request, "user/signup.html")
+
+
 
 def forgot_password(request):
     return render(request, 'user/forgot_password.html')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect("generator:signin")
 
 # ===============================
 # IMAGE GENERATION
 # ===============================
 
+@login_required(login_url='generator:signin')
 def generate_images(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid method'}, status=400)
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=400)
 
-    image = request.FILES.get('product_image')
-    category = request.POST.get('category')
-    net_weight = float(request.POST.get('net_weight', 0))
-    meesho_price = float(request.POST.get('meesho_price', 0))
-    return_price = float(request.POST.get('return_price', 0))
-    mrp = float(request.POST.get('mrp', 0))
-    num_images = int(request.POST.get('num_images', 55))
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    # ✅ credit check
+    if profile.credits < 1:
+        messages.error(request, "You have 0 credits left. Please recharge.")
+        return redirect("generator:meesho_image_generator")
+
+    image = request.FILES.get("product_image")
+    category = request.POST.get("category")
+    net_weight = float(request.POST.get("net_weight", 0))
+    meesho_price = float(request.POST.get("meesho_price", 0))
+    return_price = float(request.POST.get("return_price", 0))
+    mrp = float(request.POST.get("mrp", 0))
+    num_images = int(request.POST.get("num_images", 55))
 
     if not image or not category:
-        return JsonResponse({'error': 'Missing data'}, status=400)
+        messages.error(request, "Please upload image and select category!")
+        return redirect("generator:meesho_image_generator")
 
-    variations = generate_image_variations(image, category, num_images)
+    # ✅ Save generation details in DB (history)
+    history = GenerationHistory.objects.create(
+        user=request.user,
+        category=category,
+        net_weight=net_weight,
+        meesho_price=meesho_price,
+        return_price=return_price,
+        mrp=mrp,
+        uploaded_image=image
+    )
+
+    # ✅ Cut 1 credit ONLY ONCE
+    profile.credits -= 1
+    profile.save()
+
+    # ✅ Redirect to results page (GET) => Refresh safe ✅
+    request.session["last_history_id"] = history.id
+    return redirect("generator:results")
+
+
+
+@login_required(login_url='generator:signin')
+def results(request):
+    history_id = request.session.get("last_history_id")
+
+    if not history_id:
+        messages.error(request, "No generated results found. Please generate images first.")
+        return redirect("generator:meesho_image_generator")
+
+    history = GenerationHistory.objects.get(id=history_id, user=request.user)
+
+    variations = generate_image_variations(history.uploaded_image, history.category, 55)
 
     for variation in variations:
-        variation['pricing'] = calculate_pricing(
-            cost_price=meesho_price,
-            selling_price=meesho_price,
-            shipping_rate=variation['shipping_rate']
+        variation["pricing"] = calculate_pricing(
+            cost_price=history.meesho_price,
+            selling_price=history.meesho_price,
+            shipping_rate=variation["shipping_rate"]
         )
-        variation['extra'] = {
-            'net_weight': net_weight,
-            'return_price': return_price,
-            'mrp': mrp,
+        variation["extra"] = {
+            "net_weight": history.net_weight,
+            "return_price": history.return_price,
+            "mrp": history.mrp,
         }
 
-    context = {
-        'variations': variations,
-        'category': CATEGORIES.get(category, {}).get('name', category),
-        'total_images': len(variations)
-    }
+    profile = UserProfile.objects.get(user=request.user)
 
-    return render(request, 'generator/results.html', context)
-
-
+    return render(request, "generator/results.html", {
+        "variations": variations,
+        "category": CATEGORIES.get(history.category, {}).get("name", history.category),
+        "total_images": len(variations),
+        "credits_left": profile.credits
+    })
 
 # ===============================
 # DOWNLOAD IMAGE

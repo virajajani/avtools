@@ -459,7 +459,7 @@ body{
   </div>
   
   <div class="user-menu">
-    <div class="credits-badge">⚡ 149 Credits</div>
+  <div class="credits-badge">⚡ {{ credits_left }} Credits</div>
   </div>
 </nav>
 
@@ -584,9 +584,14 @@ body{
 
 <script>
 function downloadAll() {
-  const totalImages = {{ total_images }};
+  const totalImages = Number("{{ total_images|default:'0' }}");
   const downloadButtons = document.querySelectorAll('.download-btn');
-  
+
+  if (totalImages <= 0) {
+    alert("No images to download.");
+    return;
+  }
+
   if (confirm(`Download all ${totalImages} images? This will download them one by one.`)) {
     downloadButtons.forEach((btn, index) => {
       setTimeout(() => {
@@ -596,6 +601,7 @@ function downloadAll() {
   }
 }
 </script>
+
 
 </body>
 </html>

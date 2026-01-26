@@ -11,6 +11,10 @@ from django.utils.decorators import method_decorator
 from .models import User, UserDevice
 from .serializers import RegisterSerializer, LoginSerializer
 from .utils import token_expiry_time
+import random
+from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -108,3 +112,83 @@ class LoginAPI(APIView):
                 "last_name": user.last_name
             }
         })
+
+@method_decorator(csrf_exempt, name="dispatch")
+class ForgotPasswordAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        email = request.data.get("email", "").strip().lower()
+
+        if not email:
+            return Response({"message": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            return Response({"message": "Email not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        otp = str(random.randint(100000, 999999))
+
+        # ✅ Save in session
+        request.session["reset_email"] = user.email
+        request.session["reset_otp"] = otp
+
+        # ✅ Send OTP to email
+        send_mail(
+            subject="AVTools Password Reset OTP",
+            message=f"Your OTP is: {otp}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False
+        )
+
+        print("✅ OTP sent to email:", user.email)
+
+        return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class VerifyOTPAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        email = request.data.get("email", "").strip().lower()
+        otp = request.data.get("otp", "").strip()
+
+        if request.session.get("reset_email") != email:
+            return Response({"message": "Invalid email"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if request.session.get("reset_otp") != otp:
+            return Response({"message": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "OTP verified"}, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class ResetPasswordAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        email = request.data.get("email", "").strip().lower()
+        password = request.data.get("password", "").strip()
+
+        if not password:
+            return Response({"message": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        user.password = make_password(password)
+        user.save()
+
+        # clear session otp
+        request.session.pop("reset_email", None)
+        request.session.pop("reset_otp", None)
+
+        return Response({"message": "Password reset successful"}, status=status.HTTP_200_OK)

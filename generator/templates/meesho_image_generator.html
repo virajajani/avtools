@@ -492,7 +492,7 @@ select:focus{
   </div>
   
   <div class="user-menu">
-    <div class="credits-badge">⚡ 150 Credits</div>
+    <div class="credits-badge">⚡ {{ credits }} Credits</div>
   </div>
 </nav>
 
@@ -559,10 +559,27 @@ select:focus{
         <input type="number" name="num_images" value="55" min="12" max="100" required>
       </div> {% endcomment %}
 
-      <button type="submit" class="btn" id="submitBtn">
-        <span>⚡</span>
-        <span>Generate Images</span>
-      </button>
+      <button type="submit" class="btn" id="submitBtn" {% if credits < 1 %}disabled{% endif %}>
+  <span>⚡</span>
+  <span>
+    {% if credits < 1 %}
+      No Credits Left
+    {% else %}
+      Generate Images
+    {% endif %}
+  </span>
+</button>
+
+<div class="credit-info">
+  💡 Each generation uses 1 credit • Your balance: <b>{{ credits }}</b>
+</div>
+
+{% if credits < 1 %}
+  <p style="color:red; font-weight:700; text-align:center; margin-top:10px;">
+    ⚠️ You have 0 credits. Please recharge to generate images.
+  </p>
+{% endif %}
+
 
       <div class="credit-info">
         💡 Each generation uses 1 credit • Results in 30–60 seconds

@@ -25,3 +25,31 @@
     
 #     def __str__(self):
 #         return f"{self.zone} - {self.min_weight}g to {self.max_weight}g: ₹{self.rate}"
+
+from django.db import models
+from django.conf import settings
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    credits = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.user)
+
+
+class GenerationHistory(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    category = models.CharField(max_length=100)
+    net_weight = models.FloatField(default=0)
+
+    meesho_price = models.FloatField(default=0)
+    return_price = models.FloatField(default=0)
+    mrp = models.FloatField(default=0)
+
+    uploaded_image = models.ImageField(upload_to="uploaded_images/")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.category} - {self.created_at}"
+
