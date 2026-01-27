@@ -34,4 +34,10 @@ urlpatterns = [
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path("results/", views.results, name="results"),
     path("logout/", views.logout_user, name="logout"),
+
+    path("account/update/", views.update_profile, name="update_profile"),
+    path("account/set-password/", views.set_password, name="set_password"),
+    path("account/delete/", views.delete_account, name="delete_account"),
+    path("account/disconnect-google/", views.disconnect_google, name="disconnect_google"),
+
 ]

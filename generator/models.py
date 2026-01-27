@@ -32,11 +32,11 @@ from django.conf import settings
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    credits = models.IntegerField(default=0)
+    display_name = models.CharField(max_length=100, blank=True, null=True)
+    credits = models.IntegerField(default=10)
 
     def __str__(self):
-        return str(self.user)
-
+        return self.user.email
 
 class GenerationHistory(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -53,3 +53,12 @@ class GenerationHistory(models.Model):
     def __str__(self):
         return f"{self.user} - {self.category} - {self.created_at}"
 
+class ActiveSession(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    session_key = models.CharField(max_length=40, unique=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField()
+    last_activity = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.ip_address}"

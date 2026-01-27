@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meesho Image Generator | AVTools</title>
 <meta name="description" content="Generate optimized Meesho product images and calculate shipping slabs to reduce costs and increase profits.">
+
+<!-- ✅ Header CSS -->
+<link rel="stylesheet" href="{% static 'css/header.css' %}">
 <style>
 *{
   box-sizing:border-box;
@@ -475,26 +479,14 @@ select:focus{
     text-align:center;
   }
 }
+
 </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar">
-  <div class="logo">
-    <img src="/static/images/avtools.png" alt="AVTools">
-  </div>
-  
-  <div class="nav-links">
-    <a href="{% url 'generator:home' %}">Dashboard</a>
-    <a href="{% url 'generator:meesho_image_generator' %}" class="active">Image Generator</a>
-    <a href="{% url 'generator:label_cropper' %}">Label Cropper</a>
-  </div>
-  
-  <div class="user-menu">
-    <div class="credits-badge">⚡ {{ credits }} Credits</div>
-  </div>
-</nav>
+{% include "partials/header.html" %}
+
 
 <!-- MAIN -->
 <div class="wrapper">
@@ -775,5 +767,7 @@ const recentGrid = document.getElementById('recentGrid');
 // recentGrid.style.display = 'grid';
 </script>
 
+{% include "partials/account_modal.html" %}
+<script src="{% static 'js/header.js' %}"></script>
 </body>
 </html>
