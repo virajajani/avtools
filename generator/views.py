@@ -326,6 +326,7 @@ def process_labels(request):
         print(traceback.format_exc())
         return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
     
+<<<<<<< HEAD
 @login_required(login_url='generator:signin')
 @require_POST
 def update_profile(request):
@@ -420,3 +421,18 @@ def load_active_devices(request):
         "sessions": [],
         "current_session": None,
     }
+=======
+
+# ===============================   
+# STATIC RIGHTS PAGES
+# ===============================
+
+def terms(request):
+    return render(request, 'rights/terms.html')
+
+def privacy(request):
+    return render(request, 'rights/privacy.html')
+
+def contact(request):
+    return render(request, 'rights/contact.html')
+>>>>>>> 6e7a0b7b35e04c01712c999cbb2c27782a9e3a53
