@@ -326,7 +326,10 @@ def process_labels(request):
         print(traceback.format_exc())
         return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
     
-<<<<<<< HEAD
+# ===============================
+# PROFILE / SECURITY ACTIONS
+# ===============================
+
 @login_required(login_url='generator:signin')
 @require_POST
 def update_profile(request):
@@ -338,20 +341,19 @@ def update_profile(request):
 
     if first_name:
         user.first_name = first_name
-
     if last_name:
         user.last_name = last_name
 
     user.save()
 
     profile, _ = UserProfile.objects.get_or_create(user=user)
-
     if avatar:
         profile.avatar = avatar
         profile.save()
 
     messages.success(request, "Profile updated successfully.")
     return redirect("generator:home")
+
 
 @login_required(login_url='generator:signin')
 @require_POST
@@ -371,9 +373,10 @@ def set_password(request):
     user.set_password(password1)
     user.save()
 
-    logout(request)  # force re-login
-    messages.success(request, "Password set successfully. Please login again.")
-    return redirect("generator:signin")
+    update_session_auth_hash(request, user)
+    messages.success(request, "Password updated successfully.")
+    return redirect("generator:home")
+
 
 @login_required(login_url='generator:signin')
 @require_POST
@@ -384,12 +387,12 @@ def delete_account(request):
 
     messages.success(request, "Your account has been permanently deleted.")
     return redirect("generator:signin")
-  
+
+
 @login_required(login_url='generator:signin')
 @require_POST
 def disconnect_google(request):
     try:
-        # If django-allauth is installed
         request.user.socialaccount_set.all().delete()
         messages.success(request, "Google account disconnected.")
     except Exception:
@@ -397,7 +400,10 @@ def disconnect_google(request):
 
     return redirect("generator:home")
 
-from .models import ActiveSession
+
+# ===============================
+# ACTIVE DEVICES
+# ===============================
 
 def load_active_devices(request):
     session_key = request.session.session_key
@@ -421,9 +427,9 @@ def load_active_devices(request):
         "sessions": [],
         "current_session": None,
     }
-=======
 
-# ===============================   
+
+# ===============================
 # STATIC RIGHTS PAGES
 # ===============================
 
@@ -435,4 +441,3 @@ def privacy(request):
 
 def contact(request):
     return render(request, 'rights/contact.html')
->>>>>>> 6e7a0b7b35e04c01712c999cbb2c27782a9e3a53
