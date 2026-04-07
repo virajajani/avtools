@@ -27,6 +27,13 @@ CSRF_TRUSTED_ORIGINS = [
     "http://avtools.in"
 ]
 
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "139.59.12.154",
+    "localhost",
+    "avtools.in"
+]
+
 # --------------------------------------------------
 # CUSTOM USER MODEL
 # --------------------------------------------------
