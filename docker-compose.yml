@@ -12,7 +12,23 @@ services:
       - 8000
     env_file:
       - .env
+    depends_on:
+      - db
     restart: always
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: av_tools
+      MYSQL_USER: av_users
+      MYSQL_PASSWORD: Av@12345678
+      MYSQL_ROOT_PASSWORD: root123
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
 
   nginx:
     image: nginx:1.25-alpine
@@ -28,3 +44,4 @@ services:
 
 volumes:
   static_volume:
+  mysql_data:
