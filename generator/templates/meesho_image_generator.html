@@ -480,6 +480,110 @@ select:focus{
   }
 }
 
+/* BUY CREDIT BUTTON */
+.buy-credit-wrap{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:18px;
+}
+
+.buy-credit-btn{
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.buy-credit-btn:hover{
+  background:#1e40af;
+}
+
+/* MODAL */
+.credit-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:999;
+}
+.credit-modal.show{display:block}
+
+.credit-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.45);
+}
+
+.credit-box{
+  position:relative;
+  max-width:820px;
+  margin:90px auto;
+  background:#fff;
+  padding:36px;
+  border-radius:20px;
+}
+
+.close-credit{
+  position:absolute;
+  top:16px;
+  right:20px;
+  font-size:26px;
+  background:none;
+  border:none;
+  cursor:pointer;
+}
+
+.credit-plans{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+  margin-top:28px;
+}
+
+.plan{
+  border:1px solid #e2e8f0;
+  padding:24px;
+  border-radius:16px;
+  text-align:center;
+}
+
+.plan.popular{
+  border:2px solid #2563eb;
+}
+
+.badge{
+  background:#2563eb;
+  color:#fff;
+  font-size:11px;
+  padding:4px 10px;
+  border-radius:20px;
+}
+
+.price{
+  font-size:30px;
+  font-weight:900;
+  margin:14px 0;
+}
+
+.plan button{
+  margin-top:18px;
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #e2e8f0;
+  background:#fff;
+  cursor:pointer;
+}
+
+.plan .primary{
+  background:#2563eb;
+  color:#fff;
+  border:none;
+}
+
 </style>
 </head>
 <body>
@@ -581,6 +685,52 @@ select:focus{
 
   <!-- RIGHT SECTION -->
   <div class="right-section">
+    <div class="buy-credit-wrap">
+  <button class="buy-credit-btn" id="openCreditModal">
+    + Buy Credits
+  </button>
+</div>
+
+<div class="credit-modal" id="creditModal">
+  <div class="credit-overlay"></div>
+
+  <div class="credit-box">
+    <button class="close-credit" id="closeCreditModal">×</button>
+
+    <h2>Choose a plan</h2>
+    <p class="sub-text">Recharge credits to continue generating images</p>
+
+    <div class="credit-plans">
+
+      <div class="plan">
+        <h3>Starter</h3>
+        <div class="price">₹99</div>
+        <p>25 Credits</p>
+        <p>30 Days Validity</p>
+        <button>Buy Now</button>
+      </div>
+
+      <div class="plan popular">
+        <span class="badge">MOST POPULAR</span>
+        <h3>Growth</h3>
+        <div class="price">₹299</div>
+        <p>100 Credits</p>
+        <p>60 Days Validity</p>
+        <button class="primary">Buy Now</button>
+      </div>
+
+      <div class="plan">
+        <h3>Pro</h3>
+        <div class="price">₹699</div>
+        <p>400 Credits</p>
+        <p>90 Days Validity</p>
+        <button>Buy Now</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
     <h3>Recent Generations</h3>
     
     <!-- Empty State -->
@@ -757,6 +907,31 @@ generatorForm.addEventListener('submit', (e) => {
   // Form will submit normally - no e.preventDefault()
   console.log('Form is submitting...');
 });
+
+ /* ===============================
+     BUY CREDITS MODAL (NEW CODE)
+     =============================== */
+
+  const openCreditBtn = document.getElementById("openCreditModal");
+  const closeCreditBtn = document.getElementById("closeCreditModal");
+  const creditModal = document.getElementById("creditModal");
+
+  if (openCreditBtn && closeCreditBtn && creditModal) {
+
+    const overlay = creditModal.querySelector(".credit-overlay");
+
+    openCreditBtn.addEventListener("click", () => {
+      creditModal.classList.add("show");
+    });
+
+    closeCreditBtn.addEventListener("click", () => {
+      creditModal.classList.remove("show");
+    });
+
+    overlay.addEventListener("click", () => {
+      creditModal.classList.remove("show");
+    });
+  }
 
 // Toggle between empty state and grid (for demo purposes)
 const emptyState = document.getElementById('emptyState');
