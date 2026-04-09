@@ -304,5 +304,8 @@ def terms(request):
 def privacy(request):
     return render(request, 'rights/privacy.html')
 
+def refund_policy(request):
+    return render(request, 'rights/refund-policy.html')
+
 def contact(request):
     return render(request, 'rights/contact.html')
