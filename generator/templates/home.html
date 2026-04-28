@@ -1,473 +1,446 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard | AVTools</title>
-<meta name="description" content="AVTools helps Meesho sellers generate low-shipping product images and optimize profits.">
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+  {% load static %}
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | AVTools</title>
+  <meta name="description" content="AVTools helps Meesho sellers generate low-shipping product images and optimize profits.">
 
-body{
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:#f8fafc;
-  color:#0f172a;
-  min-height:100vh;
-}
-
-/* NAVBAR */
-.navbar{
-  background:#fff;
-  border-bottom:1px solid #e2e8f0;
-  padding:16px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:100;
-  box-shadow:0 1px 3px rgba(0,0,0,0.04);
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-}
-
-.logo img{
-  height:36px;
-}
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:32px;
-}
-
-.nav-links a{
-  text-decoration:none;
-  color:#64748b;
-  font-weight:500;
-  font-size:15px;
-  transition:color 0.3s;
-  position:relative;
-}
-
-.nav-links a:hover{
-  color:#3b82f6;
-}
-
-.nav-links a.active{
-  color:#3b82f6;
-  font-weight:600;
-}
-
-.nav-links a.active::after{
-  content:'';
-  position:absolute;
-  bottom:-18px;
-  left:0;
-  right:0;
-  height:2px;
-  background:#3b82f6;
-}
-
-.user-menu{
-  display:flex;
-  align-items:center;
-  gap:16px;
-}
-
-.credits-badge{
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  color:#fff;
-  padding:8px 16px;
-  border-radius:20px;
-  font-size:13px;
-  font-weight:700;
-}
-
-.user-avatar{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-weight:700;
-  font-size:14px;
-}
-
-/* MAIN */
-.main{
-  max-width:1200px;
-  margin:0 auto;
-  padding:60px 6% 80px;
-}
-
-.header{
-  margin-bottom:48px;
-}
-
-.header h1{
-  font-size:36px;
-  font-weight:800;
-  margin-bottom:8px;
-  background:linear-gradient(135deg,#1e293b,#3b82f6);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-
-.header p{
-  font-size:16px;
-  color:#64748b;
-}
-
-/* CARDS GRID */
-.cards-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:32px;
-}
-
-.tool-card{
-  background:#fff;
-  border-radius:20px;
-  padding:32px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.06);
-  border:1px solid #e2e8f0;
-  transition:all 0.3s ease;
-  position:relative;
-  overflow:hidden;
-}
-
-.tool-card::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:4px;
-  background:linear-gradient(90deg,#3b82f6,#8b5cf6);
-  transform:scaleX(0);
-  transition:transform 0.3s ease;
-}
-
-.tool-card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 20px 60px rgba(0,0,0,0.12);
-}
-
-.tool-card:hover::before{
-  transform:scaleX(1);
-}
-
-.tool-card.disabled{
-  opacity:0.7;
-  cursor:not-allowed;
-}
-
-.tool-card.disabled:hover{
-  transform:none;
-}
-
-.badge{
-  display:inline-block;
-  padding:6px 12px;
-  border-radius:20px;
-  font-size:11px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-  margin-bottom:16px;
-}
-
-.badge-new{
-  background:#dbeafe;
-  color:#1e40af;
-}
-
-.badge-soon{
-  background:#fef3c7;
-  color:#92400e;
-}
-
-.badge-beta{
-  background:#f3e8ff;
-  color:#6b21a8;
-}
-
-.tool-icon{
-  width:64px;
-  height:64px;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  border-radius:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:32px;
-  margin-bottom:20px;
-}
-
-.tool-card h3{
-  font-size:22px;
-  font-weight:700;
-  margin-bottom:12px;
-  color:#1e293b;
-}
-
-.tool-card p{
-  font-size:15px;
-  color:#64748b;
-  line-height:1.6;
-  margin-bottom:20px;
-}
-
-.feature-list{
-  list-style:none;
-  margin-bottom:24px;
-}
-
-.feature-list li{
-  font-size:14px;
-  color:#475569;
-  margin-bottom:10px;
-  padding-left:24px;
-  position:relative;
-}
-
-.feature-list li::before{
-  content:'✓';
-  position:absolute;
-  left:0;
-  color:#3b82f6;
-  font-weight:700;
-  font-size:16px;
-}
-
-.btn{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  font-weight:700;
-  font-size:15px;
-  border:none;
-  cursor:pointer;
-  transition:all 0.3s ease;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-}
-
-.btn-primary{
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  color:#fff;
-  box-shadow:0 8px 24px rgba(59,130,246,0.3);
-}
-
-.btn-primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 32px rgba(59,130,246,0.4);
-}
-
-.btn-disabled{
-  background:#e2e8f0;
-  color:#94a3b8;
-  cursor:not-allowed;
-  box-shadow:none;
-}
-
-.btn-disabled:hover{
-  transform:none;
-}
-
-/* STATS SECTION */
-.stats-section{
-  background:#fff;
-  border-radius:20px;
-  padding:32px;
-  margin-bottom:48px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.06);
-  border:1px solid #e2e8f0;
-}
-
-.stats-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:32px;
-}
-
-.stat-item{
-  text-align:center;
-}
-
-.stat-number{
-  font-size:36px;
-  font-weight:800;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-  display:block;
-  margin-bottom:8px;
-}
-
-.stat-label{
-  font-size:14px;
-  color:#64748b;
-  font-weight:500;
-}
-
-/* FOOTER */
-.footer{
-  border-top:1px solid #e2e8f0;
-  padding:32px 6%;
-  margin-top:80px;
-  background:#fff;
-}
-
-.footer-content{
-  max-width:1200px;
-  margin:0 auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:16px;
-}
-
-.footer-links{
-  display:flex;
-  gap:24px;
-}
-
-.footer-links a{
-  color:#64748b;
-  text-decoration:none;
-  font-size:14px;
-  transition:color 0.3s;
-}
-
-.footer-links a:hover{
-  color:#3b82f6;
-}
-
-/* RESPONSIVE */
-@media(max-width:768px){
-  .navbar{
-    padding:14px 5%;
+  <!-- ✅ Header CSS -->
+  <link rel="stylesheet" href="{% static 'css/header.css' %}">
+  <style>
+  *{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
   }
-  
+
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:#f8fafc;
+    color:#0f172a;
+    min-height:100vh;
+  }
+
+  /* NAVBAR */
+  .navbar{
+    background:#fff;
+    border-bottom:1px solid #e2e8f0;
+    padding:16px 6%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+    box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .logo{
+    display:flex;
+    align-items:center;
+  }
+
+  .logo img{
+    height:36px;
+  }
+
   .nav-links{
+    display:flex;
+    align-items:center;
+    gap:32px;
+  }
+
+  .nav-links a{
+    text-decoration:none;
+    color:#64748b;
+    font-weight:500;
+    font-size:15px;
+    transition:color 0.3s;
+    position:relative;
+  }
+
+  .nav-links a:hover{
+    color:#3b82f6;
+  }
+
+  .nav-links a.active{
+    color:#3b82f6;
+    font-weight:600;
+  }
+
+  .nav-links a.active::after{
+    content:'';
+    position:absolute;
+    bottom:-18px;
+    left:0;
+    right:0;
+    height:2px;
+    background:#3b82f6;
+  }
+
+  .user-menu{
+    display:flex;
+    align-items:center;
     gap:16px;
+  }
+
+  .credits-badge{
+    background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+    color:#fff;
+    padding:8px 16px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:700;
+  }
+
+  .user-avatar{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:700;
     font-size:14px;
   }
-  
-  .user-menu{
-    display:none;
-  }
-  
+
+  /* MAIN */
   .main{
-    padding:40px 5%;
+    max-width:1200px;
+    margin:0 auto;
+    padding:60px 6% 80px;
   }
-  
+
+  .header{
+    margin-bottom:48px;
+  }
+
   .header h1{
-    font-size:28px;
+    font-size:36px;
+    font-weight:800;
+    margin-bottom:8px;
+    background:linear-gradient(135deg,#1e293b,#3b82f6);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
   }
-  
+
+  .header p{
+    font-size:16px;
+    color:#64748b;
+  }
+
+  /* CARDS GRID */
   .cards-grid{
-    grid-template-columns:1fr;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:32px;
   }
-  
+
+  .tool-card{
+    background:#fff;
+    border-radius:20px;
+    padding:32px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.06);
+    border:1px solid #e2e8f0;
+    transition:all 0.3s ease;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .tool-card::before{
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:4px;
+    background:linear-gradient(90deg,#3b82f6,#8b5cf6);
+    transform:scaleX(0);
+    transition:transform 0.3s ease;
+  }
+
+  .tool-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 20px 60px rgba(0,0,0,0.12);
+  }
+
+  .tool-card:hover::before{
+    transform:scaleX(1);
+  }
+
+  .tool-card.disabled{
+    opacity:0.7;
+    cursor:not-allowed;
+  }
+
+  .tool-card.disabled:hover{
+    transform:none;
+  }
+
+  .badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    margin-bottom:16px;
+  }
+
+  .badge-new{
+    background:#dbeafe;
+    color:#1e40af;
+  }
+
+  .badge-soon{
+    background:#fef3c7;
+    color:#92400e;
+  }
+
+  .badge-beta{
+    background:#f3e8ff;
+    color:#6b21a8;
+  }
+
+  .tool-icon{
+    width:64px;
+    height:64px;
+    background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    margin-bottom:20px;
+  }
+
+  .tool-card h3{
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:12px;
+    color:#1e293b;
+  }
+
+  .tool-card p{
+    font-size:15px;
+    color:#64748b;
+    line-height:1.6;
+    margin-bottom:20px;
+  }
+
+  .feature-list{
+    list-style:none;
+    margin-bottom:24px;
+  }
+
+  .feature-list li{
+    font-size:14px;
+    color:#475569;
+    margin-bottom:10px;
+    padding-left:24px;
+    position:relative;
+  }
+
+  .feature-list li::before{
+    content:'✓';
+    position:absolute;
+    left:0;
+    color:#3b82f6;
+    font-weight:700;
+    font-size:16px;
+  }
+
+  .btn{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    font-weight:700;
+    font-size:15px;
+    border:none;
+    cursor:pointer;
+    transition:all 0.3s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+
+  .btn-primary{
+    background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+    color:#fff;
+    box-shadow:0 8px 24px rgba(59,130,246,0.3);
+  }
+
+  .btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 32px rgba(59,130,246,0.4);
+  }
+
+  .btn-disabled{
+    background:#e2e8f0;
+    color:#94a3b8;
+    cursor:not-allowed;
+    box-shadow:none;
+  }
+
+  .btn-disabled:hover{
+    transform:none;
+  }
+
+  /* STATS SECTION */
+  .stats-section{
+    background:#fff;
+    border-radius:20px;
+    padding:32px;
+    margin-bottom:48px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.06);
+    border:1px solid #e2e8f0;
+  }
+
   .stats-grid{
-    grid-template-columns:1fr;
-    gap:24px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:32px;
   }
-  
-  .footer-content{
-    flex-direction:column;
+
+  .stat-item{
     text-align:center;
   }
-}
-</style>
-</head>
-<body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="logo">
-    <!-- <img src="/static/images/avtools.png" alt="AVTools"> -->
-   <img src="{% static 'images/avtools.png' %}">
+  .stat-number{
+    font-size:36px;
+    font-weight:800;
+    background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    display:block;
+    margin-bottom:8px;
+  }
 
+  .stat-label{
+    font-size:14px;
+    color:#64748b;
+    font-weight:500;
+  }
 
-  </div>
-  
-  <div class="nav-links">
-    <!-- <a onclick="location.href='/'" style="cursor:pointer;" class="active">Dashboard</a>
-    <a onclick="location.href='/meesho-image-generator'" style="cursor:pointer;"> Image Generator</a>
-    <a href="{% url 'generator:label_cropper' %}">Label Cropper</a> -->
+  /* FOOTER */
+  .footer{
+    border-top:1px solid #e2e8f0;
+    padding:32px 6%;
+    margin-top:80px;
+    background:#fff;
+  }
 
-    <a href="{% url 'generator:home' %}" class="active">Dashboard</a>
-<a href="{% url 'generator:meesho_image_generator' %}">Image Generator</a>
-<a href="{% url 'generator:label_cropper' %}">Label Cropper</a>
-  <!-- ✅ Logout -->
-  <a href="{% url 'generator:logout' %}" style="color:#ef4444; font-weight:700;">
-    Logout
-  </a>
+  .footer-content{
+    max-width:1200px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:16px;
+  }
 
-  </div>
-  
-  <div class="user-menu">
-    <div class="credits-badge">⚡ {{ credits }} Credits</div>
+  .footer-links{
+    display:flex;
+    gap:24px;
+  }
 
-<div class="user-avatar">
-  {{ initials }}
-</div>
-  </div>
-</nav>
+  .footer-links a{
+    color:#64748b;
+    text-decoration:none;
+    font-size:14px;
+    transition:color 0.3s;
+  }
 
-<!-- MAIN -->
-<main class="main">
-  <div class="header">
-    <h1>Welcome to AVTools</h1>
-    <p>Powerful tools built specifically to help Meesho sellers reduce shipping costs and increase profits.</p>
-  </div>
+  .footer-links a:hover{
+    color:#3b82f6;
+  }
 
-  <!-- TOOLS GRID -->
-  <div class="cards-grid">
+  /* RESPONSIVE */
+  @media(max-width:768px){
+    .navbar{
+      padding:14px 5%;
+    }
     
-    <!-- IMAGE GENERATOR -->
-    <div class="tool-card">
-      <span class="badge badge-new">Live</span>
-      <div class="tool-icon">⚡</div>
-      <h3>Meesho Image Generator</h3>
-      <p>Generate optimized product images that qualify for lower Meesho shipping slabs and maximize your profits.</p>
-      
-      <ul class="feature-list">
-        <li>Shipping slab optimized images</li>
-        <li>Category-based weight calculation</li>
-        <li>Instant preview & download</li>
-        <li>Bulk processing available</li>
-      </ul>
-      
-      <button class="btn btn-primary" onclick="location.href='/meesho-image-generator'">
-        <span>Launch Generator</span>
-        <span>→</span>
-      </button>
+    .nav-links{
+      gap:16px;
+      font-size:14px;
+    }
+    
+    .user-menu{
+      display:none;
+    }
+    
+    .main{
+      padding:40px 5%;
+    }
+    
+    .header h1{
+      font-size:28px;
+    }
+    
+    .cards-grid{
+      grid-template-columns:1fr;
+    }
+    
+    .stats-grid{
+      grid-template-columns:1fr;
+      gap:24px;
+    }
+    
+    .footer-content{
+      flex-direction:column;
+      text-align:center;
+    }
+  }
+  </style>
+  </head>
+  <body>
+
+  <!-- NAVBAR -->
+  {% include "partials/header.html" %}
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="header">
+      <h1>Welcome to AVTools</h1>
+      <p>Powerful tools built specifically to help Meesho sellers reduce shipping costs and increase profits.</p>
     </div>
+
+    <!-- TOOLS GRID -->
+    <div class="cards-grid">
+      
+      <!-- IMAGE GENERATOR -->
+      <div class="tool-card">
+        <span class="badge badge-new">Live</span>
+        <div class="tool-icon">⚡</div>
+        <h3>Meesho Image Generator</h3>
+        <p>Generate optimized product images that qualify for lower Meesho shipping slabs and maximize your profits.</p>
+        
+        <ul class="feature-list">
+          <li>Shipping slab optimized images</li>
+          <li>Category-based weight calculation</li>
+          <li>Instant preview & download</li>
+          <li>Bulk processing available</li>
+        </ul>
+        
+        <button class="btn btn-primary" onclick="location.href='/meesho-image-generator'">
+          <span>Launch Generator</span>
+          <span>→</span>
+        </button>
+      </div>
 
     <!-- LABEL EXPORT -->
     <div class="tool-card disabled">
-      <span class="badge badge-soon">Live</span>
+      <span class="badge badge-soon">Coming Soon</span>
       <div class="tool-icon">📦</div>
       <h3>Shipping Label Export</h3>
       <p>Upload Meesho invoices and export shipping labels in bulk with smart filters and data extraction.</p>
@@ -479,32 +452,32 @@ body{
         <li>Auto-organize by courier</li>
       </ul>
       
-      <button class="btn btn-primary" onclick="location.href='/label-cropper'">
-        <span>Label Export</span>
-      </button>
-    </div>
-
-    <!-- PROFIT CALCULATOR -->
-    <div class="tool-card disabled">
-      <span class="badge badge-beta">Beta Soon</span>
-      <div class="tool-icon">💰</div>
-      <h3>Profit Calculator</h3>
-      <p>Calculate real profits after all deductions including shipping, returns, GST, and platform fees.</p>
-      
-      <ul class="feature-list">
-        <li>Accurate profit calculations</li>
-        <li>Include all fee types</li>
-        <li>Compare before/after shipping</li>
-        <li>Export detailed reports</li>
-      </ul>
-      
       <button class="btn btn-disabled" disabled>
-        <span>🚧 In Development</span>
+        <span>🚧 Coming Soon</span>
       </button>
     </div>
 
-  </div>
-</main>
+      <!-- PROFIT CALCULATOR -->
+      <div class="tool-card disabled">
+        <span class="badge badge-beta">Beta Soon</span>
+        <div class="tool-icon">💰</div>
+        <h3>Profit Calculator</h3>
+        <p>Calculate real profits after all deductions including shipping, returns, GST, and platform fees.</p>
+        
+        <ul class="feature-list">
+          <li>Accurate profit calculations</li>
+          <li>Include all fee types</li>
+          <li>Compare before/after shipping</li>
+          <li>Export detailed reports</li>
+        </ul>
+        
+        <button class="btn btn-disabled" disabled>
+          <span>🚧 In Development</span>
+        </button>
+      </div>
+
+    </div>
+  </main>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -519,5 +492,7 @@ body{
   </div>
 </footer>
 
-</body>
-</html>
+  {% include "partials/account_modal.html" %}
+  <script src="{% static 'js/header.js' %}"></script>
+  </body>
+  </html>

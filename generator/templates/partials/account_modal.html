@@ -1,0 +1,193 @@
+<div class="account-overlay" id="accountModal">
+
+  <div class="account-box">
+
+    <!-- HEADER -->
+    <div class="account-top">
+      <div>
+        <h2>Account</h2>
+        <p>Manage your account info.</p>
+      </div>
+      <button class="account-close" onclick="closeAccountModal()">✕</button>
+    </div>
+
+    <div class="account-body">
+
+      <!-- SIDEBAR -->
+      <div class="account-side">
+        <button class="side-tab active" id="btnProfile" onclick="showTab('profileTab')">
+          👤 Profile
+        </button>
+        <button class="side-tab" id="btnSecurity" onclick="showTab('securityTab')">
+          🔒 Security
+        </button>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="account-content">
+
+        <!-- ================= PROFILE TAB ================= -->
+        <div id="profileTab">
+
+          <h3>Profile details</h3>
+
+          <div class="profile-card">
+            <div class="profile-left">
+              <div class="profile-avatar">
+                {% if request.user.profile.avatar %}
+                  <img src="{{ request.user.profile.avatar.url }}">
+                {% else %}
+                  {{ initials }}
+                {% endif %}
+              </div>
+              <div>
+                <div class="profile-name">{{ request.user.get_full_name }}</div>
+                <div class="profile-email">{{ request.user.email }}</div>
+              </div>
+            </div>
+            <button class="profile-update" onclick="openProfileEdit()">Update profile</button>
+          </div>
+
+          <!-- UPDATE PROFILE -->
+          <div class="modal-overlay" id="profileEditModal">
+            <div class="modal-box">
+              <h3>Update profile</h3>
+
+              <form method="POST" enctype="multipart/form-data" action="{% url 'generator:update_profile' %}">
+                {% csrf_token %}
+
+                <label>Profile image</label>
+                <input type="file" name="avatar">
+
+                <label>First name</label>
+                <input type="text" name="first_name" value="{{ request.user.first_name }}" required>
+
+                <label>Last name</label>
+                <input type="text" name="last_name" value="{{ request.user.last_name }}" required>
+
+                <div class="modal-actions">
+                  <button type="button" class="btn-link" onclick="closeProfileEdit()">Cancel</button>
+                  <button type="submit" class="btn-primary">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="profile-line"></div>
+
+          <!-- CONNECTED ACCOUNT -->
+          <div class="connected">
+            <div class="connected-title">Connected accounts</div>
+
+            <div class="connected-row">
+              <div class="connected-left">
+                <div class="google-ic">G</div>
+                <div>
+                  <div class="connected-provider">Google</div>
+                  <div class="connected-mail">{{ request.user.email }}</div>
+                </div>
+              </div>
+
+              <div class="dots-wrap">
+                <button class="dots-btn" onclick="toggleDots()">⋯</button>
+                <div class="dots-menu" id="dotsMenu">
+                  <form method="POST" action="{% url 'generator:disconnect_google' %}">
+                    {% csrf_token %}
+                    <button class="btn-danger-text">Remove</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= SECURITY TAB ================= -->
+        <div id="securityTab" style="display:none">
+
+          <h3>Security</h3>
+
+          <!-- PASSWORD -->
+          <div class="security-card">
+            <div class="security-row">
+              <div>
+                <div class="security-title">Password</div>
+                <div class="security-sub">Set a strong password.</div>
+              </div>
+              <button class="security-btn" onclick="openPasswordModal()">Set password</button>
+            </div>
+          </div>
+
+          <!-- SET PASSWORD -->
+          <div class="modal-overlay" id="passwordModal">
+            <div class="modal-box">
+              <h3>Set password</h3>
+
+              <form method="POST" action="{% url 'generator:set_password' %}">
+                {% csrf_token %}
+                <input type="password" name="password1" placeholder="New password" required>
+                <input type="password" name="password2" placeholder="Confirm password" required>
+
+                <div class="modal-actions">
+                  <button type="button" class="btn-link" onclick="closePasswordModal()">Cancel</button>
+                  <button class="btn-primary">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="profile-line"></div>
+
+          <!-- 🔥 ACTIVE DEVICES (NEW, REAL) -->
+          <div class="security-card">
+            <div class="security-title">Active devices</div>
+
+            {% for s in sessions %}
+              <div class="security-row" style="margin-top:12px">
+                <div>
+                  <div class="security-title">
+                    {{ s.user_agent|truncatechars:50 }}
+                    {% if s.session_key == current_session %}
+                      <span style="color:#16a34a;font-size:12px;"> • This device</span>
+                    {% endif %}
+                  </div>
+                  <div class="security-sub">
+                    IP: {{ s.ip_address }}
+                  </div>
+                </div>
+              </div>
+            {% empty %}
+              <p class="security-sub">No active devices found.</p>
+            {% endfor %}
+          </div>
+
+          <div class="profile-line"></div>
+
+          <!-- DELETE ACCOUNT -->
+          <div class="delete-account">
+            <div class="delete-title">Delete account</div>
+            <button class="delete-link" onclick="openDeleteModal()">Delete account</button>
+          </div>
+
+          <div class="modal-overlay" id="deleteModal">
+            <div class="modal-box">
+              <h3>Delete account</h3>
+              <p>This action is permanent.</p>
+
+              <form method="POST" action="{% url 'generator:delete_account' %}">
+                {% csrf_token %}
+                <input type="text" id="deleteInput" placeholder="Type Delete account">
+                <div class="modal-actions">
+                  <button type="button" class="btn-link" onclick="closeDeleteModal()">Cancel</button>
+                  <button class="btn-danger" id="deleteBtn" disabled>Delete account</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

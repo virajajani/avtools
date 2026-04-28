@@ -1,0 +1,75 @@
+{% load static %}
+
+<nav class="navbar">
+
+  <div class="logo">
+    <img src="{% static 'images/avtools.png' %}" alt="AVTools">
+  </div>
+
+  <div class="nav-links">
+    <a href="{% url 'generator:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+      Home
+    </a>
+
+    <a href="{% url 'generator:meesho_image_generator' %}" class="{% if request.resolver_match.url_name == 'meesho_image_generator' %}active{% endif %}">
+      Meesho Image Generator
+    </a>
+
+    <a href="{% url 'generator:label_cropper' %}" class="{% if request.resolver_match.url_name == 'label_cropper' %}active{% endif %}">
+      Shipping Label Export
+    </a>
+  </div>
+
+  <div class="user-menu">
+    <div class="credits-badge">⚡ {{ credits }} Credits</div>
+
+    <!-- ✅ Avatar + Dropdown -->
+    <div class="profile-dropdown">
+
+      <button class="avatar-btn" id="avatarBtn" type="button">
+        <span class="avatar-circle">{{ initials }}</span>
+      </button>
+
+      <!-- ✅ Dropdown Panel -->
+      <div class="dropdown-panel" id="dropdownCard">
+
+        <div class="dropdown-user">
+          <div class="dropdown-user-left">
+            <div class="dropdown-avatar">{{ initials }}</div>
+
+            <div class="dropdown-user-text">
+              <div class="dropdown-username">
+  {% if request.user.get_full_name %}
+    {{ request.user.get_full_name }}
+  {% else %}
+    {{ request.user.username }}
+  {% endif %}
+</div>
+<div class="dropdown-email">{{ request.user.email }}</div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="dropdown-divider"></div>
+
+        <button class="dropdown-link" type="button" onclick="openAccountModal()">
+          <span class="dropdown-ic">⚙️</span>
+          <span>Manage account</span>
+        </button>
+
+        <a class="dropdown-link logout" href="{% url 'generator:logout' %}">
+          <span class="dropdown-ic">↪</span>
+          <span>Sign out</span>
+        </a>
+
+        <div class="dropdown-footer">
+          Secured by <b>AVTools</b>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</nav>

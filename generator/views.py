@@ -8,13 +8,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
-from .models import UserProfile
 from django.contrib.auth import logout
-from django.contrib import messages
-from django.shortcuts import redirect
-from .models import UserProfile, GenerationHistory
+from .models import UserProfile, GenerationHistory,ActiveSession
 from django.contrib.auth import get_user_model
 User = get_user_model()
+from django.views.decorators.http import require_POST
+from django.contrib.auth import update_session_auth_hash
+
 
 
 #==============================
@@ -30,32 +30,49 @@ def landing(request):
 
 @login_required(login_url='generator:signin')
 def home(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user, defaults={"credits": 10})
+    profile, created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={"credits": 10}
+    )
 
-    full_name = request.user.get_full_name().strip()
-    if full_name:
-        parts = full_name.split()
-        initials = (parts[0][0] + (parts[-1][0] if len(parts) > 1 else "")).upper()
-    else:
-        initials = request.user.username[:2].upper()
+    username = request.user.username or "U"
+    initials = username[0].upper()
+
+    device_ctx = load_active_devices(request)
 
     return render(request, "home.html", {
         "credits": profile.credits,
-        "initials": initials
+        "initials": initials,
+        **device_ctx,
     })
-
+ 
 
 # ===============================
 # MEESHO IMAGE GENERATOR PAGE
 # ===============================
-
 @login_required(login_url='generator:signin')
 def meesho_image_generator(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    profile, created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={"credits": 10}
+    )
+
+    username = request.user.username or "U"
+    initials = username[0].upper()
+
+    device_ctx = load_active_devices(request)
+
+    # ✅ FETCH RECENT GENERATIONS
+    recent_generations = GenerationHistory.objects.filter(
+        user=request.user
+    ).order_by('-created_at')[:6]
 
     return render(request, "meesho_image_generator.html", {
         "categories": CATEGORIES,
         "credits": profile.credits,
+        "initials": initials,
+        "recent_generations": recent_generations,   # ✅ ADD THIS
+        **device_ctx,
     })
 
 
@@ -63,15 +80,22 @@ def meesho_image_generator(request):
 # AUTH PAGES (FRONTEND ONLY)
 # ===============================
 
+
+
+
 def signin(request):
     if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "").strip()
 
-        # ✅ Try login with email field (custom user)
+        if not email or not password:
+            messages.error(request, "Email and password are required.")
+            return redirect("generator:signin")
+
+        # ✅ Try email-based login
         user = authenticate(request, email=email, password=password)
 
-        # ✅ If above fails, fallback to username method
+        # ✅ Fallback to username-based login
         if user is None:
             user = authenticate(request, username=email, password=password)
 
@@ -79,16 +103,30 @@ def signin(request):
             messages.error(request, "Invalid email or password!")
             return redirect("generator:signin")
 
+        # ✅ Login user
         login(request, user)
 
+        # ✅ Ensure profile exists
         profile, created = UserProfile.objects.get_or_create(user=user)
         if created:
             profile.credits = 10
             profile.save()
 
+        # ✅ Track active device (REAL)
+        if request.session.session_key:
+            ActiveSession.objects.update_or_create(
+                session_key=request.session.session_key,
+                defaults={
+                    "user": user,
+                    "ip_address": request.META.get("REMOTE_ADDR"),
+                    "user_agent": request.META.get("HTTP_USER_AGENT", "")
+                }
+            )
+
         return redirect("generator:home")
 
     return render(request, "user/signin.html")
+
 
 
 
@@ -121,8 +159,12 @@ def signup(request):
 def forgot_password(request):
     return render(request, 'user/forgot_password.html')
 
-
 def logout_user(request):
+    if request.session.session_key:
+        ActiveSession.objects.filter(
+            session_key=request.session.session_key
+        ).delete()
+
     logout(request)
     return redirect("generator:signin")
 
@@ -135,7 +177,15 @@ def generate_images(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=400)
 
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    profile, created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={"credits": 10}
+    )
+
+    # Safety fix
+    if profile.credits is None:
+        profile.credits = 10
+        profile.save()
 
     # ✅ credit check
     if profile.credits < 1:
@@ -293,8 +343,110 @@ def process_labels(request):
         print(traceback.format_exc())
         return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
     
+# ===============================
+# PROFILE / SECURITY ACTIONS
+# ===============================
 
-# ===============================   
+@login_required(login_url='generator:signin')
+@require_POST
+def update_profile(request):
+    user = request.user
+
+    first_name = request.POST.get("first_name")
+    last_name = request.POST.get("last_name")
+    avatar = request.FILES.get("avatar")
+
+    if first_name:
+        user.first_name = first_name
+    if last_name:
+        user.last_name = last_name
+
+    user.save()
+
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    if avatar:
+        profile.avatar = avatar
+        profile.save()
+
+    messages.success(request, "Profile updated successfully.")
+    return redirect("generator:home")
+
+
+@login_required(login_url='generator:signin')
+@require_POST
+def set_password(request):
+    password1 = request.POST.get("password1")
+    password2 = request.POST.get("password2")
+
+    if not password1 or not password2:
+        messages.error(request, "Password fields cannot be empty.")
+        return redirect("generator:home")
+
+    if password1 != password2:
+        messages.error(request, "Passwords do not match.")
+        return redirect("generator:home")
+
+    user = request.user
+    user.set_password(password1)
+    user.save()
+
+    update_session_auth_hash(request, user)
+    messages.success(request, "Password updated successfully.")
+    return redirect("generator:home")
+
+
+@login_required(login_url='generator:signin')
+@require_POST
+def delete_account(request):
+    user = request.user
+    logout(request)
+    user.delete()
+
+    messages.success(request, "Your account has been permanently deleted.")
+    return redirect("generator:signin")
+
+
+@login_required(login_url='generator:signin')
+@require_POST
+def disconnect_google(request):
+    try:
+        request.user.socialaccount_set.all().delete()
+        messages.success(request, "Google account disconnected.")
+    except Exception:
+        messages.error(request, "No connected Google account found.")
+
+    return redirect("generator:home")
+
+
+# ===============================
+# ACTIVE DEVICES
+# ===============================
+
+def load_active_devices(request):
+    session_key = request.session.session_key
+
+    if request.user.is_authenticated and session_key:
+        ActiveSession.objects.update_or_create(
+            session_key=session_key,
+            defaults={
+                "user": request.user,
+                "ip_address": request.META.get("REMOTE_ADDR"),
+                "user_agent": request.META.get("HTTP_USER_AGENT", "")
+            }
+        )
+
+        return {
+            "sessions": ActiveSession.objects.filter(user=request.user),
+            "current_session": session_key,
+        }
+
+    return {
+        "sessions": [],
+        "current_session": None,
+    }
+
+
+# ===============================
 # STATIC RIGHTS PAGES
 # ===============================
 

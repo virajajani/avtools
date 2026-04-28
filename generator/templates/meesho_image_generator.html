@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meesho Image Generator | AVTools</title>
 <meta name="description" content="Generate optimized Meesho product images and calculate shipping slabs to reduce costs and increase profits.">
+
+<!-- ✅ Header CSS -->
+<link rel="stylesheet" href="{% static 'css/header.css' %}">
 <style>
 *{
   box-sizing:border-box;
@@ -475,26 +479,118 @@ select:focus{
     text-align:center;
   }
 }
+
+/* BUY CREDIT BUTTON */
+.buy-credit-wrap{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:18px;
+}
+
+.buy-credit-btn{
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.buy-credit-btn:hover{
+  background:#1e40af;
+}
+
+/* MODAL */
+.credit-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:999;
+}
+.credit-modal.show{display:block}
+
+.credit-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.45);
+}
+
+.credit-box{
+  position:relative;
+  max-width:820px;
+  margin:90px auto;
+  background:#fff;
+  padding:36px;
+  border-radius:20px;
+}
+
+.close-credit{
+  position:absolute;
+  top:16px;
+  right:20px;
+  font-size:26px;
+  background:none;
+  border:none;
+  cursor:pointer;
+}
+
+.credit-plans{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+  margin-top:28px;
+}
+
+.plan{
+  border:1px solid #e2e8f0;
+  padding:24px;
+  border-radius:16px;
+  text-align:center;
+}
+
+.plan.popular{
+  border:2px solid #2563eb;
+}
+
+.badge{
+  background:#2563eb;
+  color:#fff;
+  font-size:11px;
+  padding:4px 10px;
+  border-radius:20px;
+}
+
+.price{
+  font-size:30px;
+  font-weight:900;
+  margin:14px 0;
+}
+
+.plan button{
+  margin-top:18px;
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #e2e8f0;
+  background:#fff;
+  cursor:pointer;
+}
+
+.plan .primary{
+  background:#2563eb;
+  color:#fff;
+  border:none;
+}
+
 </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar">
-  <div class="logo">
-    <img src="/static/images/avtools.png" alt="AVTools">
-  </div>
-  
-  <div class="nav-links">
-    <a href="{% url 'generator:home' %}">Dashboard</a>
-    <a href="{% url 'generator:meesho_image_generator' %}" class="active">Image Generator</a>
-    <a href="{% url 'generator:label_cropper' %}">Label Cropper</a>
-  </div>
-  
-  <div class="user-menu">
-    <div class="credits-badge">⚡ {{ credits }} Credits</div>
-  </div>
-</nav>
+{% include "partials/header.html" %}
+
 
 <!-- MAIN -->
 <div class="wrapper">
@@ -589,68 +685,110 @@ select:focus{
 
   <!-- RIGHT SECTION -->
   <div class="right-section">
-    <h3>Recent Generations</h3>
-    
-    <!-- Empty State -->
-    <div class="empty-state" id="emptyState">
-      <div class="empty-icon">🎨</div>
-      <div class="empty-text">No generations yet</div>
-      <div class="empty-hint">Your generated images will appear here</div>
+    <div class="buy-credit-wrap">
+  <button class="buy-credit-btn" id="openCreditModal">
+    + Buy Credits
+  </button>
+</div>
+
+<div class="credit-modal" id="creditModal">
+  <div class="credit-overlay"></div>
+
+  <div class="credit-box">
+    <button class="close-credit" id="closeCreditModal">×</button>
+
+    <h2>Choose a plan</h2>
+    <p class="sub-text">Recharge credits to continue generating images</p>
+
+    <div class="credit-plans">
+
+      <div class="plan">
+        <h3>Starter</h3>
+        <div class="price">₹99</div>
+        <p>25 Credits</p>
+        <p>30 Days Validity</p>
+        <button>Buy Now</button>
+      </div>
+
+      <div class="plan popular">
+        <span class="badge">MOST POPULAR</span>
+        <h3>Growth</h3>
+        <div class="price">₹299</div>
+        <p>100 Credits</p>
+        <p>60 Days Validity</p>
+        <button class="primary">Buy Now</button>
+      </div>
+
+      <div class="plan">
+        <h3>Pro</h3>
+        <div class="price">₹699</div>
+        <p>400 Credits</p>
+        <p>90 Days Validity</p>
+        <button>Buy Now</button>
+      </div>
+
     </div>
+  </div>
+</div>
 
-    <!-- Recent Grid (hidden initially) -->
-    <div class="recent-grid" id="recentGrid" style="display:none;">
+    <h3>Recent Generations</h3>
+
+      {% if recent_generations %}
+        <div class="recent-grid">
+
+          {% for gen in recent_generations %}
+          <div class="generation-card">
+
+            <!-- IMAGE -->
+            <div class="gen-image" style="padding:0;">
+              <img src="{{ gen.uploaded_image.url }}" 
+                  style="width:100%; height:180px; object-fit:cover;">
+
+              <div class="gen-status status-completed">
+                Completed
+              </div>
+            </div>
+
+            <!-- INFO -->
+            <div class="gen-info">
+              <div class="gen-category">
+                {{ gen.category|title }}
+              </div>
+
+              <div class="gen-details">
+                {{ gen.net_weight }}g • ₹{{ gen.meesho_price }}
+              </div>
+
+              <div class="gen-details">
+                {{ gen.created_at|date:"M d, H:i" }}
+              </div>
+
+              <div class="gen-actions">
+                <a href="{{ gen.uploaded_image.url }}" target="_blank" class="btn-small">
+                  👁 View
+                </a>
+
+                <a href="{% url 'generator:results' %}" class="btn-small">
+                  ⚡ Open
+                </a>
+              </div>
+            </div>
+
+          </div>
+          {% endfor %}
+
+        </div>
+
+      {% else %}
+
+        <div class="empty-state">
+          <div class="empty-icon">🎨</div>
+          <div class="empty-text">No generations yet</div>
+          <div class="empty-hint">Your generated images will appear here</div>
+        </div>
+
+      {% endif %}
       
-      <div class="generation-card">
-        <div class="gen-image">
-          <span>💍</span>
-          <div class="gen-status status-completed">Completed</div>
-        </div>
-        <div class="gen-info">
-          <div class="gen-category">Necklaces & Chains</div>
-          <div class="gen-details">56 images • 120g net weight</div>
-          <div class="gen-details">Lowest Shipping Slab</div>
-          <div class="gen-price">₹63</div>
-          <div class="gen-actions">
-            <button class="btn-small">📥 Download</button>
-            <button class="btn-small">👁 View</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="generation-card">
-        <div class="gen-image">
-          <span>👂</span>
-          <div class="gen-status status-processing">Processing</div>
-        </div>
-        <div class="gen-info">
-          <div class="gen-category">Earrings</div>
-          <div class="gen-details">56 images • 85g net weight</div>
-          <div class="gen-details">Estimated: 45 seconds</div>
-          <div class="gen-price">₹58</div>
-          <div class="gen-actions">
-            <button class="btn-small" disabled>⏳ Processing...</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="generation-card">
-        <div class="gen-image">
-          <span>📿</span>
-          <div class="gen-status status-completed">Completed</div>
-        </div>
-        <div class="gen-info">
-          <div class="gen-category">Bracelets</div>
-          <div class="gen-details">56 images • 95g net weight</div>
-          <div class="gen-details">Lowest Shipping Slab</div>
-          <div class="gen-price">₹61</div>
-          <div class="gen-actions">
-            <button class="btn-small">📥 Download</button>
-            <button class="btn-small">👁 View</button>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -766,6 +904,31 @@ generatorForm.addEventListener('submit', (e) => {
   console.log('Form is submitting...');
 });
 
+ /* ===============================
+     BUY CREDITS MODAL (NEW CODE)
+     =============================== */
+
+  const openCreditBtn = document.getElementById("openCreditModal");
+  const closeCreditBtn = document.getElementById("closeCreditModal");
+  const creditModal = document.getElementById("creditModal");
+
+  if (openCreditBtn && closeCreditBtn && creditModal) {
+
+    const overlay = creditModal.querySelector(".credit-overlay");
+
+    openCreditBtn.addEventListener("click", () => {
+      creditModal.classList.add("show");
+    });
+
+    closeCreditBtn.addEventListener("click", () => {
+      creditModal.classList.remove("show");
+    });
+
+    overlay.addEventListener("click", () => {
+      creditModal.classList.remove("show");
+    });
+  }
+
 // Toggle between empty state and grid (for demo purposes)
 const emptyState = document.getElementById('emptyState');
 const recentGrid = document.getElementById('recentGrid');
@@ -775,5 +938,7 @@ const recentGrid = document.getElementById('recentGrid');
 // recentGrid.style.display = 'grid';
 </script>
 
+{% include "partials/account_modal.html" %}
+<script src="{% static 'js/header.js' %}"></script>
 </body>
 </html>
