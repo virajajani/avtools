@@ -214,25 +214,25 @@ def contact_support(request):
         )
 
         # Send Email
-        email_subject = "New Contact Support Message - AVTools"
-        email_body = f"""
-New support message received:
+        # email_subject = "New Contact Support Message - AVTools"
+        # email_body = f"""
+        #     New support message received:
 
-Name: {first_name} {last_name}
-Mobile: {mobile}
-Email: {email}
+        #     Name: {first_name} {last_name}
+        #     Mobile: {mobile}
+        #     Email: {email}
 
-Message:
-{message}
-"""
+        #     Message:
+        #     {message}
+        #     """
 
-        send_mail(
-            email_subject,
-            email_body,
-            settings.DEFAULT_FROM_EMAIL,
-            ["avtools.in@gmail.com"],  # YOUR SUPPORT EMAIL
-            fail_silently=False,
-        )
+        # send_mail(
+        #     email_subject,
+        #     email_body,
+        #     settings.DEFAULT_FROM_EMAIL,
+        #     ["avtools.in@gmail.com"],  # YOUR SUPPORT EMAIL
+        #     fail_silently=False,
+        # )
 
         return render(request, "user/contact_success.html")
 
