@@ -275,7 +275,6 @@ select:focus{
 .right-section h3{
   font-size:22px;
   font-weight:800;
-  margin-bottom:24px;
   color:#1e293b;
 }
 
@@ -584,6 +583,21 @@ select:focus{
   border:none;
 }
 
+.section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+@media(max-width:600px){
+  .section-header{
+    {% comment %} flex-direction:column; {% endcomment %}
+    align-items:flex-start;
+    gap:10px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -685,53 +699,59 @@ select:focus{
 
   <!-- RIGHT SECTION -->
   <div class="right-section">
-    <div class="buy-credit-wrap">
-  <button class="buy-credit-btn" id="openCreditModal">
-    + Buy Credits
-  </button>
-</div>
+    {% comment %} <div class="buy-credit-wrap">
+      <button class="buy-credit-btn" id="openCreditModal">
+        + Buy Credits
+      </button>
+    </div> {% endcomment %}
 
-<div class="credit-modal" id="creditModal">
-  <div class="credit-overlay"></div>
+    <div class="credit-modal" id="creditModal">
+      <div class="credit-overlay"></div>
 
-  <div class="credit-box">
-    <button class="close-credit" id="closeCreditModal">×</button>
+      <div class="credit-box">
+        <button class="close-credit" id="closeCreditModal">×</button>
 
-    <h2>Choose a plan</h2>
-    <p class="sub-text">Recharge credits to continue generating images</p>
+        <h2>Choose a plan</h2>
+        <p class="sub-text">Recharge credits to continue generating images</p>
 
-    <div class="credit-plans">
+        <div class="credit-plans">
 
-      <div class="plan">
-        <h3>Starter</h3>
-        <div class="price">₹99</div>
-        <p>25 Credits</p>
-        <p>30 Days Validity</p>
-        <button>Buy Now</button>
+          <div class="plan">
+            <h3>Starter</h3>
+            <div class="price">₹99</div>
+            <p>25 Credits</p>
+            <p>30 Days Validity</p>
+            <button>Buy Now</button>
+          </div>
+
+          <div class="plan popular">
+            <span class="badge">MOST POPULAR</span>
+            <h3>Growth</h3>
+            <div class="price">₹299</div>
+            <p>100 Credits</p>
+            <p>60 Days Validity</p>
+            <button class="primary">Buy Now</button>
+          </div>
+
+          <div class="plan">
+            <h3>Pro</h3>
+            <div class="price">₹699</div>
+            <p>400 Credits</p>
+            <p>90 Days Validity</p>
+            <button>Buy Now</button>
+          </div>
+
+        </div>
       </div>
-
-      <div class="plan popular">
-        <span class="badge">MOST POPULAR</span>
-        <h3>Growth</h3>
-        <div class="price">₹299</div>
-        <p>100 Credits</p>
-        <p>60 Days Validity</p>
-        <button class="primary">Buy Now</button>
-      </div>
-
-      <div class="plan">
-        <h3>Pro</h3>
-        <div class="price">₹699</div>
-        <p>400 Credits</p>
-        <p>90 Days Validity</p>
-        <button>Buy Now</button>
-      </div>
-
     </div>
-  </div>
-</div>
 
-    <h3>Recent Generations</h3>
+    <div class="section-header">
+      <h3>Recent Generations</h3>
+
+      <button class="buy-credit-btn" id="openCreditModal">
+        + Buy Credits
+      </button>
+    </div>
 
       {% if recent_generations %}
         <div class="recent-grid">
