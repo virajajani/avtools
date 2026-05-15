@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Us – AVTools</title>
+<meta name="description" content="Learn about AVTools – smart AI-powered tools built for Meesho and online sellers in India to reduce catalogue costs and grow faster.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#3b82f6;--primary-dark:#2563eb;--accent:#8b5cf6;
+  --text:#1e293b;--text-light:#64748b;
+  --bg:#ffffff;--bg-gray:#f8fafc;--border:#e2e8f0;
+}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-gray);color:var(--text);line-height:1.7;}
+
+/* NAV */
+.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1000;}
+.logo img{height:36px;}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-weight:500;font-size:15px;transition:color 0.3s;}
+.nav-links a:hover{color:var(--primary);}
+.btn{padding:11px 24px;border-radius:10px;font-weight:600;text-decoration:none;transition:all 0.3s;font-size:14px;display:inline-block;}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff !important;box-shadow:0 4px 14px rgba(59,130,246,0.3);}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:100px 6% 80px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");opacity:0.4;}
+.hero h1{font-size:52px;font-weight:900;color:#fff;position:relative;z-index:1;margin-bottom:16px;}
+.hero h1 span{background:linear-gradient(135deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:19px;color:rgba(255,255,255,0.9);max-width:620px;margin:0 auto;position:relative;z-index:1;}
+
+/* CARDS */
+.container{max-width:960px;margin:60px auto 80px;padding:0 6%;}
+.card{background:#fff;border-radius:20px;border:1px solid var(--border);padding:48px;margin-bottom:32px;box-shadow:0 8px 32px rgba(0,0,0,0.05);}
+.card-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:20px;}
+.card h2{font-size:28px;font-weight:800;margin-bottom:14px;background:linear-gradient(135deg,var(--text),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.card p{font-size:16px;color:var(--text-light);line-height:1.8;margin-bottom:14px;}
+.card p:last-child{margin-bottom:0;}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin-top:28px;}
+.step{background:var(--bg-gray);border-radius:14px;padding:24px;text-align:center;border:1px solid var(--border);transition:all 0.3s;}
+.step:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(59,130,246,0.1);border-color:var(--primary);}
+.step-num{width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--accent));border-radius:50%;color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.step h4{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--text);}
+.step p{font-size:14px;margin:0;}
+
+.highlight{background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(139,92,246,0.08));border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:24px 28px;margin-top:20px;}
+.highlight p{margin:0;font-size:16px;color:var(--text);}
+.highlight strong{color:var(--primary);}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:20px;}
+.info-item{background:var(--bg-gray);border-radius:12px;padding:20px 24px;border:1px solid var(--border);}
+.info-item label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--primary);margin-bottom:8px;}
+.info-item span{font-size:15px;color:var(--text);font-weight:500;line-height:1.5;display:block;}
+
+/* FOOTER */
+.footer{background:#1e293b;color:rgba(255,255,255,0.7);padding:56px 6% 32px;}
+.footer-top{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:48px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.footer-brand p{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;margin-top:14px;max-width:280px;}
+.footer-brand .address{font-size:13px;color:rgba(255,255,255,0.5);margin-top:16px;line-height:1.8;}
+.footer-col h4{color:#fff;font-size:13px;font-weight:700;margin-bottom:18px;text-transform:uppercase;letter-spacing:0.07em;}
+.footer-col a{display:block;color:rgba(255,255,255,0.6);text-decoration:none;font-size:14px;margin-bottom:11px;transition:color 0.3s;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{max-width:1200px;margin:28px auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;color:rgba(255,255,255,0.4);}
+
+@media(max-width:768px){
+  .hero h1{font-size:34px;}
+  .card{padding:30px 24px;}
+  .info-grid{grid-template-columns:1fr;}
+  .nav-links{gap:14px;flex-wrap:wrap;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:28px;}
+  .footer-bottom{flex-direction:column;text-align:center;}
+}
+@media(max-width:480px){.footer-top{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo">
+    <a href="/"><img src="/static/images/avtools.png" alt="AVTools"></a>
+  </div>
+  <div class="nav-links">
+    <a href="/#features">Features</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    <a href="/signin">Login</a>
+    <a href="/signup" class="btn btn-primary">Get Started</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>About <span>AVTools</span></h1>
+  <p>Built by sellers, for sellers. We're on a mission to make Indian e-commerce smarter, faster, and more profitable.</p>
+</section>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-icon">🚀</div>
+    <h2>Who We Are</h2>
+    <p><strong>AVTools</strong> (operated by <strong>Ajani Virajbhai Jentibhai</strong>) is a product-first technology platform built specifically for Meesho sellers and Indian online marketplace sellers. We understand the real challenges you face every day — from managing product images to controlling shipping costs — and we've built tools to solve them.</p>
+    <p>We are headquartered in Rajkot, Gujarat, India, and serve thousands of active sellers across the country.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🤖</div>
+    <h2>What We Do</h2>
+    <p>Our core product is an <strong>AI-powered image optimization platform</strong> for online sellers. Here's the problem we solve: when you create a product catalogue on Meesho or similar platforms, the shipping charge is calculated based on the weight slab your product falls into — and a large, heavy image file can push your product into a higher (more expensive) shipping slab.</p>
+    <p>With AVTools, sellers can upload their product images and our AI automatically optimizes, resizes, and processes them so the final image fits within a lower shipping weight slab — <strong>directly reducing your per-order shipping cost</strong> without any compromise on visual quality.</p>
+    <div class="highlight">
+      <p>💡 <strong>Simple example:</strong> A seller listing a saree on Meesho may be paying ₹60/order in shipping because their catalogue image pushes the product into a higher slab. After processing through AVTools, the same listing can qualify for a ₹35/order slab — saving <strong>₹25 per order</strong>. At 100 orders/month, that's <strong>₹2,500 saved every month</strong> from one simple change.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">⚙️</div>
+    <h2>How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Upload Your Image</h4>
+        <p>Upload your product photo — any format, any size.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>AI Optimization</h4>
+        <p>Our AI processes and optimizes the image for the target weight slab.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Download & List</h4>
+        <p>Download your optimized image and use it directly on Meesho.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Save on Shipping</h4>
+        <p>Pay less per order — every single time you ship.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🛠️</div>
+    <h2>Our Tools</h2>
+    <p>AVTools offers a growing suite of tools designed for Indian online sellers:</p>
+    <p><strong>AI Image Generator & Optimizer</strong> — Upload a product image and get an AI-optimized version that reduces your shipping slab cost while maintaining listing quality.</p>
+    <p><strong>Meesho Label Cropper</strong> — Automatically crop and format shipping labels for Meesho orders, saving time on daily label printing and dispatch.</p>
+    <p><strong>Profit Calculator</strong> — See your real profit after factoring in shipping charges, platform commission, GST, and return rates — so you price confidently.</p>
+    <p><strong>Bulk Image Processing</strong> — Process hundreds of product images at once with batch upload, perfect for sellers with large catalogues.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🎯</div>
+    <h2>Our Mission</h2>
+    <p>India has millions of small and micro sellers who sell on platforms like Meesho, Flipkart, and Amazon but often lack the tools and data needed to compete effectively. They pay too much in shipping, price incorrectly, and make decisions based on guesswork rather than data.</p>
+    <p>Our mission is simple: <strong>give every Indian seller access to smart, affordable tools that were previously only available to large businesses.</strong> We want to level the playing field so that a small seller in a Tier-2 city can compete and grow just like a big catalogue seller.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">📋</div>
+    <h2>Business Information</h2>
+    <p>AVTools is operated by an individual entrepreneur based in Gujarat, India. Here are our details:</p>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Operator / Owner</label>
+        <span>Ajani Virajbhai Jentibhai</span>
+      </div>
+      <div class="info-item">
+        <label>Business Name</label>
+        <span>AVTools</span>
+      </div>
+      <div class="info-item">
+        <label>Registered Address</label>
+        <span>Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003</span>
+      </div>
+      <div class="info-item">
+        <label>Email</label>
+        <span>avtools.in@gmail.com</span>
+      </div>
+      <div class="info-item">
+        <label>Location</label>
+        <span>Rajkot, Gujarat, India</span>
+      </div>
+      <div class="info-item">
+        <label>Services</label>
+        <span>AI Image Optimization, Label Cropping, Seller Analytics Tools</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="/static/images/avtools.png" alt="AVTools" style="height:32px;filter:brightness(10);">
+      <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
+      <div class="address">
+        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
+        Near Green Land Chokdi, Behind HP Petrol Pump,<br>
+        Rajkot, Gujarat – 360003, India<br><br>
+        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br>
+        📧 avtools.in@gmail.com
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="/#features">Features</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/image-generator">Image Generator</a>
+      <a href="/label-cropper">Label Cropper</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+      <a href="/signin">Sign In</a>
+      <a href="/signup">Sign Up</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/refund-policy">Refund & Cancellation Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
+    <div>Rajkot, Gujarat, India</div>
+  </div>
+</footer>
+
+</body>
+</html>

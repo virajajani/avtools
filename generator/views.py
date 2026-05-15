@@ -451,13 +451,16 @@ def load_active_devices(request):
 # ===============================
 
 def terms(request):
-    return render(request, 'rights/terms.html')
+    return render(request, 'rights/terms.html', {'user': request.user})
 
 def privacy(request):
-    return render(request, 'rights/privacy.html')
+    return render(request, 'rights/privacy.html', {'user': request.user})
 
 def refund_policy(request):
-    return render(request, 'rights/refund-policy.html')
+    return render(request, 'rights/refund-policy.html', {'user': request.user})
 
 def contact(request):
-    return render(request, 'rights/contact.html')
+    return render(request, 'rights/contact.html', {'user': request.user})
+
+def about_us(request):
+    return render(request, 'rights/about-us.html', {'user': request.user})

@@ -5,188 +5,334 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Terms of Service – AVTools</title>
 <meta name="description" content="Terms of Service for AVTools image generator and Meesho seller label cropper.">
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-
 :root{
-  --primary:#3b82f6;
-  --primary-dark:#2563eb;
-  --text:#1e293b;
-  --text-light:#64748b;
-  --bg:#ffffff;
-  --bg-gray:#f8fafc;
-  --border:#e2e8f0;
+  --primary:#3b82f6;--primary-dark:#2563eb;
+  --text:#1e293b;--text-light:#64748b;
+  --bg:#ffffff;--bg-gray:#f8fafc;--border:#e2e8f0;
 }
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-gray);color:var(--text);line-height:1.7;}
 
-body{
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:var(--bg-gray);
-  color:var(--text);
-  line-height:1.7;
-}
+.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1000;}
+.navbar img{height:34px;}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-weight:500;font-size:15px;transition:color 0.3s;}
+.nav-links a:hover{color:var(--primary);}
+.btn{padding:10px 22px;border-radius:10px;font-weight:600;text-decoration:none;font-size:14px;display:inline-block;}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff !important;box-shadow:0 4px 14px rgba(59,130,246,0.3);}
 
-.navbar{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  padding:18px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+.container{max-width:900px;margin:60px auto;background:#fff;padding:60px;border-radius:20px;border:1px solid var(--border);}
+h1{font-size:42px;margin-bottom:10px;}
+.updated{color:var(--text-light);font-size:14px;margin-bottom:40px;}
+h2{font-size:22px;margin-top:40px;margin-bottom:12px;color:var(--text);}
+p,li{font-size:16px;color:var(--text-light);}
+ul{margin-left:20px;margin-top:10px;}
+.operator-box{background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(139,92,246,0.06));border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:20px 24px;margin:20px 0;}
+.operator-box p{margin:0;color:var(--text);}
 
-.navbar img{
-  height:34px;
-}
+.highlight-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:20px 24px;margin:20px 0;}
+.highlight-box p{margin:0;color:#92400e;font-weight:500;}
 
-.container{
-  max-width:900px;
-  margin:60px auto;
-  background:#fff;
-  padding:60px;
-  border-radius:20px;
-  border:1px solid var(--border);
-}
+.cancel-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:15px;}
+.cancel-table th{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 16px;text-align:left;font-weight:700;}
+.cancel-table td{padding:13px 16px;border-bottom:1px solid var(--border);color:var(--text-light);}
+.cancel-table tr:last-child td{border-bottom:none;}
+.cancel-table tr:nth-child(even) td{background:#f8fafc;}
 
-h1{
-  font-size:42px;
-  margin-bottom:10px;
-}
+.services-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:15px;}
+.services-table th{background:linear-gradient(135deg,#1e293b,#334155);color:#fff;padding:14px 16px;text-align:left;font-weight:700;}
+.services-table td{padding:13px 16px;border-bottom:1px solid var(--border);color:var(--text-light);}
+.services-table tr:last-child td{border-bottom:none;}
+.services-table tr:nth-child(even) td{background:#f8fafc;}
+.services-table .price{color:var(--primary);font-weight:700;}
 
-.updated{
-  color:var(--text-light);
-  font-size:14px;
-  margin-bottom:40px;
-}
+.footer{background:#1e293b;color:rgba(255,255,255,0.7);padding:56px 6% 32px;margin-top:80px;}
+.footer-top{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:48px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.footer-brand p{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;margin-top:14px;max-width:280px;}
+.footer-brand .address{font-size:13px;color:rgba(255,255,255,0.5);margin-top:16px;line-height:1.8;}
+.footer-col h4{color:#fff;font-size:13px;font-weight:700;margin-bottom:18px;text-transform:uppercase;letter-spacing:0.07em;}
+.footer-col a{display:block;color:rgba(255,255,255,0.6);text-decoration:none;font-size:14px;margin-bottom:11px;transition:color 0.3s;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{max-width:1200px;margin:28px auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;color:rgba(255,255,255,0.4);}
 
-h2{
-  font-size:22px;
-  margin-top:40px;
-  margin-bottom:12px;
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .container{margin:40px 16px;padding:32px 20px;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:28px;}
+  .footer-bottom{flex-direction:column;text-align:center;}
+  .cancel-table,.services-table{font-size:13px;}
 }
-
-p, li{
-  font-size:16px;
-  color:var(--text-light);
-}
-
-ul{
-  margin-left:20px;
-  margin-top:10px;
-}
-
-.footer{
-  background:#1e293b;
-  color:rgba(255,255,255,0.7);
-  padding:30px 6%;
-  text-align:center;
-  margin-top:80px;
-}
+@media(max-width:480px){.footer-top{grid-template-columns:1fr;}}
 </style>
 </head>
-
 <body>
 
-<!-- NAV -->
 <nav class="navbar">
   <a href="/"><img src="/static/images/avtools.png" alt="AVTools"></a>
+  <div class="nav-links">
+    {% comment %} <a href="/#features">Features</a>
+    <a href="/#pricing">Pricing</a> {% endcomment %}
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    {% if user.is_authenticated %}
+      {% comment %} <a href="/dashboard">Dashboard</a> {% endcomment %}
+      {% comment %} <a href="/signout" class="btn btn-primary">Logout</a> {% endcomment %}
+    {% else %}
+      <a href="/signin">Login</a>
+      <a href="/signup" class="btn btn-primary">Get Started</a>
+    {% endif %}
+  </div>
 </nav>
 
-<!-- CONTENT -->
 <div class="container">
   <h1>Terms of Service</h1>
-  <div class="updated">Last Updated: January 2026</div>
+  <div class="updated">Last Updated: May 2026</div>
 
-  <p>
-    Welcome to <strong>AVTools</strong>. By accessing or using our website and services,
-    including the <strong>AI Image Generator</strong> and
-    <strong>Meesho Seller Label Cropper</strong>, you agree to be bound by these Terms of Service.
-    If you do not agree, please do not use our services.
-  </p>
+  <div class="operator-box">
+    <p>This website is operated by <strong>Ajani Virajbhai Jentibhai</strong>, trading as <strong>AVTools</strong>.<br>
+    Registered Address: Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India.<br>
+    Contact: <strong>avtools.in@gmail.com</strong></p>
+  </div>
 
+  <p>Welcome to <strong>AVTools</strong>. By accessing or using our website and services, including the <strong>AI Image Generator</strong> and <strong>Meesho Seller Label Cropper</strong>, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
+
+  <!-- ===================== SECTION 1 ===================== -->
   <h2>1. Services Provided</h2>
-  <p>
-    AVTools provides online tools including image generation, image processing,
-    seller label cropping, and pricing estimation tools for Meesho sellers.
-    All services are provided on an <strong>“AS IS”</strong> and <strong>“AS AVAILABLE”</strong> basis.
-  </p>
+  <p>AVTools provides digital-only, AI-powered online tools for Indian e-commerce sellers. All services are delivered digitally and instantly upon usage. No physical goods are shipped or delivered. Services are provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis.</p>
 
-  <h2>2. No Accuracy Guarantee</h2>
-  <p>
-    AI-generated images, cropped labels, analytics, and pricing estimates may be inaccurate,
-    incomplete, or unsuitable for your specific use case. We do not guarantee correctness,
-    reliability, or commercial suitability.
-  </p>
+  <table class="services-table">
+    <tr>
+      <th>Service / Product</th>
+      <th>Description</th>
+      <th>Credit Cost</th>
+    </tr>
+    <tr>
+      <td><strong>AI Image Generator</strong></td>
+      <td>Generate optimized product images for Meesho listings using AI. Images are sized and styled to reduce shipping slab charges. Delivered instantly as downloadable files.</td>
+      <td class="price">1 Credit per image</td>
+    </tr>
+    <tr>
+      <td><strong>Meesho Label Cropper</strong></td>
+      <td>Automatically crop and format Meesho shipping labels for printing. Supports bulk label processing. Output delivered instantly as downloadable files.</td>
+      <td class="price">1 Credit per label set</td>
+    </tr>
+    <tr>
+      <td><strong>Bulk Image Processing</strong></td>
+      <td>Process multiple product images at once for batch optimization, resizing, and watermarking. Ideal for high-volume sellers.</td>
+      <td class="price">1 Credit per image</td>
+    </tr>
+    <tr>
+      <td><strong>Profit Calculator</strong></td>
+      <td>Calculate actual profit after Meesho platform fees, shipping charges, returns, and GST. Free tool available to all registered users.</td>
+      <td class="price">Free</td>
+    </tr>
+    <tr>
+      <td><strong>Shipping Slab Optimizer</strong></td>
+      <td>Analyze product weight and dimensions to recommend the most cost-effective shipping slab. Helps reduce shipping expenses by up to 40%.</td>
+      <td class="price">Free</td>
+    </tr>
+  </table>
 
-  <h2>3. Pricing & Credits Disclaimer</h2>
-  <p>
-    Any prices, cost savings, profits, or shipping estimates displayed are
-    <strong>approximate only</strong>. They are not guaranteed, final, or legally binding.
-    Credits purchased are non-transferable and subject to our Refund & Cancellation Policy.
-  </p>
+  <!-- ===================== SECTION 2 ===================== -->
+  <h2>2. Pricing & Payment</h2>
+  <p>All prices are displayed in <strong>Indian Rupees (INR)</strong> inclusive of applicable taxes. Services are available via prepaid credit packs purchased through <strong>PayU</strong>, a PCI-DSS compliant payment gateway. Accepted payment methods include UPI, Debit Card, Credit Card, Net Banking, and Wallets.</p>
 
-  <h2>4. User Content & Responsibility</h2>
-  <ul>
-    <li>You retain ownership of all images and content you upload.</li>
-    <li>You grant AVTools temporary permission to process uploaded content.</li>
-    <li>You are solely responsible for ensuring you have legal rights to uploaded content.</li>
+  <table class="services-table">
+    <tr>
+      <th>Plan</th>
+      <th>Price (INR)</th>
+      <th>Credits</th>
+      <th>Validity</th>
+      <th>Best For</th>
+    </tr>
+    <tr>
+      <td><strong>Starter</strong></td>
+      <td class="price">₹99</td>
+      <td>25 Credits</td>
+      <td>30 Days</td>
+      <td>New sellers trying the platform</td>
+    </tr>
+    <tr>
+      <td><strong>Growth</strong></td>
+      <td class="price">₹299</td>
+      <td>100 Credits</td>
+      <td>60 Days</td>
+      <td>Regular sellers with moderate volume</td>
+    </tr>
+    <tr>
+      <td><strong>Pro</strong></td>
+      <td class="price">₹699</td>
+      <td>400 Credits</td>
+      <td>90 Days</td>
+      <td>High-volume sellers and power users</td>
+    </tr>
+  </table>
+
+  <p style="margin-top:14px;">Credits are non-transferable, non-exchangeable for cash, and expire at the end of the validity period. Cash on delivery (COD) is <strong>not available</strong> for digital services. New accounts receive <strong>10 free credits</strong> on signup (no purchase required).</p>
+
+  <!-- ===================== SECTION 3 ===================== -->
+  <h2>3. Cancellation Policy</h2>
+
+  <div class="highlight-box">
+    <p>⏱ <strong>Cancellation Window:</strong> You may request cancellation within <strong>24 hours</strong> of purchase, provided <strong>zero credits have been used</strong>. After 24 hours or after any credit is consumed, cancellation is not permitted.</p>
+  </div>
+
+  <table class="cancel-table">
+    <tr>
+      <th>Scenario</th>
+      <th>Cancellation Allowed?</th>
+      <th>Time Limit</th>
+      <th>Action Required</th>
+    </tr>
+    <tr>
+      <td>Credit pack purchased, zero credits used</td>
+      <td>✅ Yes</td>
+      <td>Within 24 hours of purchase</td>
+      <td>Email avtools.in@gmail.com with Order ID</td>
+    </tr>
+    <tr>
+      <td>Credit pack purchased, any credits used</td>
+      <td>❌ No</td>
+      <td>—</td>
+      <td>Not eligible for cancellation</td>
+    </tr>
+    <tr>
+      <td>Request after 24 hours of purchase</td>
+      <td>❌ No</td>
+      <td>Expired</td>
+      <td>Not eligible regardless of unused credits</td>
+    </tr>
+    <tr>
+      <td>Duplicate / double payment</td>
+      <td>✅ Yes</td>
+      <td>Within 7 days of transaction</td>
+      <td>Email with transaction proof</td>
+    </tr>
+    <tr>
+      <td>Payment deducted, credits not added</td>
+      <td>✅ Yes (Full Refund)</td>
+      <td>Within 7 days of transaction</td>
+      <td>Email with payment screenshot</td>
+    </tr>
+  </table>
+
+  <p style="margin-top:14px;">To request cancellation, email <strong>avtools.in@gmail.com</strong> with subject: <em>"Cancellation Request – [Order ID / Registered Email]"</em>. Include the date of purchase and reason. We will acknowledge within 2 business days.</p>
+
+  <!-- ===================== SECTION 4 ===================== -->
+  <h2>4. Shipping & Delivery Policy</h2>
+
+  <div class="highlight-box">
+    <p>📦 <strong>AVTools is a 100% digital service platform.</strong> No physical products, no physical shipping, and no delivery to any postal address.</p>
+  </div>
+
+  <p>All outputs generated by AVTools — including AI-generated images, cropped labels, processed files, and downloadable reports — are delivered <strong>digitally and instantly</strong> upon processing. Delivery is made directly within the user's account dashboard or as an immediate browser download. There is no shipping, no courier, and no physical dispatch involved at any stage.</p>
+
+  <ul style="margin-top:12px;">
+    <li>AI-generated images are available for download immediately after generation.</li>
+    <li>Cropped and processed label files are ready for download within seconds of upload.</li>
+    <li>Credit packs are activated and reflected in your account balance immediately upon successful PayU payment confirmation.</li>
+    <li>In the rare event of a technical delay, credits or outputs will be made available within 24 hours. If not, you are eligible for a full refund under our Refund Policy.</li>
+    <li>No physical address is required or used for service delivery.</li>
   </ul>
 
-  <h2>5. Prohibited Use</h2>
+  <!-- ===================== SECTION 5 ===================== -->
+  <h2>5. No Accuracy Guarantee</h2>
+  <p>AI-generated images, cropped labels, analytics, and pricing estimates may be inaccurate, incomplete, or unsuitable for your specific use case. We do not guarantee correctness, reliability, or commercial suitability of any output.</p>
+
+  <!-- ===================== SECTION 6 ===================== -->
+  <h2>6. User Content & Responsibility</h2>
+  <ul>
+    <li>You retain full ownership of all images and content you upload.</li>
+    <li>You grant AVTools a temporary, limited licence to process uploaded content solely for the purpose of providing the requested service.</li>
+    <li>You are solely responsible for ensuring you have legal rights to all uploaded content.</li>
+    <li>Do not upload sensitive, confidential, personal data of third parties, or any illegal content.</li>
+  </ul>
+
+  <!-- ===================== SECTION 7 ===================== -->
+  <h2>7. Prohibited Use</h2>
   <p>You agree not to:</p>
   <ul>
     <li>Upload illegal, offensive, or copyrighted content without permission</li>
     <li>Use generated images for fraud, impersonation, or deception</li>
     <li>Attempt to reverse engineer, abuse, or overload our systems</li>
     <li>Use our services for any unlawful or unethical purpose</li>
+    <li>Share, resell, or redistribute platform outputs commercially without written permission</li>
   </ul>
 
-  <h2>6. Limitation of Liability</h2>
-  <p>
-    AVTools shall not be liable for any direct, indirect, incidental, or consequential damages,
-    including business loss, data loss, or financial loss arising from the use or inability
-    to use our services.
-  </p>
+  <!-- ===================== SECTION 8 ===================== -->
+  <h2>8. Payment Security (PayU)</h2>
+  <p>All payments are processed by <strong>PayU India</strong>, a Reserve Bank of India (RBI) authorised payment aggregator and PCI-DSS Level 1 certified gateway. AVTools does not store, access, or process any card numbers, CVV, UPI PINs, or net banking credentials. All payment data is handled exclusively by PayU under their privacy policy and security standards.</p>
 
-  <h2>7. Suspension & Termination</h2>
-  <p>
-    We reserve the right to suspend or terminate access to our services at any time,
-    without prior notice, if we believe these Terms have been violated.
-  </p>
+  <!-- ===================== SECTION 9 ===================== -->
+  <h2>9. Limitation of Liability</h2>
+  <p>AVTools shall not be liable for any direct, indirect, incidental, or consequential damages, including business loss, data loss, or financial loss arising from the use or inability to use our services.</p>
 
-  <h2>8. Legal Action</h2>
-  <p>
-    AVTools reserves the right to take legal action against users who misuse the platform,
-    violate applicable laws, or cause harm to the service, brand, or other users.
-  </p>
+  <!-- ===================== SECTION 10 ===================== -->
+  <h2>10. Suspension & Termination</h2>
+  <p>We reserve the right to suspend or terminate access to our services at any time, without prior notice, if we believe these Terms have been violated.</p>
 
-  <h2>9. Intellectual Property</h2>
-  <p>
-    All website content, branding, design, and code belong to AVTools.
-    Users may not copy, redistribute, or resell any part of the platform without written permission.
-  </p>
+  <!-- ===================== SECTION 11 ===================== -->
+  <h2>11. Intellectual Property</h2>
+  <p>All website content, branding, design, and code belong to AVTools (operated by Ajani Virajbhai Jentibhai). Users may not copy, redistribute, or resell any part of the platform without written permission.</p>
 
-  <h2>10. Governing Law</h2>
-  <p>
-    These Terms shall be governed by and interpreted in accordance with the laws of India.
-    Any disputes shall be subject to the jurisdiction of Indian courts.
-  </p>
+  <!-- ===================== SECTION 12 ===================== -->
+  <h2>12. Governing Law</h2>
+  <p>These Terms shall be governed by and interpreted in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in <strong>Rajkot, Gujarat, India</strong>.</p>
 
-  <h2>11. Changes to Terms</h2>
-  <p>
-    We may update these Terms at any time. Continued use of AVTools means acceptance of the updated Terms.
-  </p>
+  <!-- ===================== SECTION 13 ===================== -->
+  <h2>13. Changes to Terms</h2>
+  <p>We may update these Terms at any time without prior notice. Continued use of AVTools after any update constitutes acceptance of the revised Terms. The latest version is always available at <strong>avtools.in/terms</strong>.</p>
 
-  <h2>12. Contact Information</h2>
+  <!-- ===================== SECTION 14 ===================== -->
+  <h2>14. Contact Information</h2>
   <p>
     For questions regarding these Terms:<br>
-    <strong>Email:</strong> avtools.in@gmail.com
+    <strong>Operator:</strong> Ajani Virajbhai Jentibhai<br>
+    <strong>Business Name:</strong> AVTools<br>
+    <strong>Email:</strong> avtools.in@gmail.com<br>
+    <strong>Address:</strong> Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India
   </p>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
-  © 2026 AVTools. All rights reserved.
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="/static/images/avtools.png" alt="AVTools" style="height:32px;filter:brightness(10);">
+      <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
+      <div class="address">
+        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
+        Near Green Land Chokdi, Behind HP Petrol Pump,<br>
+        Rajkot, Gujarat – 360003, India<br><br>
+        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br>
+        📧 avtools.in@gmail.com
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="/#features">Features</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/image-generator">Image Generator</a>
+      <a href="/label-cropper">Label Cropper</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+      <a href="/signin">Sign In</a>
+      <a href="/signup">Sign Up</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/refund-policy">Refund & Cancellation Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
+    <div>Rajkot, Gujarat, India</div>
+  </div>
 </footer>
 
 </body>

@@ -4,143 +4,308 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Refund & Cancellation Policy – AVTools</title>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-
 :root{
-  --primary:#3b82f6;
-  --primary-dark:#2563eb;
-  --text:#1e293b;
-  --text-light:#64748b;
-  --bg:#ffffff;
-  --bg-gray:#f8fafc;
-  --border:#e2e8f0;
+  --primary:#3b82f6;--primary-dark:#2563eb;
+  --text:#1e293b;--text-light:#64748b;
+  --bg:#ffffff;--bg-gray:#f8fafc;--border:#e2e8f0;
 }
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-gray);color:var(--text);line-height:1.7;}
 
-body{
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:var(--bg-gray);
-  color:var(--text);
-  line-height:1.7;
-}
+.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1000;}
+.navbar img{height:34px;}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-weight:500;font-size:15px;transition:color 0.3s;}
+.nav-links a:hover{color:var(--primary);}
+.btn{padding:10px 22px;border-radius:10px;font-weight:600;text-decoration:none;font-size:14px;display:inline-block;}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff !important;box-shadow:0 4px 14px rgba(59,130,246,0.3);}
 
-.navbar{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  padding:18px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+.container{max-width:900px;margin:60px auto;background:#fff;padding:60px;border-radius:20px;border:1px solid var(--border);}
+h1{font-size:42px;margin-bottom:10px;}
+.updated{color:var(--text-light);font-size:14px;margin-bottom:40px;}
+h2{font-size:22px;margin-top:40px;margin-bottom:12px;color:var(--text);}
+p,li{font-size:16px;color:var(--text-light);}
+ul{margin-left:20px;margin-top:10px;}
+.info-box{background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(139,92,246,0.06));border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:20px 24px;margin:20px 0;}
+.info-box p{margin:0;color:var(--text);}
 
-.navbar img{
-  height:34px;
-}
+.warning-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:20px 24px;margin:20px 0;}
+.warning-box p{margin:0;color:#92400e;font-weight:500;}
 
-.container{
-  max-width:900px;
-  margin:60px auto;
-  background:#fff;
-  padding:60px;
-  border-radius:20px;
-  border:1px solid var(--border);
-}
+.success-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:20px 24px;margin:20px 0;}
+.success-box p{margin:0;color:#166534;font-weight:500;}
 
-h1{
-  font-size:42px;
-  margin-bottom:10px;
-}
+.refund-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:15px;}
+.refund-table th{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 16px;text-align:left;font-weight:700;}
+.refund-table td{padding:13px 16px;border-bottom:1px solid var(--border);color:var(--text-light);vertical-align:top;}
+.refund-table tr:last-child td{border-bottom:none;}
+.refund-table tr:nth-child(even) td{background:#f8fafc;}
 
-.updated{
-  color:var(--text-light);
-  font-size:14px;
-  margin-bottom:40px;
-}
+.cancel-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:15px;}
+.cancel-table th{background:linear-gradient(135deg,#1e293b,#334155);color:#fff;padding:14px 16px;text-align:left;font-weight:700;}
+.cancel-table td{padding:13px 16px;border-bottom:1px solid var(--border);color:var(--text-light);vertical-align:top;}
+.cancel-table tr:last-child td{border-bottom:none;}
+.cancel-table tr:nth-child(even) td{background:#f8fafc;}
 
-h2{
-  font-size:22px;
-  margin-top:40px;
-  margin-bottom:12px;
-}
+.step-list{list-style:none;margin-left:0;counter-reset:steps;}
+.step-list li{counter-increment:steps;padding:14px 16px 14px 56px;border-bottom:1px solid var(--border);position:relative;color:var(--text-light);}
+.step-list li:last-child{border-bottom:none;}
+.step-list li::before{content:counter(steps);position:absolute;left:16px;top:50%;transform:translateY(-50%);width:28px;height:28px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;line-height:28px;text-align:center;}
 
-p, li{
-  font-size:16px;
-  color:var(--text-light);
-}
+.footer{background:#1e293b;color:rgba(255,255,255,0.7);padding:56px 6% 32px;margin-top:80px;}
+.footer-top{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:48px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.footer-brand p{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;margin-top:14px;max-width:280px;}
+.footer-brand .address{font-size:13px;color:rgba(255,255,255,0.5);margin-top:16px;line-height:1.8;}
+.footer-col h4{color:#fff;font-size:13px;font-weight:700;margin-bottom:18px;text-transform:uppercase;letter-spacing:0.07em;}
+.footer-col a{display:block;color:rgba(255,255,255,0.6);text-decoration:none;font-size:14px;margin-bottom:11px;transition:color 0.3s;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{max-width:1200px;margin:28px auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;color:rgba(255,255,255,0.4);}
 
-ul{
-  margin-left:20px;
-  margin-top:10px;
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .container{margin:40px 16px;padding:32px 20px;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:28px;}
+  .footer-bottom{flex-direction:column;text-align:center;}
+  .refund-table,.cancel-table{font-size:13px;}
 }
-
-.footer{
-  background:#1e293b;
-  color:rgba(255,255,255,0.7);
-  padding:30px 6%;
-  text-align:center;
-  margin-top:80px;
-}
+@media(max-width:480px){.footer-top{grid-template-columns:1fr;}}
 </style>
 </head>
-
 <body>
 
-
-<!-- NAV -->
 <nav class="navbar">
   <a href="/"><img src="/static/images/avtools.png" alt="AVTools"></a>
+  <div class="nav-links">
+    {% comment %} <a href="/#features">Features</a>
+    <a href="/#pricing">Pricing</a> {% endcomment %}
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    {% if user.is_authenticated %}
+      {% comment %} <a href="/dashboard">Dashboard</a> {% endcomment %}
+      {% comment %} <a href="/signout" class="btn btn-primary">Logout</a> {% endcomment %}
+    {% else %}
+      <a href="/signin">Login</a>
+      <a href="/signup" class="btn btn-primary">Get Started</a>
+    {% endif %}
+    </div>
 </nav>
 
 <div class="container">
-<h1>Refund & Cancellation Policy</h1>
-<p><strong>Last Updated:</strong> January 2026</p>
+  <h1>Refund & Cancellation Policy</h1>
+  <div class="updated">Last Updated: May 2026</div>
 
-<p>
-At <strong>AVTools</strong>, we strive to provide reliable digital tools for our users.
-This policy outlines how refunds and cancellations are handled.
-</p>
+  <div class="info-box">
+    <p>This policy applies to all digital services offered by <strong>AVTools</strong>, operated by <strong>Ajani Virajbhai Jentibhai</strong>.<br>
+    Address: Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India.<br>
+    Payments are processed via <strong>PayU India</strong>.</p>
+  </div>
 
-<h2>1. Nature of Services</h2>
-<p>
-AVTools provides digital services (AI image generation, image processing, and utility tools).
-All services are delivered instantly upon usage.
-</p>
+  <p>At <strong>AVTools</strong>, we strive to provide reliable digital tools for our users. This policy outlines how cancellations and refunds are handled for all our services.</p>
 
-<h2>2. No Cancellation</h2>
-<p>
-Once a service is used (such as generating an image or processing a file),
-the transaction cannot be cancelled.
-</p>
+  <!-- ===================== SECTION 1 ===================== -->
+  <h2>1. Nature of Services</h2>
+  <p>AVTools provides <strong>100% digital services</strong> — including AI image generation, image processing, label cropping, and utility tools for Meesho and other Indian e-commerce sellers. All services are delivered instantly and digitally upon usage. <strong>No physical goods are shipped or delivered at any time.</strong></p>
 
-<h2>3. Refund Policy</h2>
-<ul>
-<li>Payments made for digital credits are generally <strong>non-refundable</strong>.</li>
-<li>If a transaction fails but payment is deducted, the amount will be automatically refunded within <strong>5–7 business days</strong>.</li>
-<li>If you were charged but did not receive the service due to a technical issue, you may contact us for review.</li>
-</ul>
+  <!-- ===================== SECTION 2 ===================== -->
+  <h2>2. Cancellation Policy</h2>
 
-<h2>4. Duplicate Transactions</h2>
-<p>
-In case of duplicate payments, the extra amount will be refunded after verification.
-</p>
+  <div class="warning-box">
+    <p>⏱ <strong>Cancellation Window: 24 Hours from Purchase</strong><br>
+    Cancellation requests are only accepted within <strong>24 hours</strong> of the original purchase, and <strong>only if zero credits have been consumed</strong>. Once even one credit is used, cancellation is not possible for that purchase.</p>
+  </div>
 
-<h2>5. Contact for Refund Requests</h2>
-<p>
-For any refund-related queries, contact us at:<br>
-<strong>Email:</strong> avtools.in@gmail.com
-</p>
+  <table class="cancel-table">
+    <tr>
+      <th>Cancellation Scenario</th>
+      <th>Eligible?</th>
+      <th>Time Limit</th>
+      <th>Outcome</th>
+    </tr>
+    <tr>
+      <td>Credit pack purchased — <strong>0 credits used</strong></td>
+      <td>✅ Yes</td>
+      <td><strong>Within 24 hours</strong> of purchase</td>
+      <td>Full refund processed to original payment method within 7–10 business days</td>
+    </tr>
+    <tr>
+      <td>Credit pack purchased — <strong>any credits used</strong></td>
+      <td>❌ No</td>
+      <td>—</td>
+      <td>Not eligible; used credits are consumed upon service delivery</td>
+    </tr>
+    <tr>
+      <td>Cancellation request <strong>after 24 hours</strong></td>
+      <td>❌ No</td>
+      <td>Window expired</td>
+      <td>Not accepted regardless of unused credit balance</td>
+    </tr>
+    <tr>
+      <td><strong>Duplicate / double payment</strong> for same order</td>
+      <td>✅ Yes</td>
+      <td>Within 7 days</td>
+      <td>Duplicate amount refunded within 5–7 business days after verification</td>
+    </tr>
+    <tr>
+      <td>Payment deducted — <strong>credits not credited</strong> (transaction failure)</td>
+      <td>✅ Yes (Full Refund)</td>
+      <td>Within 7 days</td>
+      <td>Full refund within 5–7 business days after confirmation</td>
+    </tr>
+  </table>
 
-<h2>6. Policy Updates</h2>
-<p>
-We may update this policy at any time. Continued use of our services means acceptance of the updated policy.
-</p>
+  <p style="margin-top:16px;"><strong>How to Cancel:</strong> Email <strong>avtools.in@gmail.com</strong> with subject line: <em>"Cancellation Request – [Order ID / Registered Email]"</em>. Include your purchase date and reason. We acknowledge requests within <strong>2 business days</strong>.</p>
 
+  <!-- ===================== SECTION 3 ===================== -->
+  <h2>3. Refund Policy</h2>
+
+  <div class="success-box">
+    <p>✅ Eligible refunds are always returned to the <strong>original payment source</strong> (UPI, Debit/Credit Card, or Net Banking) used at the time of purchase via PayU.</p>
+  </div>
+
+  <table class="refund-table">
+    <tr>
+      <th>Scenario</th>
+      <th>Refund Eligible?</th>
+      <th>Processing Time</th>
+      <th>Refund Mode</th>
+    </tr>
+    <tr>
+      <td>Payment deducted but credits not added (transaction failure)</td>
+      <td>✅ Full Refund</td>
+      <td>5–7 business days</td>
+      <td>Original payment method via PayU</td>
+    </tr>
+    <tr>
+      <td>Duplicate / double payment for the same order</td>
+      <td>✅ Full Refund of duplicate amount</td>
+      <td>5–7 business days after verification</td>
+      <td>Original payment method via PayU</td>
+    </tr>
+    <tr>
+      <td>Service not delivered due to verified technical error on our end</td>
+      <td>✅ Credit or Refund (case by case)</td>
+      <td>7–10 business days</td>
+      <td>Original payment method or AVTools credits</td>
+    </tr>
+    <tr>
+      <td>Credits purchased but not used — cancellation within 24 hours</td>
+      <td>✅ Eligible (request required)</td>
+      <td>7–10 business days after approval</td>
+      <td>Original payment method via PayU</td>
+    </tr>
+    <tr>
+      <td>Credits partially or fully used</td>
+      <td>❌ Not Eligible</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Dissatisfaction with AI output quality</td>
+      <td>❌ Not Eligible</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Credits expired (validity period ended)</td>
+      <td>❌ Not Eligible</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Change of mind after using services</td>
+      <td>❌ Not Eligible</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  </table>
+
+  <!-- ===================== SECTION 4 ===================== -->
+  <h2>4. Refund Mode</h2>
+  <p>All eligible refunds are processed to the <strong>original payment source</strong> — UPI ID, Debit/Credit Card, or Net Banking account — used at the time of purchase. Refunds are initiated through <strong>PayU India</strong> and are subject to your bank's processing schedule (typically 3–7 additional business days after initiation). We do not issue refunds in cash, by cheque, or via any third-party wallet.</p>
+
+  <!-- ===================== SECTION 5 ===================== -->
+  <h2>5. Shipping Policy</h2>
+
+  <div class="info-box">
+    <p>📦 <strong>AVTools is a fully digital platform.</strong> We do not ship any physical products. There is no courier, no postal delivery, and no physical address required for service delivery.</p>
+  </div>
+
+  <p>All service outputs — generated images, processed label files, and account credits — are delivered <strong>digitally and instantly</strong>:</p>
+  <ul style="margin-top:12px;">
+    <li><strong>AI-generated images</strong> are available for immediate browser download upon generation.</li>
+    <li><strong>Cropped label files</strong> are ready for download within seconds of upload and processing.</li>
+    <li><strong>Credit packs</strong> are activated instantly in your account dashboard upon successful PayU payment confirmation.</li>
+    <li>In the rare event of a technical delay exceeding 24 hours, you are entitled to a full refund under Section 3 of this policy.</li>
+  </ul>
+  <p style="margin-top:12px;">Since all services are digital, there are no shipping charges, no delivery timelines, and no physical address requirements associated with any AVTools purchase.</p>
+
+  <!-- ===================== SECTION 6 ===================== -->
+  <h2>6. How to Request a Refund or Cancellation</h2>
+  <ul class="step-list">
+    <li>Email <strong>avtools.in@gmail.com</strong> with subject: <em>"Refund Request – [Your Email / Order ID]"</em> or <em>"Cancellation Request – [Your Email / Order ID]"</em></li>
+    <li>Include your registered email address, the date of transaction, PayU transaction/order ID, and your reason.</li>
+    <li>Attach a screenshot of your payment confirmation if available.</li>
+    <li>We will acknowledge your request within <strong>2 business days</strong>.</li>
+    <li>After verification, eligible refunds are processed within <strong>5–10 business days</strong> and credited via PayU to your original payment method.</li>
+  </ul>
+
+  <!-- ===================== SECTION 7 ===================== -->
+  <h2>7. Dispute Resolution</h2>
+  <p>If you believe a transaction has been incorrectly charged or a refund has not been processed, contact us at <strong>avtools.in@gmail.com</strong>. We aim to resolve all disputes within <strong>10 business days</strong>. If unresolved, disputes are subject to the exclusive jurisdiction of courts in <strong>Rajkot, Gujarat, India</strong>.</p>
+
+  <!-- ===================== SECTION 8 ===================== -->
+  <h2>8. Policy Updates</h2>
+  <p>We may update this policy at any time without prior notice. Continued use of our services means acceptance of the updated policy. The latest version is always available at <strong>avtools.in/refund-policy</strong>.</p>
+
+  <!-- ===================== SECTION 9 ===================== -->
+  <h2>9. Contact</h2>
+  <p>
+    <strong>Operator:</strong> Ajani Virajbhai Jentibhai<br>
+    <strong>Business:</strong> AVTools<br>
+    <strong>Email:</strong> avtools.in@gmail.com<br>
+    <strong>Address:</strong> Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India
+  </p>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
-  © 2026 AVTools. All rights reserved.
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="/static/images/avtools.png" alt="AVTools" style="height:32px;filter:brightness(10);">
+      <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
+      <div class="address">
+        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
+        Near Green Land Chokdi, Behind HP Petrol Pump,<br>
+        Rajkot, Gujarat – 360003, India<br><br>
+        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br>
+        📧 avtools.in@gmail.com
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="/#features">Features</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/image-generator">Image Generator</a>
+      <a href="/label-cropper">Label Cropper</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+      <a href="/signin">Sign In</a>
+      <a href="/signup">Sign Up</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/refund-policy">Refund & Cancellation Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
+    <div>Rajkot, Gujarat, India</div>
+  </div>
 </footer>
 
 </body>

@@ -5,166 +5,194 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Privacy Policy – AVTools</title>
 <meta name="description" content="Privacy Policy for AVTools image generator and Meesho label cropper.">
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-
 :root{
-  --primary:#3b82f6;
-  --primary-dark:#2563eb;
-  --text:#1e293b;
-  --text-light:#64748b;
-  --bg:#ffffff;
-  --bg-gray:#f8fafc;
-  --border:#e2e8f0;
+  --primary:#3b82f6;--primary-dark:#2563eb;
+  --text:#1e293b;--text-light:#64748b;
+  --bg:#ffffff;--bg-gray:#f8fafc;--border:#e2e8f0;
 }
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-gray);color:var(--text);line-height:1.7;}
 
-body{
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:var(--bg-gray);
-  color:var(--text);
-  line-height:1.7;
-}
+.navbar{background:#fff;border-bottom:1px solid var(--border);padding:18px 6%;display:flex;justify-content:space-between;align-items:center;}
+.navbar img{height:34px;}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-weight:500;font-size:15px;transition:color 0.3s;}
+.nav-links a:hover{color:var(--primary);}
+.btn{padding:10px 22px;border-radius:10px;font-weight:600;text-decoration:none;font-size:14px;display:inline-block;}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff !important;box-shadow:0 4px 14px rgba(59,130,246,0.3);}
 
-.navbar{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  padding:18px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
+.container{max-width:900px;margin:60px auto;background:#fff;padding:60px;border-radius:20px;border:1px solid var(--border);}
+h1{font-size:42px;margin-bottom:10px;}
+.updated{color:var(--text-light);font-size:14px;margin-bottom:40px;}
+h2{font-size:22px;margin-top:40px;margin-bottom:12px;color:var(--text);}
+p,li{font-size:16px;color:var(--text-light);}
+ul{margin-left:20px;margin-top:10px;}
+.info-box{background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(139,92,246,0.06));border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:20px 24px;margin:20px 0;}
+.info-box p{margin:0;color:var(--text);}
+.notice-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:20px 24px;margin:20px 0;}
+.notice-box p{margin:0;color:#92400e;font-weight:500;}
 
-.navbar img{
-  height:34px;
-}
+.footer{background:#1e293b;color:rgba(255,255,255,0.7);padding:48px 6% 32px;margin-top:80px;}
+.footer-top{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.footer-brand p{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;margin-top:12px;}
+.footer-brand .address{font-size:13px;color:rgba(255,255,255,0.5);margin-top:12px;line-height:1.7;}
+.footer-col h4{color:#fff;font-size:14px;font-weight:700;margin-bottom:16px;text-transform:uppercase;letter-spacing:0.06em;}
+.footer-col a{display:block;color:rgba(255,255,255,0.6);text-decoration:none;font-size:14px;margin-bottom:10px;transition:color 0.3s;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{max-width:1200px;margin:24px auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;color:rgba(255,255,255,0.4);}
 
-.container{
-  max-width:900px;
-  margin:60px auto;
-  background:#fff;
-  padding:60px;
-  border-radius:20px;
-  border:1px solid var(--border);
-}
-
-h1{
-  font-size:42px;
-  margin-bottom:10px;
-}
-
-.updated{
-  color:var(--text-light);
-  font-size:14px;
-  margin-bottom:40px;
-}
-
-h2{
-  font-size:22px;
-  margin-top:40px;
-  margin-bottom:12px;
-}
-
-p, li{
-  font-size:16px;
-  color:var(--text-light);
-}
-
-ul{
-  margin-left:20px;
-  margin-top:10px;
-}
-
-.footer{
-  background:#1e293b;
-  color:rgba(255,255,255,0.7);
-  padding:30px 6%;
-  text-align:center;
-  margin-top:80px;
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .container{margin:40px 16px;padding:32px 20px;}
+  .footer-top{grid-template-columns:1fr;gap:28px;}
+  .footer-bottom{flex-direction:column;text-align:center;}
 }
 </style>
 </head>
-
 <body>
 
-<!-- NAV -->
 <nav class="navbar">
   <a href="/"><img src="/static/images/avtools.png" alt="AVTools"></a>
+  <div class="nav-links">
+    {% comment %} <a href="/#features">Features</a>
+    <a href="/#pricing">Pricing</a> {% endcomment %}
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    {% if user.is_authenticated %}
+      {% comment %} <a href="/dashboard">Dashboard</a> {% endcomment %}
+      {% comment %} <a href="/signout" class="btn btn-primary">Logout</a> {% endcomment %}
+    {% else %}
+      <a href="/signin">Login</a>
+      <a href="/signup" class="btn btn-primary">Get Started</a>
+    {% endif %}
+  </div>
 </nav>
 
-<!-- CONTENT -->
 <div class="container">
   <h1>Privacy Policy</h1>
-  <div class="updated">Last Updated: January 2026</div>
+  <div class="updated">Last Updated: May 2026</div>
 
-  <p>
-    Welcome to <strong>AVTools</strong>. Your privacy is important to us. This Privacy Policy explains how we collect,
-    use, and protect your information when you use our services, including our
-    <strong>AI Image Generator</strong> and <strong>Meesho Seller Label Cropper</strong>.
-  </p>
+  <div class="info-box">
+    <p>This Privacy Policy applies to <strong>AVTools</strong>, operated by <strong>Ajani Virajbhai Jentibhai</strong>.<br>
+    Registered Address: Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India.<br>
+    Contact: <strong>avtools.in@gmail.com</strong></p>
+  </div>
 
-  <h2>1. Information We Collect</h2>
+  <p>Welcome to <strong>AVTools</strong>. Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information when you use our services.</p>
+
+  <!-- ===================== SECTION 1 ===================== -->
+  <h2>1. Our Services</h2>
+  <p>AVTools provides the following <strong>digital-only services</strong> for Indian e-commerce and Meesho sellers. No physical goods are sold or shipped:</p>
+  <ul>
+    <li><strong>AI Image Generator</strong> — Generate optimised product images for Meesho listings (₹99 / ₹299 / ₹699 credit packs; 1 credit per image)</li>
+    <li><strong>Meesho Label Cropper</strong> — Automatically crop and format Meesho shipping labels for printing (1 credit per label set)</li>
+    <li><strong>Bulk Image Processing</strong> — Batch optimise, resize, and watermark product images (1 credit per image)</li>
+    <li><strong>Profit Calculator</strong> — Calculate actual margins after platform fees, shipping, GST, and returns (Free)</li>
+    <li><strong>Shipping Slab Optimizer</strong> — Recommend the most cost-effective weight slab to reduce shipping costs (Free)</li>
+  </ul>
+
+  <!-- ===================== SECTION 2 ===================== -->
+  <h2>2. Information We Collect</h2>
   <ul>
     <li>Images uploaded by users for image generation or label cropping</li>
     <li>Text prompts or inputs provided by users</li>
-    <li>Basic technical data such as IP address, browser type, and usage logs</li>
+    <li>Account information (name, email address) when you register</li>
+    <li>Payment information processed securely through PayU India (we do not store card details, CVV, UPI PINs, or net banking credentials)</li>
+    <li>Basic technical data such as IP address, browser type, device type, and usage logs</li>
   </ul>
 
-  <h2>2. Use of Uploaded Images</h2>
-  <p>
-    Uploaded images are used <strong>only for processing</strong> (image generation or label cropping).
-    We do <strong>not claim ownership</strong> of your images.
-  </p>
-  <p>
-    Images may be temporarily stored and automatically deleted after processing.
-    Do not upload sensitive, confidential, or illegal content.
-  </p>
+  <!-- ===================== SECTION 3 ===================== -->
+  <h2>3. Use of Uploaded Images</h2>
+  <p>Uploaded images are used <strong>only for processing</strong> (image generation or label cropping). We do <strong>not claim ownership</strong> of your images.</p>
+  <p>Images may be temporarily stored on secure servers and are automatically deleted after processing is complete. Do not upload sensitive, confidential, or illegal content.</p>
 
-  <h2>3. AI Image Generator Disclaimer</h2>
-  <p>
-    Generated images are created automatically using AI and may be inaccurate, distorted,
-    or unsuitable for commercial use. We make <strong>no guarantees</strong> regarding output quality or correctness.
-  </p>
+  <!-- ===================== SECTION 4 ===================== -->
+  <h2>4. How We Use Your Information</h2>
+  <ul>
+    <li>To provide and improve our digital services</li>
+    <li>To process payments and manage your credit balance via PayU India</li>
+    <li>To send service-related communications (e.g. payment receipts, support replies)</li>
+    <li>To detect and prevent fraud or misuse of the platform</li>
+    <li>To comply with legal obligations if required by Indian law or government authority</li>
+  </ul>
 
-  <h2>4. Price & Cost Disclaimer</h2>
-  <p>
-    Any prices, savings, or cost estimates shown on AVTools are
-    <strong>approximate only</strong>. They are not guaranteed or legally binding.
-  </p>
+  <!-- ===================== SECTION 5 ===================== -->
+  <h2>5. Shipping & Physical Data</h2>
+  <div class="notice-box">
+    <p>📦 AVTools does not sell, ship, or deliver any physical products. We do not collect postal addresses, phone numbers, or physical delivery details for the purpose of fulfilling orders. All services and outputs are delivered digitally.</p>
+  </div>
 
-  <h2>5. Data Security</h2>
-  <p>
-    We use reasonable security measures to protect data. However, no online platform is 100% secure,
-    and we cannot guarantee absolute protection.
-  </p>
+  <!-- ===================== SECTION 6 ===================== -->
+  <h2>6. AI Image Generator Disclaimer</h2>
+  <p>Generated images are created automatically using AI and may be inaccurate, distorted, or unsuitable for commercial use. We make <strong>no guarantees</strong> regarding output quality, correctness, or fitness for any particular purpose.</p>
 
-  <h2>6. Legal Disclosure</h2>
-  <p>
-    We may disclose information if required by law, court order, or government authority.
-  </p>
+  <!-- ===================== SECTION 7 ===================== -->
+  <h2>7. Price & Cost Disclaimer</h2>
+  <p>All prices are displayed in <strong>Indian Rupees (INR)</strong>. Current plans: Starter ₹99 (25 Credits, 30 Days), Growth ₹299 (100 Credits, 60 Days), Pro ₹699 (400 Credits, 90 Days). Any savings estimates or cost reduction figures shown on the platform are <strong>approximate only</strong> and are not guaranteed or legally binding.</p>
 
-  <h2>7. User Responsibility</h2>
-  <p>
-    By using AVTools, you confirm that you own or have legal rights to the content you upload.
-    You are solely responsible for any misuse.
-  </p>
+  <!-- ===================== SECTION 8 ===================== -->
+  <h2>8. Data Security</h2>
+  <p>We use reasonable technical and organisational security measures to protect your data. Payment transactions are handled exclusively by <strong>PayU India</strong>, a PCI-DSS Level 1 compliant and RBI-authorised payment aggregator. However, no online platform is 100% secure, and we cannot guarantee absolute protection against all threats.</p>
 
-  <h2>8. Changes to This Policy</h2>
-  <p>
-    We may update this Privacy Policy at any time. Continued use of AVTools means you accept the updated policy.
-  </p>
+  <!-- ===================== SECTION 9 ===================== -->
+  <h2>9. Third-Party Services</h2>
+  <p>We use <strong>PayU India</strong> for all payment processing. Their privacy policy governs how they handle your payment data. We do not sell, rent, or share your personal information with any third parties for marketing or commercial purposes.</p>
 
-  <h2>9. Contact Us</h2>
+  <!-- ===================== SECTION 10 ===================== -->
+  <h2>10. Legal Disclosure</h2>
+  <p>We may disclose information if required by law, court order, or a competent government authority in India.</p>
+
+  <!-- ===================== SECTION 11 ===================== -->
+  <h2>11. User Responsibility</h2>
+  <p>By using AVTools, you confirm that you own or have legal rights to the content you upload. You are solely responsible for ensuring your use of the platform complies with applicable laws and any misuse.</p>
+
+  <!-- ===================== SECTION 12 ===================== -->
+  <h2>12. Changes to This Policy</h2>
+  <p>We may update this Privacy Policy at any time without prior notice. Continued use of AVTools after any update means you accept the revised policy. The latest version is always available at <strong>avtools.in/privacy</strong>.</p>
+
+  <!-- ===================== SECTION 13 ===================== -->
+  <h2>13. Contact Us</h2>
   <p>
     For privacy-related questions:<br>
-    <strong>Email:</strong> avtools.in@gmail.com
-    <strong>Address:</strong> Gujarat, India
+    <strong>Operator:</strong> Ajani Virajbhai Jentibhai<br>
+    <strong>Email:</strong> avtools.in@gmail.com<br>
+    <strong>Address:</strong> Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India
   </p>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
-  © 2026 AVTools. All rights reserved.
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="/static/images/avtools.png" alt="AVTools" style="height:32px;filter:brightness(10);">
+      <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow your business faster.</p>
+      <div class="address">
+        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
+        Near Green Land Chokdi, Behind HP Petrol Pump,<br>
+        Rajkot, Gujarat – 360003, India<br><br>
+        Operated by: <strong style="color:rgba(255,255,255,0.7);">Ajani Virajbhai Jentibhai</strong><br>
+        📧 avtools.in@gmail.com
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="/">Home</a>
+      <a href="/#features">Features</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/about">About Us</a>
+      <a href="/contact">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/refund-policy">Refund & Cancellation Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
+    <div>Rajkot, Gujarat, India</div>
+  </div>
 </footer>
 
 </body>

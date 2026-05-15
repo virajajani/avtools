@@ -34,6 +34,7 @@ urlpatterns = [
     path('privacy/', views.privacy, name='privacy'),
     path('refund-policy/', views.refund_policy, name='refund_policy'),
     path("contact/", contact_support, name="contact"),
+    path("about/", views.about_us, name="about"),
 
     # ===============================
     # AUTH (FRONTEND ONLY)
