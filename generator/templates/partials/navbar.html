@@ -1,0 +1,350 @@
+{% load static %}
+
+<!-- ===== NAVBAR PARTIAL — include this in any template ===== -->
+
+<style>
+/* ── NAVBAR BASE ── */
+.navbar{
+  background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid #e2e8f0;
+  padding:14px 6%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  transition:box-shadow 0.3s ease;
+}
+.navbar.scrolled{
+  box-shadow:0 4px 20px rgba(0,0,0,0.07);
+}
+
+/* LOGO */
+.nav-logo{ display:flex; align-items:center; text-decoration:none; }
+.nav-logo img{ height:36px; }
+
+/* DESKTOP LINKS */
+.nav-links{
+  display:flex;
+  gap:26px;
+  align-items:center;
+}
+.nav-links a{
+  text-decoration:none;
+  color:#1e293b;
+  font-weight:500;
+  font-size:15px;
+  transition:color 0.25s;
+  position:relative;
+  white-space:nowrap;
+}
+.nav-links a:hover{ color:#3b82f6; }
+.nav-links a::after{
+  content:'';
+  position:absolute;
+  bottom:-4px; left:0;
+  width:0; height:2px;
+  background:#3b82f6;
+  transition:width 0.3s;
+}
+.nav-links a:hover::after{ width:100%; }
+
+/* CTA BUTTON */
+.nav-cta{
+  padding:10px 22px;
+  border-radius:10px;
+  font-weight:700;
+  font-size:14px;
+  text-decoration:none;
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+  color:#fff !important;
+  box-shadow:0 4px 14px rgba(59,130,246,0.3);
+  transition:all 0.3s;
+  white-space:nowrap;
+}
+.nav-cta:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(59,130,246,0.4);
+}
+.nav-cta::after{ display:none !important; }
+
+/* ── HAMBURGER BUTTON ── */
+.nav-hamburger{
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  width:40px;
+  height:40px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:4px;
+  border-radius:8px;
+  transition:background 0.2s;
+  z-index:1100;
+  flex-shrink:0;
+}
+.nav-hamburger:hover{ background:#f1f5f9; }
+.nav-hamburger span{
+  display:block;
+  width:24px;
+  height:2px;
+  background:#1e293b;
+  border-radius:2px;
+  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  transform-origin:center;
+}
+
+/* Hamburger → X animation */
+.nav-hamburger.open span:nth-child(1){
+  transform:translateY(7px) rotate(45deg);
+}
+.nav-hamburger.open span:nth-child(2){
+  opacity:0;
+  transform:scaleX(0);
+}
+.nav-hamburger.open span:nth-child(3){
+  transform:translateY(-7px) rotate(-45deg);
+}
+
+/* ── MOBILE OVERLAY DRAWER ── */
+.nav-drawer{
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  z-index:999;
+}
+
+/* Dark backdrop */
+.nav-drawer-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,0.45);
+  opacity:0;
+  transition:opacity 0.35s ease;
+  backdrop-filter:blur(2px);
+}
+
+/* Slide-in panel from top */
+.nav-drawer-panel{
+  position:absolute;
+  top:0; left:0; right:0;
+  background:#fff;
+  padding:0 6% 28px;
+  border-radius:0 0 24px 24px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.15);
+  transform:translateY(-100%);
+  transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+}
+
+.nav-drawer.open .nav-drawer-backdrop{ opacity:1; }
+.nav-drawer.open .nav-drawer-panel{ transform:translateY(0); }
+
+/* Panel header row */
+.nav-drawer-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0 20px;
+  border-bottom:1px solid #e2e8f0;
+  margin-bottom:8px;
+}
+.nav-drawer-header img{ height:34px; }
+
+/* Close button inside panel */
+.nav-drawer-close{
+  width:36px; height:36px;
+  border:none; background:#f1f5f9;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:20px;
+  display:flex; align-items:center; justify-content:center;
+  color:#64748b;
+  transition:background 0.2s;
+}
+.nav-drawer-close:hover{ background:#e2e8f0; }
+
+/* Mobile link list */
+.nav-drawer-links{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  margin-top:4px;
+}
+.nav-drawer-links a{
+  text-decoration:none;
+  color:#1e293b;
+  font-size:17px;
+  font-weight:500;
+  padding:14px 0;
+  border-bottom:1px solid #f1f5f9;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  transition:color 0.2s;
+}
+.nav-drawer-links a:hover{ color:#3b82f6; }
+.nav-drawer-links a:last-child{ border-bottom:none; }
+.nav-drawer-links a .arrow{ font-size:18px; color:#94a3b8; }
+
+/* Mobile CTA */
+.nav-drawer-cta{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:20px;
+  padding-top:20px;
+  border-top:1px solid #e2e8f0;
+}
+.nav-drawer-cta a{
+  padding:14px 24px;
+  border-radius:12px;
+  font-weight:700;
+  font-size:16px;
+  text-align:center;
+  text-decoration:none;
+  transition:all 0.3s;
+}
+.btn-drawer-primary{
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(59,130,246,0.3);
+}
+.btn-drawer-primary:hover{ transform:translateY(-2px); }
+.btn-drawer-secondary{
+  background:linear-gradient(135deg,#0f766e,#0369a1);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(15,118,110,0.3);
+}
+.btn-drawer-outline{
+  background:transparent;
+  color:#3b82f6;
+  border:2px solid #3b82f6;
+}
+
+/* ── RESPONSIVE BREAKPOINTS ── */
+@media(max-width:900px){
+  .nav-links{ display:none; }
+  .nav-hamburger{ display:flex; }
+  .nav-drawer{ display:block; }
+}
+
+@media(max-width:480px){
+  .navbar{ padding:12px 5%; }
+  .nav-logo img{ height:30px; }
+}
+</style>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="/" class="nav-logo">
+    <img src="{% static 'images/avtools.png' %}" alt="AVTools – Smart Tools for Meesho Sellers">
+  </a>
+
+  <!-- Desktop links -->
+  <div class="nav-links">
+    <a href="/#tools">Tools</a>
+    <a href="/#features">Features</a>
+    <a href="/#aim">Mission</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+    <a href="/signin">Log in</a>
+    <a href="/signup" class="nav-cta">Get Started</a>
+  </div>
+
+  <!-- Hamburger (mobile only) -->
+  <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</nav>
+
+<!-- MOBILE DRAWER -->
+<div class="nav-drawer" id="navDrawer" role="dialog" aria-label="Navigation menu">
+  <div class="nav-drawer-backdrop" id="navBackdrop"></div>
+  <div class="nav-drawer-panel">
+    <div class="nav-drawer-header">
+      <img src="{% static 'images/avtools.png' %}" alt="AVTools">
+      <button class="nav-drawer-close" id="navDrawerClose" aria-label="Close menu">✕</button>
+    </div>
+    <nav class="nav-drawer-links">
+      <a href="/#tools">Tools <span class="arrow">›</span></a>
+      <a href="/#features">Features <span class="arrow">›</span></a>
+      <a href="/#aim">Mission <span class="arrow">›</span></a>
+      <a href="/#pricing">Pricing <span class="arrow">›</span></a>
+      <a href="/about">About <span class="arrow">›</span></a>
+      <a href="/contact">Contact <span class="arrow">›</span></a>
+      <a href="/signin">Log in <span class="arrow">›</span></a>
+    </nav>
+    <div class="nav-drawer-cta">
+      <a href="{% url 'generator:meesho_image_generator' %}" class="btn-drawer-primary">🖼️ Try Image Generator</a>
+      <a href="/label-cropper/" class="btn-drawer-secondary">🏷️ Export Labels Free</a>
+      <a href="/signup" class="btn-drawer-outline">Get Started — Free</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const hamburger = document.getElementById('navHamburger');
+  const drawer    = document.getElementById('navDrawer');
+  const backdrop  = document.getElementById('navBackdrop');
+  const closeBtn  = document.getElementById('navDrawerClose');
+  const navbar    = document.getElementById('navbar');
+
+  function openDrawer(){
+    drawer.classList.add('open');
+    hamburger.classList.add('open');
+    hamburger.setAttribute('aria-expanded','true');
+    document.body.style.overflow='hidden';
+  }
+
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    hamburger.classList.remove('open');
+    hamburger.setAttribute('aria-expanded','false');
+    document.body.style.overflow='';
+  }
+
+  hamburger.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  backdrop.addEventListener('click', closeDrawer);
+
+  /* Close on link click */
+  drawer.querySelectorAll('a').forEach(function(link){
+    link.addEventListener('click', closeDrawer);
+  });
+
+  /* Close on Escape */
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape') closeDrawer();
+  });
+
+  /* Scrolled shadow */
+  window.addEventListener('scroll', function(){
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  }, {passive:true});
+
+  /* Smooth scroll for hash links */
+  document.querySelectorAll('a[href^="#"], a[href*="/#"]').forEach(function(anchor){
+    anchor.addEventListener('click', function(e){
+      const href = this.getAttribute('href');
+      const hash = href.includes('#') ? '#'+href.split('#')[1] : null;
+      if(hash){
+        const target = document.querySelector(hash);
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({behavior:'smooth', block:'start'});
+        }
+      }
+    });
+  });
+})();
+</script>

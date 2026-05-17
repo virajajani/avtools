@@ -14,7 +14,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.views.decorators.http import require_POST
 from django.contrib.auth import update_session_auth_hash
-
+import traceback
 
 
 #==============================
@@ -290,58 +290,217 @@ def label_cropper(request):
     return render(request, 'crop/label_cropper.html')
 
 
+# def process_labels(request):
+#     """Process uploaded PDF and automatically download cropped labels as PDF"""
+#     if request.method != 'POST':
+#         return JsonResponse({'error': 'Invalid method'}, status=400)
+    
+#     pdf_file = request.FILES.get('label_pdf')
+    
+#     if not pdf_file:
+#         return JsonResponse({'error': 'No PDF file uploaded'}, status=400)
+    
+#     # Validate file type
+#     if not pdf_file.name.lower().endswith('.pdf'):
+#         return JsonResponse({'error': 'Please upload a PDF file'}, status=400)
+    
+#     # Validate file size (max 50MB)
+#     if pdf_file.size > 50 * 1024 * 1024:
+#         return JsonResponse({'error': 'File too large. Max size is 50MB'}, status=400)
+    
+#     try:
+#         print(f"Processing PDF: {pdf_file.name}, Size: {pdf_file.size} bytes")
+        
+#         # Process the PDF - FIXED: removed use_simple_detection parameter
+#         output_pdf_bytes = crop_meesho_labels_to_pdf(pdf_file)
+        
+#         if not output_pdf_bytes:
+#             return JsonResponse({'error': 'Failed to generate PDF'}, status=400)
+        
+#         print(f"Generated PDF size: {len(output_pdf_bytes)} bytes")
+        
+#         # Generate clean filename with time only
+#         from datetime import datetime
+#         timestamp = datetime.now().strftime('%H%M%S')
+#         output_filename = f"avtools_crop_label_{timestamp}.pdf"
+        
+#         # Return PDF as automatic download with simple headers
+#         response = HttpResponse(output_pdf_bytes, content_type='application/pdf')
+#         response['Content-Disposition'] = f'attachment; filename={output_filename}'
+#         response['Content-Length'] = str(len(output_pdf_bytes))
+        
+#         print(f"Sending PDF: {output_filename}")
+#         return response
+    
+#     except ValueError as e:
+#         # Specific errors (like no labels found)
+#         print(f"ValueError: {str(e)}")
+#         return JsonResponse({'error': str(e)}, status=400)
+    
+#     except Exception as e:
+#         # Log the full error for debugging
+#         print(f"Error processing PDF: {str(e)}")
+#         print(traceback.format_exc())
+#         return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
+
+import traceback
+import base64
+from datetime import datetime
+
+from django.http import JsonResponse
+
+from .label_utils import crop_meesho_labels_to_pdf
+
+
 def process_labels(request):
-    """Process uploaded PDF and automatically download cropped labels as PDF"""
+    """
+    Process uploaded PDF and return:
+    - cropped sorted PDF
+    - product summary
+    - total labels
+    """
+
     if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid method'}, status=400)
-    
+        return JsonResponse({
+            'error': 'Invalid method'
+        }, status=400)
+
     pdf_file = request.FILES.get('label_pdf')
-    
+
     if not pdf_file:
-        return JsonResponse({'error': 'No PDF file uploaded'}, status=400)
-    
-    # Validate file type
+        return JsonResponse({
+            'error': 'No PDF file uploaded'
+        }, status=400)
+
+    # --------------------------------------------------
+    # Validate PDF extension
+    # --------------------------------------------------
     if not pdf_file.name.lower().endswith('.pdf'):
-        return JsonResponse({'error': 'Please upload a PDF file'}, status=400)
-    
-    # Validate file size (max 50MB)
+        return JsonResponse({
+            'error': 'Please upload a PDF file'
+        }, status=400)
+
+    # --------------------------------------------------
+    # Validate max file size
+    # --------------------------------------------------
     if pdf_file.size > 50 * 1024 * 1024:
-        return JsonResponse({'error': 'File too large. Max size is 50MB'}, status=400)
-    
+        return JsonResponse({
+            'error': 'File too large. Max size is 50MB'
+        }, status=400)
+
     try:
-        print(f"Processing PDF: {pdf_file.name}, Size: {pdf_file.size} bytes")
-        
-        # Process the PDF - FIXED: removed use_simple_detection parameter
-        output_pdf_bytes = crop_meesho_labels_to_pdf(pdf_file)
-        
+
+        print("\n" + "=" * 70)
+        print("📄 STARTING PDF PROCESS")
+        print("=" * 70)
+
+        print(
+            f"Processing PDF: "
+            f"{pdf_file.name}"
+        )
+
+        print(
+            f"PDF Size: "
+            f"{pdf_file.size} bytes"
+        )
+
+        # --------------------------------------------------
+        # Process PDF
+        # --------------------------------------------------
+        result = crop_meesho_labels_to_pdf(pdf_file)
+
+        output_pdf_bytes = result["pdf_bytes"]
+
+        product_summary = result["product_summary"]
+
+        total_labels = result["total_labels"]
+
+        # --------------------------------------------------
+        # Safety check
+        # --------------------------------------------------
         if not output_pdf_bytes:
-            return JsonResponse({'error': 'Failed to generate PDF'}, status=400)
-        
-        print(f"Generated PDF size: {len(output_pdf_bytes)} bytes")
-        
-        # Generate clean filename with time only
-        from datetime import datetime
+            return JsonResponse({
+                'error': 'Failed to generate PDF'
+            }, status=400)
+
+        print(
+            f"\n✅ Generated PDF Size: "
+            f"{len(output_pdf_bytes)} bytes"
+        )
+
+        # --------------------------------------------------
+        # Product summary logs
+        # --------------------------------------------------
+        print("\n📦 PRODUCT SUMMARY")
+
+        for product, qty in product_summary.items():
+
+            print(
+                f"   {product} = {qty} Labels"
+            )
+
+        print(
+            f"\n✅ TOTAL LABELS: "
+            f"{total_labels}"
+        )
+
+        # --------------------------------------------------
+        # Generate filename
+        # --------------------------------------------------
         timestamp = datetime.now().strftime('%H%M%S')
-        output_filename = f"avtools_crop_label_{timestamp}.pdf"
-        
-        # Return PDF as automatic download with simple headers
-        response = HttpResponse(output_pdf_bytes, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename={output_filename}'
-        response['Content-Length'] = str(len(output_pdf_bytes))
-        
-        print(f"Sending PDF: {output_filename}")
-        return response
-    
+
+        output_filename = (
+            f"avtools_crop_label_{timestamp}.pdf"
+        )
+
+        # --------------------------------------------------
+        # Convert PDF to base64
+        # --------------------------------------------------
+        pdf_base64 = base64.b64encode(
+            output_pdf_bytes
+        ).decode('utf-8')
+
+        print(
+            f"\n📥 Sending PDF: "
+            f"{output_filename}"
+        )
+
+        print("=" * 70)
+
+        # --------------------------------------------------
+        # FINAL RESPONSE
+        # --------------------------------------------------
+        return JsonResponse({
+
+            'success': True,
+
+            'filename': output_filename,
+
+            'pdf_base64': pdf_base64,
+
+            'total_labels': total_labels,
+
+            'product_summary': product_summary,
+
+        })
+
     except ValueError as e:
-        # Specific errors (like no labels found)
-        print(f"ValueError: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=400)
-    
+
+        print(f"\n❌ ValueError: {str(e)}")
+
+        return JsonResponse({
+            'error': str(e)
+        }, status=400)
+
     except Exception as e:
-        # Log the full error for debugging
-        print(f"Error processing PDF: {str(e)}")
+
+        print(f"\n❌ Error processing PDF: {str(e)}")
+
         print(traceback.format_exc())
-        return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
+
+        return JsonResponse({
+            'error': f'Error processing PDF: {str(e)}'
+        }, status=500)
     
 # ===============================
 # PROFILE / SECURITY ACTIONS

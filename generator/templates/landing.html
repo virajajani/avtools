@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVTools – Smart Tools for Meesho Sellers</title>
-<meta name="description" content="AVTools helps Meesho sellers reduce shipping charges, improve profit margins, and grow faster with data-driven tools.">
+<title>AVTools – Smart Tools for Meesho Sellers | Shipping Label & Image Generator</title>
+<meta name="description" content="AVTools helps Meesho sellers reduce shipping charges, generate product images, export shipping labels, improve profit margins, and grow faster with data-driven tools.">
+<meta name="keywords" content="Meesho seller tools, shipping label cropper, Meesho image generator, shipping slab optimizer, India e-commerce tools, Meesho profit calculator">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
@@ -28,58 +29,7 @@ body{
   overflow-x:hidden;
 }
 
-/* NAVBAR */
-.navbar{
-  background:rgba(255,255,255,0.95);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  padding:18px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:1000;
-  transition:all 0.3s ease;
-}
-
-.navbar.scrolled{
-  box-shadow:0 4px 20px rgba(0,0,0,0.06);
-}
-
-.logo{ display:flex; align-items:center; }
-.logo img{ height:36px; }
-
-.nav-links{
-  display:flex;
-  gap:28px;
-  align-items:center;
-}
-
-.nav-links a{
-  text-decoration:none;
-  color:var(--text);
-  font-weight:500;
-  font-size:15px;
-  transition:color 0.3s;
-  position:relative;
-}
-
-.nav-links a:hover{ color:var(--primary); }
-
-.nav-links a::after{
-  content:'';
-  position:absolute;
-  bottom:-4px;
-  left:0;
-  width:0;
-  height:2px;
-  background:var(--primary);
-  transition:width 0.3s;
-}
-
-.nav-links a:hover::after{ width:100%; }
-
+/* ─── BUTTONS ─── */
 .btn{
   padding:11px 24px;
   border-radius:10px;
@@ -89,46 +39,40 @@ body{
   font-size:14px;
   display:inline-block;
 }
-
 .btn-primary{
   background:linear-gradient(135deg,var(--primary),var(--primary-dark));
   color:#fff !important;
   box-shadow:0 4px 14px rgba(59,130,246,0.3);
 }
-
 .btn-primary:hover{
   transform:translateY(-2px);
   box-shadow:0 6px 20px rgba(59,130,246,0.4);
 }
-
 .btn-secondary{
   background:transparent;
   color:var(--primary);
   border:1px solid #fff;
 }
-
 .btn-secondary:hover{
   background:var(--primary);
   color:#fff;
   border:none;
 }
 
-/* HERO */
+/* ─── HERO ─── */
 .hero{
   background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
   position:relative;
   overflow:hidden;
   padding:140px 6% 120px;
 }
-
 .hero::before{
   content:'';
   position:absolute;
-  top:0; left:0; right:0; bottom:0;
+  top:0;left:0;right:0;bottom:0;
   background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   opacity:0.4;
 }
-
 .hero-content{
   max-width:1200px;
   margin:0 auto;
@@ -136,7 +80,6 @@ body{
   position:relative;
   z-index:1;
 }
-
 .hero h1{
   font-size:58px;
   font-weight:900;
@@ -145,14 +88,12 @@ body{
   margin-bottom:24px;
   animation:fadeInUp 0.8s ease;
 }
-
 .hero h1 span{
   background:linear-gradient(135deg,#fbbf24,#f59e0b);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
 }
-
 .hero p{
   font-size:20px;
   color:rgba(255,255,255,0.9);
@@ -161,7 +102,6 @@ body{
   line-height:1.6;
   animation:fadeInUp 0.8s ease 0.2s backwards;
 }
-
 .hero-actions{
   display:flex;
   gap:16px;
@@ -169,12 +109,10 @@ body{
   flex-wrap:wrap;
   animation:fadeInUp 0.8s ease 0.4s backwards;
 }
-
 .hero-actions .btn{
   padding:14px 32px;
   font-size:16px;
 }
-
 .stats{
   display:flex;
   gap:48px;
@@ -182,34 +120,29 @@ body{
   margin-top:80px;
   animation:fadeInUp 0.8s ease 0.6s backwards;
 }
-
 .stat-item{ text-align:center; }
-
 .stat-number{
   font-size:42px;
   font-weight:800;
   color:#fff;
   display:block;
 }
-
 .stat-label{
   font-size:14px;
   color:rgba(255,255,255,0.8);
   margin-top:8px;
 }
 
-/* FEATURES */
+/* ─── SECTION BASE ─── */
 .section{
   max-width:1200px;
   margin:100px auto;
   padding:0 6%;
 }
-
 .section-header{
   text-align:center;
   margin-bottom:60px;
 }
-
 .section-title{
   font-size:42px;
   font-weight:800;
@@ -219,7 +152,6 @@ body{
   -webkit-text-fill-color:transparent;
   background-clip:text;
 }
-
 .section-subtitle{
   font-size:18px;
   color:var(--text-light);
@@ -227,12 +159,222 @@ body{
   margin:0 auto;
 }
 
+/* ─── FEATURED TOOLS ─── */
+.featured-tools{
+  max-width:1200px;
+  margin:100px auto;
+  padding:0 6%;
+}
+.tool-showcase{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:32px;
+}
+.tool-card{
+  border-radius:24px;
+  overflow:hidden;
+  position:relative;
+  transition:all 0.4s ease;
+  box-shadow:0 10px 40px rgba(0,0,0,0.08);
+}
+.tool-card:hover{
+  transform:translateY(-10px);
+  box-shadow:0 30px 80px rgba(0,0,0,0.18);
+}
+.tool-card-img{
+  background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);
+  padding:48px 40px 40px;
+  position:relative;
+  overflow:hidden;
+  min-height:220px;
+  display:flex;
+  align-items:center;
+}
+.tool-card-img.label-bg{
+  background:linear-gradient(135deg,#0f766e 0%,#0369a1 100%);
+}
+.tool-card-img::before{
+  content:'';
+  position:absolute;
+  top:-40px;right:-40px;
+  width:200px;height:200px;
+  background:rgba(255,255,255,0.06);
+  border-radius:50%;
+}
+.tool-card-img::after{
+  content:'';
+  position:absolute;
+  bottom:-60px;right:60px;
+  width:140px;height:140px;
+  background:rgba(255,255,255,0.04);
+  border-radius:50%;
+}
+.tool-emoji-big{
+  font-size:80px;
+  position:absolute;
+  right:32px;bottom:20px;
+  opacity:0.25;
+}
+.tool-card-img-content{ position:relative;z-index:1; }
+.tool-badge{
+  display:inline-block;
+  background:rgba(255,255,255,0.2);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  padding:5px 14px;
+  border-radius:20px;
+  margin-bottom:16px;
+}
+.tool-card-img h3{
+  font-size:28px;
+  font-weight:800;
+  color:#fff;
+  margin-bottom:10px;
+  line-height:1.2;
+}
+.tool-card-img p{
+  font-size:15px;
+  color:rgba(255,255,255,0.85);
+  line-height:1.5;
+  max-width:280px;
+}
+.tool-card-body{
+  background:var(--bg);
+  padding:32px 40px;
+  border:1px solid var(--border);
+  border-top:none;
+}
+.tool-features-list{
+  list-style:none;
+  margin-bottom:28px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 16px;
+}
+.tool-features-list li{
+  font-size:14px;
+  color:var(--text-light);
+  padding-left:22px;
+  position:relative;
+  line-height:1.4;
+}
+.tool-features-list li::before{
+  content:'✓';
+  position:absolute;
+  left:0;
+  color:var(--primary);
+  font-weight:700;
+  font-size:13px;
+}
+.label-card .tool-features-list li::before{ color:#0f766e; }
+.tool-card-actions{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.btn-tool{
+  padding:13px 28px;
+  border-radius:10px;
+  font-weight:700;
+  text-decoration:none;
+  font-size:15px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  transition:all 0.3s;
+}
+.btn-tool-primary{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  box-shadow:0 4px 14px rgba(59,130,246,0.35);
+}
+.btn-tool-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(59,130,246,0.45);
+}
+.btn-tool-teal{
+  background:linear-gradient(135deg,#0f766e,#0369a1);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(15,118,110,0.35);
+}
+.btn-tool-teal:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(15,118,110,0.45);
+}
+.btn-tool-outline{
+  background:transparent;
+  color:var(--text-light);
+  border:1.5px solid var(--border);
+  font-size:14px;
+}
+.btn-tool-outline:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+}
+
+/* ─── HOW IT WORKS ─── */
+.how-it-works{
+  background:var(--bg);
+  padding:100px 6%;
+}
+.how-inner{ max-width:1200px; margin:0 auto; }
+.steps-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  margin-top:60px;
+  align-items:start;
+}
+.steps-col h3{
+  font-size:22px;
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:32px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.col-icon{
+  width:44px;height:44px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.col-icon-blue{ background:linear-gradient(135deg,#3b82f6,#8b5cf6); }
+.col-icon-teal{ background:linear-gradient(135deg,#0f766e,#0369a1); }
+.step-item{
+  display:flex;
+  gap:16px;
+  margin-bottom:28px;
+  align-items:flex-start;
+}
+.step-num{
+  width:32px;height:32px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;
+  flex-shrink:0;margin-top:2px;
+}
+.step-num-blue{ background:#eff6ff; color:#2563eb; }
+.step-num-teal{ background:#f0fdfa; color:#0f766e; }
+.step-text h4{
+  font-size:16px;font-weight:700;
+  color:var(--text);margin-bottom:5px;
+}
+.step-text p{
+  font-size:14px;color:var(--text-light);line-height:1.5;
+}
+
+/* ─── FEATURES ─── */
 .features-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
   gap:32px;
 }
-
 .feature-card{
   background:var(--bg);
   padding:36px;
@@ -243,86 +385,61 @@ body{
   position:relative;
   overflow:hidden;
 }
-
 .feature-card::before{
   content:'';
   position:absolute;
-  top:0; left:0; right:0;
+  top:0;left:0;right:0;
   height:4px;
   background:linear-gradient(90deg,var(--primary),var(--accent));
   transform:scaleX(0);
   transition:transform 0.3s ease;
 }
-
 .feature-card:hover{
   transform:translateY(-8px);
   box-shadow:0 20px 60px rgba(0,0,0,0.12);
 }
-
 .feature-card:hover::before{ transform:scaleX(1); }
-
 .feature-icon{
-  width:56px;
-  height:56px;
+  width:56px;height:56px;
   background:linear-gradient(135deg,var(--primary),var(--accent));
   border-radius:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:28px;
-  margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin-bottom:20px;
 }
-
 .feature-card h3{
-  font-size:22px;
-  font-weight:700;
-  margin-bottom:12px;
-  color:var(--text);
+  font-size:22px;font-weight:700;
+  margin-bottom:12px;color:var(--text);
 }
-
 .feature-card p{
-  font-size:15px;
-  color:var(--text-light);
-  line-height:1.6;
+  font-size:15px;color:var(--text-light);line-height:1.6;
 }
 
-/* AIM SECTION */
+/* ─── AIM ─── */
 .aim-section{
   background:var(--bg);
   padding:80px 6%;
-  margin:100px 0;
 }
-
 .aim-content{
   max-width:900px;
   margin:0 auto;
   text-align:center;
 }
-
 .aim-content h2{
-  font-size:42px;
-  font-weight:800;
-  margin-bottom:24px;
+  font-size:42px;font-weight:800;margin-bottom:24px;
   background:linear-gradient(135deg,var(--text),var(--primary));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-
 .aim-content p{
-  font-size:19px;
-  color:var(--text-light);
-  line-height:1.8;
+  font-size:19px;color:var(--text-light);line-height:1.8;
 }
 
-/* PRICING */
+/* ─── PRICING ─── */
 .pricing-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
   gap:32px;
   margin-top:60px;
 }
-
 .price-card{
   background:var(--bg);
   border-radius:24px;
@@ -332,238 +449,171 @@ body{
   transition:all 0.3s ease;
   position:relative;
 }
-
 .price-card.popular{
   border-color:var(--primary);
   transform:scale(1.05);
   box-shadow:0 20px 60px rgba(59,130,246,0.2);
 }
-
 .popular-badge{
   position:absolute;
-  top:-12px;
-  left:50%;
+  top:-12px;left:50%;
   transform:translateX(-50%);
   background:linear-gradient(135deg,var(--primary),var(--accent));
   color:#fff;
   padding:6px 20px;
   border-radius:20px;
-  font-size:12px;
-  font-weight:700;
-  text-transform:uppercase;
+  font-size:12px;font-weight:700;text-transform:uppercase;
 }
-
 .price-card:hover{
   transform:translateY(-8px);
   box-shadow:0 20px 60px rgba(0,0,0,0.12);
 }
-
-.price-card h3{
-  font-size:24px;
-  font-weight:700;
-  margin-bottom:16px;
-}
-
-.price{
-  font-size:48px;
-  font-weight:900;
-  color:var(--primary);
-  margin:20px 0;
-}
-
-.price-card ul{
-  list-style:none;
-  margin:28px 0;
-  text-align:left;
-}
-
+.price-card h3{ font-size:24px;font-weight:700;margin-bottom:16px; }
+.price{ font-size:48px;font-weight:900;color:var(--primary);margin:20px 0; }
+.price-card ul{ list-style:none;margin:28px 0;text-align:left; }
 .price-card li{
-  font-size:15px;
-  color:var(--text-light);
-  margin-bottom:14px;
-  padding-left:28px;
-  position:relative;
+  font-size:15px;color:var(--text-light);
+  margin-bottom:14px;padding-left:28px;position:relative;
 }
-
 .price-card li::before{
-  content:'✓';
-  position:absolute;
-  left:0;
-  color:var(--primary);
-  font-weight:700;
+  content:'✓';position:absolute;left:0;
+  color:var(--primary);font-weight:700;
 }
 
-/* CTA */
+/* ─── CTA ─── */
 .cta-section{
   background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
   padding:80px 6%;
-  margin:100px 0;
   text-align:center;
   position:relative;
   overflow:hidden;
 }
-
 .cta-section::before{
   content:'';
-  position:absolute;
-  top:0; left:0; right:0; bottom:0;
+  position:absolute;inset:0;
   background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
-
 .cta-content{
-  max-width:700px;
-  margin:0 auto;
-  position:relative;
-  z-index:1;
+  max-width:700px;margin:0 auto;
+  position:relative;z-index:1;
 }
-
 .cta-content h2{
-  font-size:42px;
-  font-weight:900;
-  color:#fff;
-  margin-bottom:20px;
+  font-size:42px;font-weight:900;color:#fff;margin-bottom:20px;
 }
-
 .cta-content p{
-  font-size:19px;
-  color:rgba(255,255,255,0.9);
-  margin-bottom:36px;
+  font-size:19px;color:rgba(255,255,255,0.9);margin-bottom:36px;
 }
-
 .cta-content .btn{
-  background:#fff;
-  color:var(--primary);
-  padding:16px 40px;
-  font-size:17px;
-  font-weight:700;
+  background:#fff;color:var(--primary);
+  padding:16px 40px;font-size:17px;font-weight:700;
 }
-
 .cta-content .btn:hover{
   transform:translateY(-4px);
   box-shadow:0 10px 30px rgba(255,255,255,0.3);
 }
 
-/* FOOTER */
+/* ─── FOOTER ─── */
 .footer{
   background:var(--text);
   color:rgba(255,255,255,0.7);
   padding:56px 6% 32px;
 }
-
 .footer-top{
-  max-width:1200px;
-  margin:0 auto;
+  max-width:1200px;margin:0 auto;
   display:grid;
   grid-template-columns:2.2fr 1fr 1fr 1fr;
   gap:48px;
   padding-bottom:40px;
   border-bottom:1px solid rgba(255,255,255,0.1);
 }
-
 .footer-brand p{
-  font-size:14px;
-  color:rgba(255,255,255,0.6);
-  line-height:1.7;
-  margin-top:14px;
-  max-width:280px;
+  font-size:14px;color:rgba(255,255,255,0.6);
+  line-height:1.7;margin-top:14px;max-width:280px;
 }
-
 .footer-brand .address{
-  font-size:13px;
-  color:rgba(255,255,255,0.5);
-  margin-top:16px;
-  line-height:1.8;
+  font-size:13px;color:rgba(255,255,255,0.5);
+  margin-top:16px;line-height:1.8;
 }
-
 .footer-col h4{
-  color:#fff;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:18px;
-  text-transform:uppercase;
-  letter-spacing:0.07em;
+  color:#fff;font-size:13px;font-weight:700;
+  margin-bottom:18px;text-transform:uppercase;letter-spacing:0.07em;
 }
-
 .footer-col a{
-  display:block;
-  color:rgba(255,255,255,0.6);
-  text-decoration:none;
-  font-size:14px;
-  margin-bottom:11px;
-  transition:color 0.3s;
+  display:block;color:rgba(255,255,255,0.6);
+  text-decoration:none;font-size:14px;
+  margin-bottom:11px;transition:color 0.3s;
 }
-
 .footer-col a:hover{ color:#fff; }
-
 .footer-bottom{
-  max-width:1200px;
-  margin:28px auto 0;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-  font-size:13px;
-  color:rgba(255,255,255,0.4);
+  max-width:1200px;margin:28px auto 0;
+  display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;
+  gap:12px;font-size:13px;color:rgba(255,255,255,0.4);
 }
 
-/* ANIMATIONS */
+/* ─── ANIMATIONS ─── */
 @keyframes fadeInUp{
-  from{ opacity:0; transform:translateY(30px); }
-  to{ opacity:1; transform:translateY(0); }
+  from{ opacity:0;transform:translateY(30px); }
+  to{ opacity:1;transform:translateY(0); }
 }
 
-/* RESPONSIVE */
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){
+  .tool-showcase{ grid-template-columns:1fr; }
+  .steps-grid{ grid-template-columns:1fr;gap:48px; }
+}
 @media(max-width:768px){
-  .navbar{ padding:16px 5%; }
-  .nav-links{ gap:12px; flex-wrap:wrap; }
-
-  .hero{ padding:100px 5% 80px; }
+  .hero{ padding:80px 5% 60px; }
   .hero h1{ font-size:36px; }
   .hero p{ font-size:17px; }
-  .stats{ flex-direction:column; gap:32px; }
+  .stats{ flex-direction:column;gap:32px; }
 
-  .section-title{ font-size:32px; }
+  .section-title{ font-size:30px; }
+  .section{ margin:60px auto; }
+
+  .featured-tools{ margin:60px auto; }
+  .tool-card-body{ padding:24px; }
+  .tool-features-list{ grid-template-columns:1fr; }
+
+  .how-it-works{ padding:60px 5%; }
+
   .features-grid{ grid-template-columns:1fr; }
   .pricing-grid{ grid-template-columns:1fr; }
   .price-card.popular{ transform:scale(1); }
 
-  .footer-top{ grid-template-columns:1fr 1fr; gap:32px; }
-  .footer-bottom{ flex-direction:column; text-align:center; }
-}
+  .aim-content h2{ font-size:30px; }
+  .cta-content h2{ font-size:30px; }
 
+  .footer-top{ grid-template-columns:1fr 1fr;gap:32px; }
+  .footer-bottom{ flex-direction:column;text-align:center; }
+}
 @media(max-width:480px){
+  .hero h1{ font-size:28px; }
+  .hero p{ font-size:16px; }
+  .hero-actions .btn{ width:100%;text-align:center; }
+  .tool-card-img h3{ font-size:22px; }
+  .tool-card-img{ padding:36px 24px 36px; }
+  .tool-card-body{ padding:20px; }
+  .btn-tool{ width:100%;justify-content:center; }
+  .tool-card-actions{ flex-direction:column; }
   .footer-top{ grid-template-columns:1fr; }
 }
 </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar" id="navbar">
-  <div class="logo">
-    <img src="/static/images/avtools.png" alt="AVTools">
-  </div>
-  <div class="nav-links">
-    <a href="#features">Features</a>
-    <a href="#aim">Mission</a>
-    <a href="#pricing">Pricing</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
-    <a href="/signin">Log in</a>
-    <a class="btn btn-primary" href="/signup">Get Started</a>
-  </div>
-</nav>
+<!-- ═══ NAVBAR (separate partial) ═══ -->
+{% include 'partials/navbar.html' %}
 
-<!-- HERO -->
+<!-- ═══ HERO ═══ -->
 <section class="hero">
   <div class="hero-content">
     <h1>Smart Tools for <span>Meesho Sellers</span></h1>
-    <p>Reduce shipping costs, maximize profits, and make data-driven decisions. Built specifically for Indian e-commerce sellers who want to scale without guessing.</p>
+    <p>Reduce shipping costs, generate product images, export shipping labels, and make data-driven decisions. Built specifically for Indian e-commerce sellers who want to scale without guessing.</p>
     <div class="hero-actions">
-      <a class="btn btn-primary" href="{% url 'generator:meesho_image_generator' %}">Try Image Generator</a>
-      <a class="btn btn-secondary" href="#features" style="color:white;">Explore Features</a>
-      <a class="btn btn-primary" href="{% url 'generator:label_cropper' %}">Label Cropper</a>
+      <a class="btn btn-primary" href="{% url 'generator:meesho_image_generator' %}">🖼️ Try Image Generator</a>
+      <a class="btn btn-secondary" href="#tools" style="color:white;border:2px solid rgba(255,255,255,0.4);">Explore Tools</a>
+      <a class="btn btn-primary" href="/label-cropper/" style="background:linear-gradient(135deg,#0f766e,#0369a1);box-shadow:0 4px 14px rgba(15,118,110,0.4);">🏷️ Export Labels</a>
     </div>
     <div class="stats">
       <div class="stat-item">
@@ -582,47 +632,192 @@ body{
   </div>
 </section>
 
-<!-- FEATURES -->
+<!-- ═══ FEATURED TOOLS ═══ -->
+<section id="tools" class="featured-tools">
+  <div class="section-header">
+    <h2 class="section-title">Our Most Powerful Tools</h2>
+    <p class="section-subtitle">Two game-changing tools that every Meesho seller needs to save time, cut costs, and ship faster.</p>
+  </div>
+
+  <div class="tool-showcase">
+
+    <!-- IMAGE GENERATOR -->
+    <div class="tool-card">
+      <div class="tool-card-img">
+        <div class="tool-card-img-content">
+          <span class="tool-badge">AI-Powered</span>
+          <h3>Meesho Product<br>Image Generator</h3>
+          <p>Optimize product images for lower Meesho shipping slabs and reduce costs without affecting listing quality.</p>
+        </div>
+        <div class="tool-emoji-big">🖼️</div>
+      </div>
+      <div class="tool-card-body">
+        <ul class="tool-features-list">
+          <li>AI-powered image optimization</li>
+          <li>Shipping slab reduction</li>
+          <li>Bulk image processing</li>
+          <li>No quality loss on listings</li>
+          <li>Meesho-ready file size</li>
+          <li>Instant download</li>
+          <li>Works on mobile &amp; desktop</li>
+          <li>Save on every order shipped</li>
+        </ul>
+        <div class="tool-card-actions">
+          <a href="{% url 'generator:meesho_image_generator' %}" class="btn-tool btn-tool-primary">🖼️ Generate Images</a>
+          <a href="#features" class="btn-tool btn-tool-outline">Learn more</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- LABEL EXPORT -->
+    <div class="tool-card label-card">
+      <div class="tool-card-img label-bg">
+        <div class="tool-card-img-content">
+          <span class="tool-badge">Free &amp; No Login Required</span>
+          <h3>Shipping Label<br>Export Tool</h3>
+          <p>Upload Meesho invoice PDFs and instantly export sorted, organized shipping labels ready for dispatch.</p>
+        </div>
+        <div class="tool-emoji-big">🏷️</div>
+      </div>
+      <div class="tool-card-body">
+        <ul class="tool-features-list">
+          <li>Upload Meesho invoice PDFs</li>
+          <li>Bulk label extraction in seconds</li>
+          <li>Automatic courier-wise sorting</li>
+          <li>Product-wise organization</li>
+          <li>Quantity-wise grouping</li>
+          <li>Smart packing summary</li>
+          <li>Thermal printer ready 4x6</li>
+          <li>Instant PDF auto download</li>
+        </ul>
+        <div class="tool-card-actions">
+          <a href="/label-cropper/" class="btn-tool btn-tool-teal">🏷️ Export Labels</a>
+          <a href="#features" class="btn-tool btn-tool-outline">Learn more</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="how-it-works" id="how-it-works">
+  <div class="how-inner">
+    <div class="section-header">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">Simple steps to start saving time and money on every Meesho order you dispatch.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="steps-col">
+        <h3><div class="col-icon col-icon-blue">🖼️</div>Image Generator</h3>
+        <div class="step-item">
+          <div class="step-num step-num-blue">1</div>
+          <div class="step-text">
+            <h4>Upload your product images</h4>
+            <p>Drag and drop one or multiple product photos — JPG, PNG, or WebP formats supported.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-num-blue">2</div>
+          <div class="step-text">
+            <h4>AI optimizes for lower slab</h4>
+            <p>Our algorithm compresses and resizes to reduce the Meesho shipping weight slab without visible quality loss.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-num-blue">3</div>
+          <div class="step-text">
+            <h4>Download and upload to Meesho</h4>
+            <p>Get your optimized images instantly and upload them directly to your Meesho listings.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-num-blue">4</div>
+          <div class="step-text">
+            <h4>Save on every shipment</h4>
+            <p>Each order ships at a lower slab — savings that add up to lakhs across thousands of orders.</p>
+          </div>
+        </div>
+        <a href="{% url 'generator:meesho_image_generator' %}" class="btn btn-primary" style="margin-top:8px;display:inline-block;">Start Generating →</a>
+      </div>
+
+      <div class="steps-col">
+        <h3><div class="col-icon col-icon-teal">🏷️</div>Shipping Label Export</h3>
+        <div class="step-item">
+          <div class="step-num step-num-teal">1</div>
+          <div class="step-text">
+            <h4>Upload your Meesho invoice PDFs</h4>
+            <p>Select one or multiple Meesho invoice PDF files — no login or account needed.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-num-teal">2</div>
+          <div class="step-text">
+            <h4>Auto extraction and sorting</h4>
+            <p>Labels are extracted in seconds and automatically sorted courier-wise, product-wise, and quantity-wise.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-num-teal">3</div>
+          <div class="step-text">
+            <h4>Review packing summary</h4>
+            <p>Get a smart packing summary so your team can pack faster with zero errors.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num step-num-teal">4</div>
+          <div class="step-text">
+            <h4>Print thermal-ready labels</h4>
+            <p>PDF auto-downloads in perfect 4x6 thermal printer format — no adjustments needed.</p>
+          </div>
+        </div>
+        <a href="/label-cropper/" class="btn btn-primary" style="margin-top:8px;display:inline-block;background:linear-gradient(135deg,#0f766e,#0369a1);box-shadow:0 4px 14px rgba(15,118,110,0.35);">Export Labels Free →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
 <section id="features" class="section">
   <div class="section-header">
     <h2 class="section-title">Everything You Need to Succeed</h2>
-    <p class="section-subtitle">Purpose-built tools designed after analyzing real challenges faced by Meesho sellers.</p>
+    <p class="section-subtitle">Smart tools built specifically for Meesho sellers to reduce shipping costs, automate dispatch work, and improve profitability.</p>
   </div>
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">📦</div>
       <h3>Shipping Slab Optimizer</h3>
-      <p>Generate product images optimized for specific weight slabs. Reduce shipping charges by up to 40% with intelligent image sizing.</p>
+      <p>Optimize product images for lower Meesho shipping slabs and reduce shipping costs without affecting listing quality.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏷️</div>
+      <h3>Smart Label Cropper</h3>
+      <p>Automatically crop, sort, and organize shipping labels courier-wise, product-wise, and quantity-wise for faster packing.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">💰</div>
       <h3>Real Profit Calculator</h3>
-      <p>See your actual profit after shipping, returns, GST, and platform fees. No more surprises at the end of the month.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🎯</div>
-      <h3>Smart Product Analysis</h3>
-      <p>Make informed listing decisions with data on competition, pricing sweet spots, and demand trends specific to Meesho.</p>
+      <p>Calculate your real profit after shipping charges, returns, GST, marketplace fees, and hidden costs.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">⚡</div>
-      <h3>Bulk Image Processing</h3>
-      <p>Process hundreds of product images at once. Save hours of manual work with batch optimization and watermarking.</p>
+      <h3>Bulk Processing</h3>
+      <p>Process hundreds of product images and shipping labels in seconds with high-speed bulk automation tools.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <h3>Performance Dashboard</h3>
-      <p>Track your growth, monitor key metrics, and identify opportunities. Your business intelligence at a glance.</p>
+      <div class="feature-icon">🖨️</div>
+      <h3>Thermal Printer Ready</h3>
+      <p>Generate perfectly optimized 4x6 thermal labels ready for instant printing without manual adjustments.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🔒</div>
-      <h3>Seller-First Approach</h3>
-      <p>Built by sellers, for sellers. No generic tools—everything is tailored for the Meesho ecosystem and Indian market.</p>
+      <h3>Built for Indian Sellers</h3>
+      <p>Designed specifically for Meesho and Indian marketplace sellers with seller-focused automation and workflow tools.</p>
     </div>
   </div>
 </section>
 
-<!-- AIM -->
+<!-- ═══ MISSION ═══ -->
 <section id="aim" class="aim-section">
   <div class="aim-content">
     <h2>Our Mission</h2>
@@ -630,7 +825,7 @@ body{
   </div>
 </section>
 
-<!-- PRICING -->
+<!-- ═══ PRICING ═══ -->
 <section id="pricing" class="section">
   <div class="section-header">
     <h2 class="section-title">Simple, Transparent Pricing</h2>
@@ -648,7 +843,6 @@ body{
       </ul>
       <a href="/signup" class="btn btn-secondary" style="color:var(--primary);border:2px solid var(--primary);width:100%;text-align:center;">Get Started</a>
     </div>
-
     <div class="price-card popular">
       <span class="popular-badge">Most Popular</span>
       <h3>Growth</h3>
@@ -662,7 +856,6 @@ body{
       </ul>
       <a href="/signup" class="btn btn-primary" style="width:100%;text-align:center;">Get Started</a>
     </div>
-
     <div class="price-card">
       <h3>Pro</h3>
       <div class="price">₹699</div>
@@ -678,7 +871,7 @@ body{
   </div>
 </section>
 
-<!-- CTA -->
+<!-- ═══ CTA ═══ -->
 <section class="cta-section">
   <div class="cta-content">
     <h2>Ready to Scale Your Business?</h2>
@@ -687,7 +880,7 @@ body{
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ═══ FOOTER ═══ -->
 <footer class="footer">
   <div class="footer-top">
     <div class="footer-brand">
@@ -706,7 +899,7 @@ body{
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
       <a href="{% url 'generator:meesho_image_generator' %}">Image Generator</a>
-      <a href="{% url 'generator:label_cropper' %}">Label Cropper</a>
+      <a href="/label-cropper/">Label Export</a>
     </div>
     <div class="footer-col">
       <h4>Company</h4>
@@ -719,7 +912,7 @@ body{
       <h4>Legal</h4>
       <a href="/privacy">Privacy Policy</a>
       <a href="/terms">Terms of Service</a>
-      <a href="/refund-policy">Refund & Cancellation Policy</a>
+      <a href="/refund-policy">Refund &amp; Cancellation Policy</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -727,27 +920,6 @@ body{
     <div>Rajkot, Gujarat, India</div>
   </div>
 </footer>
-
-<script>
-window.addEventListener('scroll', () => {
-  const navbar = document.getElementById('navbar');
-  if (window.scrollY > 50) {
-    navbar.classList.add('scrolled');
-  } else {
-    navbar.classList.remove('scrolled');
-  }
-});
-
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function (e) {
-    e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      target.scrollIntoView({ behavior:'smooth', block:'start' });
-    }
-  });
-});
-</script>
 
 </body>
 </html>

@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact Support – AVTools</title>
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
@@ -22,53 +21,6 @@
 body{
   font-family:'Inter',system-ui,sans-serif;
   background:var(--bg-gray);
-}
-
-/* NAVBAR */
-.navbar{
-  background:rgba(255,255,255,0.95);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  padding:18px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:1000;
-}
-
-.logo img{ height:36px; }
-
-.nav-links{
-  display:flex;
-  gap:28px;
-  align-items:center;
-}
-
-.nav-links a{
-  text-decoration:none;
-  color:var(--text);
-  font-weight:500;
-  font-size:15px;
-  transition:color 0.3s;
-}
-
-.nav-links a:hover{ color:var(--primary); }
-
-.btn{
-  padding:10px 22px;
-  border-radius:10px;
-  font-weight:600;
-  text-decoration:none;
-  font-size:14px;
-  display:inline-block;
-}
-
-.btn-primary{
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff !important;
-  box-shadow:0 4px 14px rgba(59,130,246,0.3);
 }
 
 /* PAGE LAYOUT */
@@ -217,7 +169,6 @@ textarea{
   color:rgba(255,255,255,0.7);
   padding:56px 6% 32px;
 }
-
 .footer-top{
   max-width:1200px;
   margin:0 auto;
@@ -227,93 +178,33 @@ textarea{
   padding-bottom:40px;
   border-bottom:1px solid rgba(255,255,255,0.1);
 }
-
-.footer-brand p{
-  font-size:14px;
-  color:rgba(255,255,255,0.6);
-  line-height:1.7;
-  margin-top:14px;
-  max-width:280px;
-}
-
-.footer-brand .address{
-  font-size:13px;
-  color:rgba(255,255,255,0.5);
-  margin-top:16px;
-  line-height:1.8;
-}
-
-.footer-col h4{
-  color:#fff;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:18px;
-  text-transform:uppercase;
-  letter-spacing:0.07em;
-}
-
-.footer-col a{
-  display:block;
-  color:rgba(255,255,255,0.6);
-  text-decoration:none;
-  font-size:14px;
-  margin-bottom:11px;
-  transition:color 0.3s;
-}
-
-.footer-col a:hover{ color:#fff; }
-
-.footer-bottom{
-  max-width:1200px;
-  margin:28px auto 0;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-  font-size:13px;
-  color:rgba(255,255,255,0.4);
-}
+.footer-brand p{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;margin-top:14px;max-width:280px;}
+.footer-brand .address{font-size:13px;color:rgba(255,255,255,0.5);margin-top:16px;line-height:1.8;}
+.footer-col h4{color:#fff;font-size:13px;font-weight:700;margin-bottom:18px;text-transform:uppercase;letter-spacing:0.07em;}
+.footer-col a{display:block;color:rgba(255,255,255,0.6);text-decoration:none;font-size:14px;margin-bottom:11px;transition:color 0.3s;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{max-width:1200px;margin:28px auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:13px;color:rgba(255,255,255,0.4);}
 
 /* RESPONSIVE */
 @media(max-width:900px){
-  .page-wrapper{
-    grid-template-columns:1fr;
-  }
-  .info-sidebar{
-    grid-row:1;
-  }
+  .page-wrapper{ grid-template-columns:1fr; }
 }
-
 @media(max-width:768px){
-  .nav-links{ display:none; }
+  .page-wrapper{ margin:48px auto 60px; }
   .form-card{ padding:32px 22px; }
   .footer-top{ grid-template-columns:1fr 1fr; gap:28px; }
   .footer-bottom{ flex-direction:column; text-align:center; }
 }
-
 @media(max-width:480px){
   .footer-top{ grid-template-columns:1fr; }
+  .form-card h1{ font-size:26px; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="logo">
-    <a href="/"><img src="{% static 'images/avtools.png' %}" alt="AVTools"></a>
-  </div>
-  <div class="nav-links">
-    <a href="/#features">Features</a>
-    <a href="/#pricing">Pricing</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
-    <a href="/signin">Login</a>
-    <a href="/signup" class="btn btn-primary">Get Started</a>
-  </div>
-</nav>
+{% include 'partials/navbar.html' %}
 
 <!-- CONTACT PAGE -->
 <div class="page-wrapper">
@@ -392,7 +283,7 @@ textarea{
     <div class="info-card">
       <h3>🔗 Quick Links</h3>
       <p>
-        <a href="/refund-policy">Refund & Cancellation Policy</a><br>
+        <a href="/refund-policy">Refund &amp; Cancellation Policy</a><br>
         <a href="/terms">Terms of Service</a><br>
         <a href="/privacy">Privacy Policy</a><br>
         <a href="/about">About AVTools</a>
@@ -420,8 +311,8 @@ textarea{
       <h4>Product</h4>
       <a href="/#features">Features</a>
       <a href="/#pricing">Pricing</a>
-      <a href="/image-generator">Image Generator</a>
-      <a href="/label-cropper">Label Cropper</a>
+      <a href="{% url 'generator:meesho_image_generator' %}">Image Generator</a>
+      <a href="/label-cropper/">Label Export</a>
     </div>
     <div class="footer-col">
       <h4>Company</h4>
@@ -434,7 +325,7 @@ textarea{
       <h4>Legal</h4>
       <a href="/privacy">Privacy Policy</a>
       <a href="/terms">Terms of Service</a>
-      <a href="/refund-policy">Refund & Cancellation Policy</a>
+      <a href="/refund-policy">Refund &amp; Cancellation Policy</a>
     </div>
   </div>
   <div class="footer-bottom">

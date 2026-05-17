@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,15 +14,6 @@
   --bg:#ffffff;--bg-gray:#f8fafc;--border:#e2e8f0;
 }
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-gray);color:var(--text);line-height:1.7;}
-
-/* NAV */
-.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1000;}
-.logo img{height:36px;}
-.nav-links{display:flex;gap:28px;align-items:center;}
-.nav-links a{text-decoration:none;color:var(--text);font-weight:500;font-size:15px;transition:color 0.3s;}
-.nav-links a:hover{color:var(--primary);}
-.btn{padding:11px 24px;border-radius:10px;font-weight:600;text-decoration:none;transition:all 0.3s;font-size:14px;display:inline-block;}
-.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff !important;box-shadow:0 4px 14px rgba(59,130,246,0.3);}
 
 /* HERO */
 .hero{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:100px 6% 80px;text-align:center;position:relative;overflow:hidden;}
@@ -66,30 +58,21 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
 
 @media(max-width:768px){
   .hero h1{font-size:34px;}
+  .hero{padding:70px 5% 60px;}
   .card{padding:30px 24px;}
   .info-grid{grid-template-columns:1fr;}
-  .nav-links{gap:14px;flex-wrap:wrap;}
   .footer-top{grid-template-columns:1fr 1fr;gap:28px;}
   .footer-bottom{flex-direction:column;text-align:center;}
 }
-@media(max-width:480px){.footer-top{grid-template-columns:1fr;}}
+@media(max-width:480px){
+  .footer-top{grid-template-columns:1fr;}
+  .hero h1{font-size:28px;}
+}
 </style>
 </head>
 <body>
 
-<nav class="navbar">
-  <div class="logo">
-    <a href="/"><img src="/static/images/avtools.png" alt="AVTools"></a>
-  </div>
-  <div class="nav-links">
-    <a href="/#features">Features</a>
-    <a href="/#pricing">Pricing</a>
-    <a href="/about">About</a>
-    <a href="/contact">Contact</a>
-    <a href="/signin">Login</a>
-    <a href="/signup" class="btn btn-primary">Get Started</a>
-  </div>
-</nav>
+{% include 'partials/navbar.html' %}
 
 <section class="hero">
   <h1>About <span>AVTools</span></h1>
@@ -131,7 +114,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <h4>Download & List</h4>
+        <h4>Download &amp; List</h4>
         <p>Download your optimized image and use it directly on Meesho.</p>
       </div>
       <div class="step">
@@ -146,7 +129,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
     <div class="card-icon">🛠️</div>
     <h2>Our Tools</h2>
     <p>AVTools offers a growing suite of tools designed for Indian online sellers:</p>
-    <p><strong>AI Image Generator & Optimizer</strong> — Upload a product image and get an AI-optimized version that reduces your shipping slab cost while maintaining listing quality.</p>
+    <p><strong>AI Image Generator &amp; Optimizer</strong> — Upload a product image and get an AI-optimized version that reduces your shipping slab cost while maintaining listing quality.</p>
     <p><strong>Meesho Label Cropper</strong> — Automatically crop and format shipping labels for Meesho orders, saving time on daily label printing and dispatch.</p>
     <p><strong>Profit Calculator</strong> — See your real profit after factoring in shipping charges, platform commission, GST, and return rates — so you price confidently.</p>
     <p><strong>Bulk Image Processing</strong> — Process hundreds of product images at once with batch upload, perfect for sellers with large catalogues.</p>
@@ -196,7 +179,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
 <footer class="footer">
   <div class="footer-top">
     <div class="footer-brand">
-      <img src="/static/images/avtools.png" alt="AVTools" style="height:32px;filter:brightness(10);">
+      <img src="{% static 'images/avtools.png' %}" alt="AVTools" style="height:32px;filter:brightness(10);">
       <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
       <div class="address">
         📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
@@ -210,8 +193,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
       <h4>Product</h4>
       <a href="/#features">Features</a>
       <a href="/#pricing">Pricing</a>
-      <a href="/image-generator">Image Generator</a>
-      <a href="/label-cropper">Label Cropper</a>
+      <a href="{% url 'generator:meesho_image_generator' %}">Image Generator</a>
+      <a href="/label-cropper/">Label Export</a>
     </div>
     <div class="footer-col">
       <h4>Company</h4>
@@ -224,7 +207,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
       <h4>Legal</h4>
       <a href="/privacy">Privacy Policy</a>
       <a href="/terms">Terms of Service</a>
-      <a href="/refund-policy">Refund & Cancellation Policy</a>
+      <a href="/refund-policy">Refund &amp; Cancellation Policy</a>
     </div>
   </div>
   <div class="footer-bottom">

@@ -75,13 +75,13 @@ body{
 .wrapper{
   max-width:1000px;
   margin:0 auto;
-  padding:48px 6%;
+  padding:18px 6%;
 }
 
 /* HERO SECTION */
 .hero{
   text-align:center;
-  margin-bottom:48px;
+  margin-bottom:18px;
 }
 
 .hero-badge{
@@ -120,12 +120,12 @@ body{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:20px;
-  margin-bottom:48px;
+  margin-bottom:18px;
 }
 
 .feature{
   background:#fff;
-  padding:20px;
+  padding:9px;
   border-radius:16px;
   text-align:center;
   border:1px solid #e2e8f0;
@@ -134,7 +134,7 @@ body{
 
 .feature-icon{
   font-size:32px;
-  margin-bottom:12px;
+  margin-bottom:5px;
 }
 
 .feature-title{
@@ -152,7 +152,7 @@ body{
 /* UPLOAD CARD */
 .upload-card{
   background:#fff;
-  padding:48px;
+  padding:28px;
   border-radius:24px;
   box-shadow:0 20px 60px rgba(0,0,0,0.1);
   border:1px solid #e2e8f0;
@@ -161,7 +161,7 @@ body{
 .upload-card h2{
   font-size:24px;
   font-weight:800;
-  margin-bottom:32px;
+  margin-bottom:18px;
   text-align:center;
   color:#1e293b;
 }
@@ -170,7 +170,7 @@ body{
 .upload-area{
   border:3px dashed #cbd5e1;
   border-radius:20px;
-  padding:60px 32px;
+  padding:20px 32px;
   text-align:center;
   background:#f8fafc;
   transition:all 0.3s ease;
@@ -218,7 +218,7 @@ body{
 
 .file-preview{
   margin-bottom:24px;
-  padding:20px;
+  padding:10px;
   background:#f0fdf4;
   border:2px solid #86efac;
   border-radius:12px;
@@ -357,8 +357,8 @@ body{
   background:#f0fdf4;
   border:2px solid #86efac;
   border-radius:16px;
-  padding:24px;
-  margin-bottom:24px;
+  padding:10px;
+  margin-bottom:12px;
   text-align:center;
 }
 
@@ -367,8 +367,8 @@ body{
 }
 
 .success-icon{
-  font-size:48px;
-  margin-bottom:12px;
+  font-size:28px;
+  margin-bottom:3px;
 }
 
 .success-title{
@@ -501,6 +501,71 @@ body{
   color:#64748b;
 }
 
+/* SUMMARY BOX */
+.summary-box{
+  background:#ffffff;
+  border:1px solid #e2e8f0;
+  border-radius:20px;
+  padding:24px;
+  margin-bottom:24px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.05);
+}
+
+.summary-box h3{
+  font-size:22px;
+  margin-bottom:20px;
+  color:#1e293b;
+}
+
+.summary-total{
+  background:#eff6ff;
+  color:#1d4ed8;
+  padding:12px 16px;
+  border-radius:12px;
+  font-weight:700;
+  margin-bottom:20px;
+}
+
+.summary-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid #f1f5f9;
+  font-size:15px;
+  font-weight:600;
+  color:#334155;
+}
+
+.courier-title{
+  font-size:20px;
+  font-weight:800;
+  margin-top:24px;
+  margin-bottom:12px;
+  color:#1e293b;
+  padding-bottom:10px;
+  border-bottom:2px solid #e2e8f0;
+}
+
+.summary-item:last-child{
+  border-bottom:none;
+}
+
+.global-summary-title{
+  font-size:24px;
+  font-weight:900;
+  margin-top:10px;
+  margin-bottom:18px;
+  color:#1e293b;
+}
+
+.global-item{
+  background:#f8fafc;
+  border-radius:12px;
+  padding-left:16px;
+  padding-right:16px;
+}
+
 /* RESPONSIVE */
 @media(max-width:768px){
   .hero h1{
@@ -546,7 +611,7 @@ body{
       <span>Smart Label Processing</span>
     </div>
     <h1>Meesho Label Cropper</h1>
-    <p>Automatically detect and crop Meesho shipping labels from PDF files. Get perfectly sized 4x6 inch labels ready for printing.</p>
+    <p>Automatically crop, sort and organize Meesho shipping labels courier-wise and product-wise for faster packing and thermal printing.</p>
   </div>
   
   <!-- FEATURES -->
@@ -644,7 +709,7 @@ body{
   </div>
 </footer>
 
-<script>
+{% comment %} <script>
 // File upload handling
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
@@ -829,6 +894,567 @@ function hideMessages() {
   successMessage.classList.remove('show');
   errorMessage.classList.remove('show');
 }
+</script> {% endcomment %}
+<script>
+
+// --------------------------------------------------
+// ELEMENTS
+// --------------------------------------------------
+const uploadArea = document.getElementById('uploadArea');
+
+const fileInput = document.getElementById('fileInput');
+
+const filePreview = document.getElementById('filePreview');
+
+const fileName = document.getElementById('fileName');
+
+const fileSize = document.getElementById('fileSize');
+
+const removeFile = document.getElementById('removeFile');
+
+const submitBtn = document.getElementById('submitBtn');
+
+const cropperForm = document.getElementById('cropperForm');
+
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+const successMessage = document.getElementById('successMessage');
+
+const errorMessage = document.getElementById('errorMessage');
+
+const errorText = document.getElementById('errorText');
+
+
+// --------------------------------------------------
+// CLICK TO UPLOAD
+// --------------------------------------------------
+uploadArea.addEventListener('click', () => {
+
+    fileInput.click();
+
+});
+
+
+// --------------------------------------------------
+// DRAG OVER
+// --------------------------------------------------
+uploadArea.addEventListener('dragover', (e) => {
+
+    e.preventDefault();
+
+    uploadArea.classList.add('dragover');
+
+});
+
+
+// --------------------------------------------------
+// DRAG LEAVE
+// --------------------------------------------------
+uploadArea.addEventListener('dragleave', () => {
+
+    uploadArea.classList.remove('dragover');
+
+});
+
+
+// --------------------------------------------------
+// DROP FILE
+// --------------------------------------------------
+uploadArea.addEventListener('drop', (e) => {
+
+    e.preventDefault();
+
+    uploadArea.classList.remove('dragover');
+
+    const files = e.dataTransfer.files;
+
+    if(files.length){
+
+        const file = files[0];
+
+        if(file.type === 'application/pdf'){
+
+            fileInput.files = files;
+
+            handleFileSelect(file);
+
+        } else {
+
+            showError('Please upload a PDF file');
+
+        }
+    }
+
+});
+
+
+// --------------------------------------------------
+// FILE CHANGE
+// --------------------------------------------------
+fileInput.addEventListener('change', (e) => {
+
+    if(e.target.files.length){
+
+        handleFileSelect(
+            e.target.files[0]
+        );
+
+    }
+
+});
+
+
+// --------------------------------------------------
+// REMOVE FILE
+// --------------------------------------------------
+removeFile.addEventListener('click', () => {
+
+    fileInput.value = '';
+
+    filePreview.classList.remove('show');
+
+    hideMessages();
+
+});
+
+
+// --------------------------------------------------
+// HANDLE FILE SELECT
+// --------------------------------------------------
+function handleFileSelect(file){
+
+    // Validate PDF
+    if(file.type !== 'application/pdf'){
+
+        showError(
+            'Please upload a PDF file'
+        );
+
+        fileInput.value = '';
+
+        return;
+    }
+
+    // Validate Size
+    if(file.size > 50 * 1024 * 1024){
+
+        showError(
+            'File size must be less than 50MB'
+        );
+
+        fileInput.value = '';
+
+        return;
+    }
+
+    const sizeMB = (
+        file.size / (1024 * 1024)
+    ).toFixed(2);
+
+    fileName.textContent = file.name;
+
+    fileSize.textContent = `${sizeMB} MB`;
+
+    filePreview.classList.add('show');
+
+    hideMessages();
+
+}
+
+
+// --------------------------------------------------
+// FORM SUBMIT
+// --------------------------------------------------
+cropperForm.addEventListener(
+    'submit',
+    async (e) => {
+
+    e.preventDefault();
+
+    if(!fileInput.files.length){
+
+        showError(
+            'Please upload a PDF file'
+        );
+
+        return;
+    }
+
+    // -----------------------------------
+    // SHOW LOADING
+    // -----------------------------------
+    loadingOverlay.classList.add('show');
+
+    submitBtn.disabled = true;
+
+    submitBtn.innerHTML = `
+        <span>⏳</span>
+        <span>Processing...</span>
+    `;
+
+    hideMessages();
+
+    // -----------------------------------
+    // CREATE FORM DATA
+    // -----------------------------------
+    const formData = new FormData(
+        cropperForm
+    );
+
+    try {
+
+        // -----------------------------------
+        // SEND REQUEST
+        // -----------------------------------
+        const response = await fetch(
+
+            cropperForm.action,
+
+            {
+                method: 'POST',
+                body: formData
+            }
+
+        );
+
+        // -----------------------------------
+        // HIDE LOADING
+        // -----------------------------------
+        loadingOverlay.classList.remove(
+            'show'
+        );
+
+        submitBtn.disabled = false;
+
+        submitBtn.innerHTML = `
+            <span>✂️</span>
+            <span>
+                Process & Download PDF
+            </span>
+        `;
+
+        // -----------------------------------
+        // HTTP ERROR
+        // -----------------------------------
+        if(!response.ok){
+
+            const data = await response.json();
+
+            showError(
+
+                data.error ||
+
+                'Server error occurred'
+
+            );
+
+            return;
+        }
+
+        // -----------------------------------
+        // GET JSON DATA
+        // -----------------------------------
+        const data = await response.json();
+
+        // -----------------------------------
+        // HANDLE BACKEND ERROR
+        // -----------------------------------
+        if(data.error){
+
+            showError(data.error);
+
+            return;
+        }
+
+        // -----------------------------------
+        // REMOVE OLD SUMMARY
+        // -----------------------------------
+        const oldSummary = document.querySelector(
+            '.summary-box'
+        );
+
+        if(oldSummary){
+
+            oldSummary.remove();
+
+        }
+
+        // -----------------------------------
+        // BUILD SUMMARY HTML
+        // -----------------------------------
+        let summaryHtml = '';
+
+        // -----------------------------------
+        // GLOBAL PRODUCT TOTALS
+        // -----------------------------------
+        const globalTotals = {};
+
+        // -----------------------------------
+        // CALCULATE GLOBAL TOTALS
+        // -----------------------------------
+        Object.entries(
+            data.product_summary
+        ).forEach(([courier, products]) => {
+
+            Object.entries(products).forEach(
+                ([product, qty]) => {
+
+                    if(!globalTotals[product]){
+
+                        globalTotals[product] = 0;
+
+                    }
+
+                    globalTotals[product] += qty;
+
+                }
+            );
+
+        });
+
+        // -----------------------------------
+        // GLOBAL SUMMARY TITLE
+        // -----------------------------------
+        summaryHtml += `
+            <div class="global-summary-title">
+                📦 Total Product Summary
+            </div>
+        `;
+
+        // -----------------------------------
+        // GLOBAL PRODUCT LIST
+        // -----------------------------------
+        Object.entries(globalTotals).forEach(
+            ([product, qty]) => {
+
+                summaryHtml += `
+                    <div class="summary-item global-item">
+
+                        <div>
+                            ${product}
+                        </div>
+
+                        <div>
+                            ${qty} Labels
+                        </div>
+
+                    </div>
+                `;
+            }
+        );
+
+        // -----------------------------------
+        // SPACING
+        // -----------------------------------
+        summaryHtml += `
+            <div style="height:30px;"></div>
+        `;
+
+        // -----------------------------------
+        // COURIER-WISE SUMMARY
+        // -----------------------------------
+        Object.entries(
+            data.product_summary
+        ).forEach(([courier, products]) => {
+
+            // Courier heading
+            summaryHtml += `
+                <div class="courier-title">
+                    🚚 ${courier}
+                </div>
+            `;
+
+            // Product list
+            Object.entries(products).forEach(
+                ([product, qty]) => {
+
+                    summaryHtml += `
+                        <div class="summary-item">
+
+                            <div>
+                                ${product}
+                            </div>
+
+                            <div>
+                                ${qty} Labels
+                            </div>
+
+                        </div>
+                    `;
+                }
+            );
+
+        });
+
+        // -----------------------------------
+        // CREATE SUMMARY BOX
+        // -----------------------------------
+        const summaryBox = document.createElement(
+            'div'
+        );
+
+        summaryBox.className = 'summary-box';
+
+        summaryBox.innerHTML = `
+
+            <h3>
+                📦 Packing Summary
+            </h3>
+
+            <div class="summary-total">
+
+                Total Labels:
+                ${data.total_labels}
+
+            </div>
+
+            ${summaryHtml}
+
+        `;
+
+        document
+            .querySelector('.upload-card')
+            .prepend(summaryBox);
+
+        // -----------------------------------
+        // BASE64 TO PDF
+        // -----------------------------------
+        const binary = atob(
+            data.pdf_base64
+        );
+
+        const bytes = new Uint8Array(
+            binary.length
+        );
+
+        for(
+            let i = 0;
+            i < binary.length;
+            i++
+        ){
+
+            bytes[i] =
+                binary.charCodeAt(i);
+
+        }
+
+        const blob = new Blob(
+
+            [bytes],
+
+            {
+                type: 'application/pdf'
+            }
+
+        );
+
+        // -----------------------------------
+        // AUTO DOWNLOAD
+        // -----------------------------------
+        const url = window.URL.createObjectURL(
+            blob
+        );
+
+        const a = document.createElement(
+            'a'
+        );
+
+        a.href = url;
+
+        a.download = data.filename;
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+
+        document.body.removeChild(a);
+
+        // -----------------------------------
+        // SHOW SUCCESS
+        // -----------------------------------
+        showSuccess();
+
+        // -----------------------------------
+        // RESET FORM
+        // -----------------------------------
+        setTimeout(() => {
+
+            cropperForm.reset();
+
+            filePreview.classList.remove(
+                'show'
+            );
+
+        }, 3000);
+
+    } catch(error){
+
+        // -----------------------------------
+        // HIDE LOADING
+        // -----------------------------------
+        loadingOverlay.classList.remove(
+            'show'
+        );
+
+        submitBtn.disabled = false;
+
+        submitBtn.innerHTML = `
+            <span>✂️</span>
+            <span>
+                Process & Download PDF
+            </span>
+        `;
+
+        console.error(error);
+
+        showError(
+            'Network/server error occurred'
+        );
+
+    }
+
+});
+
+
+// --------------------------------------------------
+// SHOW SUCCESS
+// --------------------------------------------------
+function showSuccess(){
+
+    successMessage.classList.add('show');
+
+    errorMessage.classList.remove('show');
+
+}
+
+
+// --------------------------------------------------
+// SHOW ERROR
+// --------------------------------------------------
+function showError(message){
+
+    errorText.textContent = message;
+
+    errorMessage.classList.add('show');
+
+    successMessage.classList.remove('show');
+
+}
+
+
+// --------------------------------------------------
+// HIDE MESSAGES
+// --------------------------------------------------
+function hideMessages(){
+
+    successMessage.classList.remove('show');
+
+    errorMessage.classList.remove('show');
+
+}
+
 </script>
 
 </body>

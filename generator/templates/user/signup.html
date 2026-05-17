@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,11 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create account | AVTools</title>
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
 
 body{
   font-family:'Inter',system-ui,-apple-system,sans-serif;
@@ -23,14 +20,28 @@ body{
 body::before{
   content:'';
   position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  top:0;left:0;right:0;bottom:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   opacity:0.4;
   z-index:0;
 }
+
+/* Back to home link */
+.back-home{
+  position:relative;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:rgba(255,255,255,0.85);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:20px;
+  transition:color 0.2s;
+}
+.back-home:hover{ color:#fff; }
+.back-home::before{ content:'←'; font-size:16px; }
 
 .auth-container{
   position:relative;
@@ -56,20 +67,11 @@ body::before{
 }
 
 .logo{display:flex;justify-content:center;margin-bottom:24px;}
-.logo img{height:50px;}
+.logo img{height:50px;cursor:pointer;}
 
 h1{text-align:center;font-size:26px;font-weight:800;margin-bottom:6px;color:#1e293b;}
 
 .subtitle{text-align:center;font-size:14px;color:#64748b;margin-bottom:24px;}
-
-.social-btn{
-  width:100%;padding:13px;border-radius:12px;border:2px solid #e2e8f0;
-  background:#fff;font-size:15px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:12px;
-  transition:all 0.3s ease;color:#1e293b;
-}
-.social-btn:hover{border-color:#3b82f6;background:#f8fafc;transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,130,246,0.15);}
-.social-btn img{width:20px;height:20px;}
 
 .divider{display:flex;align-items:center;margin:20px 0;color:#94a3b8;font-size:13px;font-weight:500;}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#e2e8f0,transparent);}
@@ -90,7 +92,10 @@ input[type="password"]{
 }
 input[type="text"]:focus,
 input[type="email"]:focus,
-input[type="password"]:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.1);}
+input[type="password"]:focus{
+  outline:none;border-color:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+}
 input::placeholder{color:#94a3b8;}
 
 .checkbox-group{display:flex;align-items:flex-start;gap:8px;margin-bottom:20px;}
@@ -100,9 +105,12 @@ input::placeholder{color:#94a3b8;}
 .checkbox-group a:hover{color:#2563eb;text-decoration:underline;}
 
 .btn-primary{
-  width:100%;padding:14px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;
-  cursor:pointer;transition:all 0.3s ease;box-shadow:0 8px 24px rgba(59,130,246,0.3);
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff;border:none;border-radius:12px;
+  font-size:15px;font-weight:700;cursor:pointer;
+  transition:all 0.3s ease;
+  box-shadow:0 8px 24px rgba(59,130,246,0.3);
 }
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(59,130,246,0.4);}
 .btn-primary:active{transform:translateY(0);}
@@ -121,7 +129,7 @@ input::placeholder{color:#94a3b8;}
 .benefits li::before{content:'✓';position:absolute;left:0;color:#3b82f6;font-weight:700;}
 
 @media(max-width:480px){
-  body{padding:20px 16px;}
+  body{padding:24px 16px;}
   .auth-card{padding:28px 20px;}
   h1{font-size:22px;}
   .subtitle{font-size:13px;}
@@ -132,20 +140,16 @@ input::placeholder{color:#94a3b8;}
 <body>
 
 <div class="auth-container">
+  <!-- Back to home -->
+  <a href="/" class="back-home">Back to AVTools</a>
+
   <div class="auth-card">
     <div class="logo">
-      <img src="/static/images/avtools.png" alt="AVTools Logo">
+      <img src="{% static 'images/avtools.png' %}" alt="AVTools Logo" onclick="window.location.href='/'">
     </div>
 
     <h1>Create your account</h1>
     <p class="subtitle">Join thousands of Meesho sellers growing faster</p>
-
-    <button class="social-btn" type="button">
-      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
-      Continue with Google
-    </button>
-
-    <div class="divider"><span>or sign up with email</span></div>
 
     <div class="benefits">
       <h3>What you get:</h3>
@@ -202,6 +206,23 @@ input::placeholder{color:#94a3b8;}
 
     <p class="secured">Secured by AVTools</p>
   </div>
+</div>
+
+<!-- Success Popup -->
+<div id="successPopup" style="
+  display:none;
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  background:white;
+  padding:18px 26px;
+  border-radius:14px;
+  box-shadow:0 15px 50px rgba(0,0,0,0.25);
+  font-size:16px;font-weight:700;
+  color:#16a34a;
+  z-index:9999;text-align:center;
+">
+  ✅ User created successfully!
 </div>
 
 <script>
@@ -301,26 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
-
-<!-- Success Popup -->
-<div id="successPopup" style="
-  display:none;
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
-  background:white;
-  padding:18px 26px;
-  border-radius:14px;
-  box-shadow:0 15px 50px rgba(0,0,0,0.25);
-  font-size:16px;
-  font-weight:700;
-  color:#16a34a;
-  z-index:9999;
-  text-align:center;
-">
-  ✅ User created successfully!
-</div>
 
 </body>
 </html>

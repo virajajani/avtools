@@ -5,7 +5,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign in | AVTools</title>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -26,6 +25,23 @@ body::before{
   opacity:0.4;
   z-index:0;
 }
+
+/* Back to home link */
+.back-home{
+  position:relative;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:rgba(255,255,255,0.85);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:20px;
+  transition:color 0.2s;
+}
+.back-home:hover{ color:#fff; }
+.back-home::before{ content:'←'; font-size:16px; }
 
 .auth-container{
   position:relative;
@@ -55,8 +71,7 @@ body::before{
   justify-content:center;
   margin-bottom:24px;
 }
-
-.logo img{height:50px;}
+.logo img{height:50px;cursor:pointer;}
 
 h1{
   text-align:center;
@@ -81,114 +96,81 @@ h1{
   font-size:13px;
   font-weight:500;
 }
-
-.divider::before,
-.divider::after{
-  content:"";
-  flex:1;
-  height:1px;
+.divider::before,.divider::after{
+  content:"";flex:1;height:1px;
   background:linear-gradient(90deg,transparent,#e2e8f0,transparent);
 }
-
 .divider span{margin:0 14px;}
 
 .form-group{margin-bottom:16px;}
 
 label{
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:6px;
-  display:block;
-  color:#334155;
+  font-size:13px;font-weight:700;
+  margin-bottom:6px;display:block;color:#334155;
 }
 
 input{
-  width:100%;
-  padding:12px 14px;
-  border-radius:10px;
-  border:2px solid #e2e8f0;
-  font-size:14px;
-  transition:all 0.3s ease;
-  background:#fff;
-  color:#1e293b;
+  width:100%;padding:12px 14px;
+  border-radius:10px;border:2px solid #e2e8f0;
+  font-size:14px;transition:all 0.3s ease;
+  background:#fff;color:#1e293b;
 }
-
 input:focus{
-  outline:none;
-  border-color:#3b82f6;
+  outline:none;border-color:#3b82f6;
   box-shadow:0 0 0 3px rgba(59,130,246,0.1);
 }
-
 input::placeholder{color:#94a3b8;}
 
+.input-error{border-color:#ef4444 !important;}
+
 .forgot-password{
-  text-align:right;
-  margin-top:-10px;
-  margin-bottom:18px;
+  text-align:right;margin-top:-10px;margin-bottom:18px;
 }
-
 .forgot-password a{
-  color:#3b82f6;
-  text-decoration:none;
-  font-size:13px;
-  font-weight:600;
+  color:#3b82f6;text-decoration:none;
+  font-size:13px;font-weight:600;
 }
-
 .forgot-password a:hover{color:#2563eb;}
 
 .btn-primary{
-  width:100%;
-  padding:14px;
+  width:100%;padding:14px;
   background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  color:#fff;
-  border:none;
-  border-radius:12px;
-  font-size:15px;
-  font-weight:700;
-  cursor:pointer;
+  color:#fff;border:none;border-radius:12px;
+  font-size:15px;font-weight:700;cursor:pointer;
   transition:all 0.3s ease;
   box-shadow:0 8px 24px rgba(59,130,246,0.3);
 }
-
 .btn-primary:hover{
   transform:translateY(-2px);
   box-shadow:0 12px 32px rgba(59,130,246,0.4);
 }
 
 .footer-text{
-  text-align:center;
-  margin-top:20px;
-  font-size:14px;
-  color:#64748b;
+  text-align:center;margin-top:20px;
+  font-size:14px;color:#64748b;
 }
-
 .footer-text a{
-  color:#3b82f6;
-  text-decoration:none;
-  font-weight:700;
+  color:#3b82f6;text-decoration:none;font-weight:700;
 }
-
 .footer-text a:hover{color:#2563eb;}
 
 .msg{
-  padding:12px 14px;
-  border-radius:12px;
-  margin-bottom:14px;
-  font-size:14px;
-  font-weight:700;
-  text-align:center;
+  padding:12px 14px;border-radius:12px;
+  margin-bottom:14px;font-size:14px;
+  font-weight:700;text-align:center;
+}
+.msg-error{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;}
+.msg-success{background:#dcfce7;color:#166534;border:1px solid #bbf7d0;}
+
+.error-text{
+  color:#ef4444;font-size:13px;
+  margin-top:6px;display:none;
 }
 
-.msg-error{
-  background:#fee2e2;
-  color:#991b1b;
-  border:1px solid #fecaca;
-}
-
-.msg-success{
-  background:#dcfce7;
-  color:#166534;
-  border:1px solid #bbf7d0;
+@media(max-width:480px){
+  body{padding:24px 16px;}
+  .auth-card{padding:28px 20px;}
+  h1{font-size:22px;}
 }
 </style>
 </head>
@@ -196,10 +178,13 @@ input::placeholder{color:#94a3b8;}
 <body>
 
 <div class="auth-container">
+  <!-- Back to home -->
+  <a href="/" class="back-home">Back to AVTools</a>
+
   <div class="auth-card">
 
     <div class="logo">
-      <img src="{% static 'images/avtools.png' %}" alt="AVTools Logo">
+      <img src="{% static 'images/avtools.png' %}" alt="AVTools Logo" onclick="window.location.href='/'">
     </div>
 
     <h1>Welcome back!</h1>
@@ -215,16 +200,17 @@ input::placeholder{color:#94a3b8;}
 
     <div class="divider"><span>Sign in with email</span></div>
 
-   <form method="POST" action="{% url 'generator:signin' %}">
-  {% csrf_token %}
+    <form id="loginForm" method="POST" action="{% url 'generator:signin' %}">
+      {% csrf_token %}
       <div class="form-group">
         <label>Email address</label>
-        <input name="email" type="email" placeholder="you@example.com" required>
+        <input id="loginEmail" name="email" type="email" placeholder="you@example.com" required>
       </div>
 
       <div class="form-group">
         <label>Password</label>
-        <input name="password" type="password" placeholder="Enter your password" required>
+        <input id="loginPassword" name="password" type="password" placeholder="Enter your password" required>
+        <p id="passwordError" class="error-text">Email or password is incorrect</p>
       </div>
 
       <div class="forgot-password">
@@ -240,6 +226,7 @@ input::placeholder{color:#94a3b8;}
 
   </div>
 </div>
+
 <script>
 const loginForm = document.getElementById("loginForm");
 const loginPassword = document.getElementById("loginPassword");
@@ -269,25 +256,19 @@ loginForm.addEventListener("submit", async (e) => {
     const res = await fetch(loginForm.action, {
       method: "POST",
       body: formData,
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      }
+      headers: { "X-Requested-With": "XMLHttpRequest" }
     });
 
-    // ✅ If login success Django will redirect (302)
     if (res.redirected) {
       window.location.href = res.url;
       return;
     }
 
-    // ✅ If response is normal HTML with error
     const html = await res.text();
 
-    // Very simple check: if "Invalid" exists show error
     if (html.includes("Invalid")) {
       showPasswordError("Email or password is incorrect");
     } else {
-      // fallback
       showPasswordError("Login failed. Please try again.");
     }
 
