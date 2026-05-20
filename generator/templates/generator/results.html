@@ -5,136 +5,116 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Generated Images | AVTools</title>
+<link rel="stylesheet" href="{% static 'css/header.css' %}">
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --primary:#3b82f6;
+  --primary-dark:#2563eb;
+  --accent:#8b5cf6;
+  --teal:#0f766e;
+  --success:#16a34a;
+  --success-bg:#dcfce7;
+  --success-border:#86efac;
+  --text:#1e293b;
+  --text-light:#64748b;
+  --bg:#ffffff;
+  --bg-gray:#f8fafc;
+  --border:#e2e8f0;
+  --profit:#10b981;
 }
 
 body{
   font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:#f8fafc;
-  color:#0f172a;
+  background:var(--bg-gray);
+  color:var(--text);
   min-height:100vh;
 }
 
-/* NAVBAR */
-.navbar{
-  background:#fff;
-  border-bottom:1px solid #e2e8f0;
-  padding:16px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:100;
-  box-shadow:0 1px 3px rgba(0,0,0,0.04);
-}
-
-.logo img{
-  height:36px;
-}
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:32px;
-}
-
-.nav-links a{
-  text-decoration:none;
-  color:#64748b;
-  font-weight:500;
-  font-size:15px;
-  transition:color 0.3s;
-  position:relative;
-}
-
-.nav-links a:hover{
-  color:#3b82f6;
-}
-
-.nav-links a.active{
-  color:#3b82f6;
-  font-weight:600;
-}
-
-.nav-links a.active::after{
-  content:'';
-  position:absolute;
-  bottom:-18px;
-  left:0;
-  right:0;
-  height:2px;
-  background:#3b82f6;
-}
-
-.user-menu{
-  display:flex;
-  align-items:center;
-  gap:16px;
-}
-
-.credits-badge{
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  color:#fff;
-  padding:8px 16px;
-  border-radius:20px;
-  font-size:13px;
-  font-weight:700;
-}
-
-/* MAIN CONTAINER */
+/* ── CONTAINER ── */
 .container{
   max-width:1400px;
   margin:0 auto;
   padding:48px 6%;
 }
 
-/* HEADER CARD */
-.header-card{
-  background:#fff;
-  padding:32px;
-  border-radius:20px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.06);
-  border:1px solid #e2e8f0;
-  margin-bottom:40px;
+/* ── HERO HEADER ── */
+.result-hero{
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  padding:56px 6% 48px;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:0;
 }
 
-.success-badge{
+.result-hero::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity:0.5;
+}
+
+.result-hero-inner{
+  max-width:1400px;
+  margin:0 auto;
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:32px;
+  flex-wrap:wrap;
+}
+
+.hero-left{}
+
+.success-pill{
   display:inline-flex;
   align-items:center;
-  gap:8px;
-  background:linear-gradient(135deg,#10b981,#059669);
+  gap:7px;
+  background:rgba(255,255,255,0.18);
+  border:1px solid rgba(255,255,255,0.3);
   color:#fff;
-  padding:8px 16px;
-  border-radius:20px;
-  font-size:13px;
+  padding:7px 16px;
+  border-radius:999px;
+  font-size:12px;
   font-weight:700;
-  margin-bottom:16px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  margin-bottom:18px;
+  backdrop-filter:blur(6px);
 }
 
-.header-card h1{
-  font-size:28px;
-  font-weight:800;
-  margin-bottom:8px;
-  color:#1e293b;
+.result-hero h1{
+  font-size:40px;
+  font-weight:900;
+  color:#fff;
+  line-height:1.15;
+  margin-bottom:10px;
 }
 
-.subtitle{
-  font-size:15px;
-  color:#64748b;
-  margin-bottom:24px;
+.result-hero h1 span{
+  background:linear-gradient(135deg,#fbbf24,#f59e0b);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
 }
 
-.subtitle strong{
-  color:#3b82f6;
+.result-subtitle{
+  font-size:16px;
+  color:rgba(255,255,255,0.85);
+  margin-bottom:28px;
+  line-height:1.6;
+}
+
+.result-subtitle strong{
+  color:#fff;
   font-weight:700;
 }
 
-.actions{
+.hero-actions{
   display:flex;
   gap:12px;
   flex-wrap:wrap;
@@ -143,10 +123,10 @@ body{
 .btn{
   padding:12px 24px;
   border-radius:10px;
-  font-weight:600;
+  font-weight:700;
   font-size:14px;
   cursor:pointer;
-  transition:all 0.3s ease;
+  transition:all 0.3s;
   border:none;
   text-decoration:none;
   display:inline-flex;
@@ -154,420 +134,493 @@ body{
   gap:8px;
 }
 
-.btn-primary{
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+.btn-white{
+  background:#fff;
+  color:var(--primary);
+  box-shadow:0 4px 14px rgba(0,0,0,0.12);
+}
+
+.btn-white:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(0,0,0,0.18);
+}
+
+.btn-ghost{
+  background:rgba(255,255,255,0.15);
   color:#fff;
-  box-shadow:0 8px 24px rgba(59,130,246,0.3);
+  border:1.5px solid rgba(255,255,255,0.35);
+  backdrop-filter:blur(6px);
 }
 
-.btn-primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 32px rgba(59,130,246,0.4);
-}
-
-.btn-secondary{
-  background:#fff;
-  color:#3b82f6;
-  border:2px solid #3b82f6;
-}
-
-.btn-secondary:hover{
-  background:#f0f9ff;
+.btn-ghost:hover{
+  background:rgba(255,255,255,0.25);
   transform:translateY(-2px);
 }
 
-/* STATS BAR */
-.stats-bar{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
-  margin-bottom:40px;
+/* HERO RIGHT — STATS */
+.hero-stats{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  align-items:flex-start;
 }
 
-.stat-card{
-  background:#fff;
-  padding:20px;
+.hero-stat{
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.22);
   border-radius:16px;
-  border:1px solid #e2e8f0;
-  box-shadow:0 4px 12px rgba(0,0,0,0.04);
+  padding:18px 22px;
+  text-align:center;
+  backdrop-filter:blur(6px);
+  min-width:110px;
 }
 
-.stat-label{
-  font-size:13px;
-  color:#64748b;
-  margin-bottom:8px;
+.hero-stat-num{
+  font-size:32px;
+  font-weight:900;
+  color:#fff;
+  display:block;
+  line-height:1;
+  margin-bottom:6px;
+}
+
+.hero-stat-label{
+  font-size:11px;
+  color:rgba(255,255,255,0.75);
   font-weight:600;
   text-transform:uppercase;
-  letter-spacing:0.5px;
+  letter-spacing:0.07em;
 }
 
-.stat-value{
-  font-size:24px;
-  font-weight:800;
-  color:#1e293b;
+/* ── FILTER / SORT BAR ── */
+.filter-bar{
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  padding:16px 6%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  position:sticky;
+  top:68px;
+  z-index:90;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
 }
 
-.stat-value.success{
-  color:#10b981;
+.filter-bar-inner{
+  max-width:1400px;
+  margin:0 auto;
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
 }
 
-/* GRID */
+.filter-label{
+  font-size:13px;
+  font-weight:700;
+  color:var(--text-light);
+  white-space:nowrap;
+}
+
+.filter-btns{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.filter-btn{
+  padding:7px 16px;
+  border-radius:999px;
+  border:1.5px solid var(--border);
+  background:#fff;
+  font-size:13px;
+  font-weight:600;
+  color:var(--text-light);
+  cursor:pointer;
+  transition:all 0.2s;
+  white-space:nowrap;
+}
+
+.filter-btn:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+}
+
+.filter-btn.active{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 4px 12px rgba(59,130,246,0.25);
+}
+
+.filter-count{
+  margin-left:auto;
+  font-size:13px;
+  color:var(--text-light);
+  font-weight:600;
+  white-space:nowrap;
+}
+
+/* ── RESULTS GRID ── */
+.results-section{
+  padding:40px 0;
+}
+
 .results-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:28px;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:24px;
 }
 
-/* CARD */
+/* ── RESULT CARD ── */
 .result-card{
-  background:#fff;
+  background:var(--bg);
   border-radius:20px;
   overflow:hidden;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
-  border:1px solid #e2e8f0;
-  transition:all 0.3s ease;
+  box-shadow:0 8px 28px rgba(0,0,0,0.07);
+  border:1px solid var(--border);
+  transition:all 0.3s;
+  display:flex;
+  flex-direction:column;
 }
 
 .result-card:hover{
   transform:translateY(-6px);
-  box-shadow:0 16px 48px rgba(0,0,0,0.12);
+  box-shadow:0 20px 56px rgba(0,0,0,0.13);
 }
 
-.card-image{
+/* IMAGE AREA */
+.card-img-wrap{
+  position:relative;
   width:100%;
-  height:280px;
-  object-fit:cover;
+  height:260px;
   background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
+  overflow:hidden;
+}
+
+.card-img-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
   display:block;
+  transition:transform 0.4s ease;
 }
 
-.card-body{
-  padding:24px;
+.result-card:hover .card-img-wrap img{
+  transform:scale(1.04);
 }
 
-.shipping-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
+/* SHIPPING RIBBON */
+.ship-ribbon{
+  position:absolute;
+  top:12px;
+  left:0;
   background:linear-gradient(135deg,#10b981,#059669);
   color:#fff;
-  padding:8px 14px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:700;
-  margin-bottom:16px;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-}
-
-/* INFO BOX */
-.info-box{
-  background:#f8fafc;
-  padding:14px;
-  border-radius:12px;
-  margin-bottom:16px;
-  border:1px solid #e2e8f0;
-}
-
-.info-row{
+  font-size:11px;
+  font-weight:800;
+  padding:6px 14px 6px 12px;
+  border-radius:0 999px 999px 0;
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  font-size:13px;
-  color:#475569;
-  margin-bottom:6px;
+  gap:5px;
+  box-shadow:0 4px 12px rgba(16,185,129,0.35);
+  text-transform:uppercase;
+  letter-spacing:0.05em;
 }
 
-.info-row:last-child{
-  margin-bottom:0;
-}
-
-.info-label{
-  font-weight:500;
-}
-
-.info-value{
+/* ZONE BADGE */
+.zone-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  background:rgba(15,23,42,0.65);
+  color:#fff;
+  font-size:10px;
   font-weight:700;
-  color:#1e293b;
+  padding:5px 10px;
+  border-radius:999px;
+  backdrop-filter:blur(6px);
+  text-transform:uppercase;
+  letter-spacing:0.05em;
 }
 
-/* PRICING */
-.pricing-box{
-  background:linear-gradient(135deg,#f8fafc,#f1f5f9);
-  padding:16px;
-  border-radius:14px;
+/* CARD BODY */
+.card-body{
+  padding:20px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* PRICING TABLE */
+.pricing-table{
+  background:var(--bg-gray);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
   margin-bottom:16px;
-  border:1px solid #e2e8f0;
 }
 
 .pricing-row{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  padding:9px 14px;
+  font-size:13px;
+  border-bottom:1px solid var(--border);
+  color:var(--text-light);
+}
+
+.pricing-row:last-child{border-bottom:none;}
+
+.pricing-row.total{
+  background:#fff;
+  font-weight:700;
+  color:var(--text);
   font-size:14px;
-  margin-bottom:8px;
-  color:#475569;
 }
 
-.pricing-row:last-child{
-  margin-bottom:0;
+.pricing-row.profit-row{
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+  font-weight:800;
+  font-size:15px;
+  color:var(--success);
+  border-top:2px solid var(--success-border);
 }
 
-.pricing-row.divider{
-  border-top:2px solid #e2e8f0;
-  padding-top:8px;
-  margin-top:8px;
-  font-weight:700;
-  color:#1e293b;
-}
+.pricing-val{font-weight:700;color:var(--text);}
+.pricing-val.green{color:var(--profit);}
+.pricing-val.red{color:#ef4444;}
 
-.pricing-row.profit{
-  color:#10b981;
-  font-size:16px;
-}
-
-.pricing-value{
-  font-weight:700;
-}
-
-/* DOWNLOAD BUTTON */
-.download-form{
-  width:100%;
-}
+/* DOWNLOAD BTN */
+.download-form{margin-top:auto;}
 
 .download-btn{
   width:100%;
-  padding:14px;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  padding:13px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   color:#fff;
   border:none;
   border-radius:12px;
   font-weight:700;
   font-size:14px;
   cursor:pointer;
-  transition:all 0.3s ease;
+  transition:all 0.3s;
   display:flex;
   align-items:center;
   justify-content:center;
   gap:8px;
-  box-shadow:0 6px 20px rgba(59,130,246,0.3);
+  box-shadow:0 6px 18px rgba(59,130,246,0.3);
 }
 
 .download-btn:hover{
   transform:translateY(-2px);
-  box-shadow:0 10px 28px rgba(59,130,246,0.4);
+  box-shadow:0 10px 28px rgba(59,130,246,0.42);
 }
 
-.download-btn:active{
-  transform:translateY(0);
+.download-btn:active{transform:translateY(0);}
+
+/* EMPTY STATE */
+.empty-results{
+  text-align:center;
+  padding:80px 20px;
+  background:var(--bg);
+  border-radius:20px;
+  border:2px dashed var(--border);
 }
+
+.empty-results .empty-icon{font-size:60px;margin-bottom:16px;}
+.empty-results h3{font-size:20px;font-weight:700;margin-bottom:8px;}
+.empty-results p{color:var(--text-light);font-size:15px;}
 
 /* FOOTER */
 .footer{
-  border-top:1px solid #e2e8f0;
-  padding:32px 6%;
-  margin-top:80px;
-  background:#fff;
+  border-top:1px solid var(--border);
+  padding:28px 6%;
+  margin-top:60px;
+  background:var(--bg);
 }
 
 .footer-content{
-  max-width:1400px;
-  margin:0 auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:16px;
+  max-width:1400px;margin:0 auto;
+  display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;
+  gap:12px;font-size:13px;color:var(--text-light);
 }
 
-.footer-links{
-  display:flex;
-  gap:24px;
-}
-
+.footer-links{display:flex;gap:20px;}
 .footer-links a{
-  color:#64748b;
-  text-decoration:none;
+  color:var(--text-light);text-decoration:none;
+  font-size:13px;transition:color 0.2s;
+}
+.footer-links a:hover{color:var(--primary);}
+
+/* DOWNLOAD ALL TOAST */
+.toast{
+  position:fixed;
+  bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:#1e293b;
+  color:#fff;
+  padding:14px 24px;
+  border-radius:14px;
   font-size:14px;
-  transition:color 0.3s;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.25);
+  z-index:9999;
+  transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  white-space:nowrap;
 }
 
-.footer-links a:hover{
-  color:#3b82f6;
-}
+.toast.show{transform:translateX(-50%) translateY(0);}
 
 /* RESPONSIVE */
-@media(max-width:1024px){
-  .user-menu{
-    display:none;
-  }
+@media(max-width:900px){
+  .result-hero h1{font-size:30px;}
+  .hero-stats{display:none;}
+  .result-hero-inner{flex-direction:column;}
 }
 
 @media(max-width:768px){
-  .navbar{
-    padding:14px 5%;
-  }
-  
-  .nav-links{
-    gap:16px;
-  }
-  
-  .container{
-    padding:32px 5%;
-  }
-  
-  .header-card h1{
-    font-size:22px;
-  }
-  
-  .actions{
-    flex-direction:column;
-  }
-  
-  .btn{
-    width:100%;
-    justify-content:center;
-  }
-  
-  .stats-bar{
-    grid-template-columns:1fr;
-  }
-  
-  .results-grid{
-    grid-template-columns:1fr;
-  }
-  
-  .footer-content{
-    flex-direction:column;
-    text-align:center;
-  }
+  .container{padding:28px 5%;}
+  .result-hero{padding:40px 5% 36px;}
+  .results-grid{grid-template-columns:1fr;}
+  .filter-bar{top:60px;}
+  .hero-actions .btn{width:100%;justify-content:center;}
+  .footer-content{flex-direction:column;text-align:center;}
+  .footer-links{flex-wrap:wrap;justify-content:center;}
+  .result-hero h1{font-size:26px;}
+}
+
+@media(max-width:480px){
+  .results-grid{grid-template-columns:1fr;}
+  .card-img-wrap{height:220px;}
 }
 </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="logo">
-    <img src="/static/images/avtools.png" alt="AVTools Logo">
-  </div>
-  
-  <div class="nav-links">
-    <a href="{% url 'generator:home' %}">Dashboard</a>
-    <a href="{% url 'generator:meesho_image_generator' %}" class="active">Image Generator</a>
-    <a href="#">Label Export</a>
-  </div>
-  
-  <div class="user-menu">
-  <div class="credits-badge">⚡ {{ credits_left }} Credits</div>
-  </div>
-</nav>
+{% include "partials/header.html" %}
 
-<!-- MAIN CONTAINER -->
-<div class="container">
-  
-  <!-- HEADER CARD -->
-  <div class="header-card">
-    <div class="success-badge">
-      <span>✓</span>
-      <span>Generation Completed</span>
-    </div>
-    
-    <h1>Your Images Are Ready! 🎉</h1>
-    <p class="subtitle">
-      Generated <strong>{{ total_images }} optimized images</strong> for <strong>{{ category }}</strong> with the best shipping rates
-    </p>
-    
-    <div class="actions">
-      <a href="{% url 'generator:meesho_image_generator' %}" class="btn btn-secondary">
-        <span>←</span>
-        <span>Generate More</span>
-      </a>
-      <button class="btn btn-primary" onclick="downloadAll()">
-        <span>📥</span>
-        <span>Download All ({{ total_images }})</span>
-      </button>
-    </div>
-  </div>
-  
-  <!-- STATS BAR -->
-  <div class="stats-bar">
-    <div class="stat-card">
-      <div class="stat-label">Total Images</div>
-      <div class="stat-value">{{ total_images }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Category</div>
-      <div class="stat-value">{{ category }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Status</div>
-      <div class="stat-value success">Complete</div>
-    </div>
-  </div>
-  
-  <!-- RESULTS GRID -->
-  <div class="results-grid">
-    {% for var in variations %}
-    <div class="result-card">
-      <img src="data:image/jpeg;base64,{{ var.image_data }}" alt="Generated Image" class="card-image">
-      
-      <div class="card-body">
-        <span class="shipping-badge">
-          <span>🚚</span>
-          <span>₹{{ var.shipping_rate }} Shipping • {{ var.zone }}</span>
-        </span>
-        
-        {% comment %} {% if var.extra %}
-        <div class="info-box">
-          <div class="info-row">
-            <span class="info-label">Net Weight</span>
-            <span class="info-value">{{ var.extra.net_weight }}g</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">MRP</span>
-            <span class="info-value">₹{{ var.extra.mrp }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Return Price</span>
-            <span class="info-value">₹{{ var.extra.return_price }}</span>
-          </div>
-        </div>
-        {% endif %} {% endcomment %}
-        
-        <div class="pricing-box">
-          <div class="pricing-row">
-            <span>Meesho Price</span>
-            <span class="pricing-value">₹{{ var.pricing.meesho_price }}</span>
-          </div>
-          <div class="pricing-row">
-            <span>Shipping</span>
-            <span class="pricing-value">₹{{ var.pricing.total_shipping|floatformat:2 }}</span>
-          </div>
-
-          <div class="pricing-row divider">
-            <span>Customer Pays</span>
-            <span class="pricing-value">₹{{ var.pricing.customer_price|floatformat:2 }}</span>
-          </div>
-          <div class="pricing-row profit">
-            <span>💰 Your Profit</span>
-            <span class="pricing-value">₹{{ var.pricing.profit|floatformat:2 }}</span>
-          </div>
-        </div>
-        
-        <form method="POST" action="{% url 'generator:download' %}" class="download-form">
-          {% csrf_token %}
-          <input type="hidden" name="image_data" value="{{ var.image_data }}">
-          <button type="submit" class="download-btn">
-            <span>📥</span>
-            <span>Download Image</span>
-          </button>
-        </form>
+<!-- ═══ HERO HEADER ═══ -->
+<section class="result-hero">
+  <div class="result-hero-inner">
+    <div class="hero-left">
+      <div class="success-pill">✓ Generation Completed</div>
+      <h1>Your Images Are <span>Ready! 🎉</span></h1>
+      <p class="result-subtitle">
+        Generated <strong>{{ total_images }} optimized images</strong> across
+        {% for cat in categories %}<strong>{{ cat.name }}</strong>{% if not forloop.last %}, {% endif %}{% endfor %}
+        with the best shipping rates.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-white" onclick="downloadAll()">
+          📥 Download All ({{ total_images }})
+        </button>
+        <a href="{% url 'generator:meesho_image_generator' %}" class="btn btn-ghost">
+          ← Generate More
+        </a>
       </div>
     </div>
-    {% endfor %}
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-num">{{ total_images }}</span>
+        <span class="hero-stat-label">Images</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num">{{ credits_left }}</span>
+        <span class="hero-stat-label">Credits Left</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num" style="color:#fbbf24;">✓</span>
+        <span class="hero-stat-label">Done</span>
+      </div>
+    </div>
   </div>
-  
+</section>
+
+<!-- ═══ FILTER BAR ═══ -->
+<div class="filter-bar">
+  <div class="filter-bar-inner">
+    <span class="filter-label">Filter:</span>
+    <div class="filter-btns">
+      <button class="filter-btn active" data-zone="all" onclick="filterZone(this,'all')">All</button>
+      <button class="filter-btn" data-zone="Local" onclick="filterZone(this,'Local')">🏘 Local</button>
+      <button class="filter-btn" data-zone="Zonal" onclick="filterZone(this,'Zonal')">🗺 Zonal</button>
+      <button class="filter-btn" data-zone="National" onclick="filterZone(this,'National')">🇮🇳 National</button>
+    </div>
+    <span class="filter-count" id="visibleCount">{{ total_images }} images</span>
+  </div>
+</div>
+
+<!-- ═══ RESULTS ═══ -->
+<div class="container">
+  <div class="results-section">
+    {% if variations %}
+    <div class="results-grid" id="resultsGrid">
+      {% for var in variations %}
+      <div class="result-card" data-zone="{{ var.zone }}">
+
+        <!-- IMAGE -->
+        <div class="card-img-wrap">
+          <img src="data:image/jpeg;base64,{{ var.image_data }}" alt="Generated Image" loading="lazy">
+          <div class="ship-ribbon">🚚 ₹{{ var.shipping_rate }}</div>
+          <div class="zone-badge">{{ var.zone }}</div>
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+
+          <!-- PRICING TABLE -->
+          <div class="pricing-table">
+            <div class="pricing-row">
+              <span>Meesho Price</span>
+              <span class="pricing-val">₹{{ var.pricing.meesho_price }}</span>
+            </div>
+            <div class="pricing-row">
+              <span>Shipping Cost</span>
+              <span class="pricing-val">₹{{ var.pricing.total_shipping|floatformat:2 }}</span>
+            </div>
+            <div class="pricing-row total">
+              <span>Customer Pays</span>
+              <span class="pricing-val">₹{{ var.pricing.customer_price|floatformat:2 }}</span>
+            </div>
+            <div class="pricing-row profit-row">
+              <span>💰 Your Profit</span>
+              <span class="pricing-val green">₹{{ var.pricing.profit|floatformat:2 }}</span>
+            </div>
+          </div>
+
+          <!-- DOWNLOAD -->
+          <form method="POST" action="{% url 'generator:download' %}" class="download-form">
+            {% csrf_token %}
+            <input type="hidden" name="image_data" value="{{ var.image_data }}">
+            <button type="submit" class="download-btn">
+              📥 Download Image
+            </button>
+          </form>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-results">
+      <div class="empty-icon">🎨</div>
+      <h3>No Images Generated</h3>
+      <p>Something went wrong. Please try generating again.</p>
+      <a href="{% url 'generator:meesho_image_generator' %}" class="btn btn-white" style="margin-top:20px;display:inline-flex;">← Go Back</a>
+    </div>
+    {% endif %}
+  </div>
 </div>
 
 <!-- FOOTER -->
@@ -577,31 +630,62 @@ body{
     <div class="footer-links">
       <a href="/privacy">Privacy Policy</a>
       <a href="/terms">Terms of Service</a>
-      <a href="/refund-policy">Refund & Cancellation Policy</a>
+      <a href="/refund-policy">Refund Policy</a>
     </div>
   </div>
 </footer>
 
-<script>
-function downloadAll() {
-  const totalImages = Number("{{ total_images|default:'0' }}");
-  const downloadButtons = document.querySelectorAll('.download-btn');
+<!-- TOAST -->
+<div class="toast" id="dlToast">📥 Downloading images...</div>
 
-  if (totalImages <= 0) {
-    alert("No images to download.");
+{% include "partials/account_modal.html" %}
+<script src="{% static 'js/header.js' %}"></script>
+
+<script>
+/* ── FILTER BY ZONE ── */
+function filterZone(btn, zone){
+  // Update active button
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  const cards = document.querySelectorAll(".result-card");
+  let visible = 0;
+
+  cards.forEach(card => {
+    const cardZone = card.getAttribute("data-zone") || "";
+    const show = zone === "all" || cardZone.toLowerCase().includes(zone.toLowerCase());
+    card.style.display = show ? "" : "none";
+    if(show) visible++;
+  });
+
+  document.getElementById("visibleCount").textContent = visible + " image" + (visible !== 1 ? "s" : "");
+}
+
+/* ── DOWNLOAD ALL ── */
+function downloadAll(){
+  const buttons = document.querySelectorAll(".download-btn:not([disabled])");
+  const total   = buttons.length;
+
+  if(total === 0){
+    showToast("No images to download.");
     return;
   }
 
-  if (confirm(`Download all ${totalImages} images? This will download them one by one.`)) {
-    downloadButtons.forEach((btn, index) => {
-      setTimeout(() => {
-        btn.click();
-      }, index * 400);
-    });
-  }
+  showToast(`📥 Downloading ${total} images one by one…`);
+
+  buttons.forEach((btn, i) => {
+    setTimeout(() => btn.click(), i * 450);
+  });
+}
+
+/* ── TOAST ── */
+function showToast(msg){
+  const t = document.getElementById("dlToast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3500);
 }
 </script>
-
 
 </body>
 </html>

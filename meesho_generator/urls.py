@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('generator.urls')),
     path("api/auth/", include("accounts.urls")),
+    path("api/products/", include("products.urls")),
 ]
 
 # ✅ ADD THIS AT THE BOTTOM

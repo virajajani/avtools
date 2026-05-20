@@ -12,34 +12,82 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_editable = ("credits",)
     list_filter = ("credits",)
 
-
-# ===============================
-# Generation History Admin
-# ===============================
 @admin.register(GenerationHistory)
 class GenerationHistoryAdmin(admin.ModelAdmin):
+
     list_display = (
         "id",
         "user",
-        "category",
-        "image_preview",   # ✅ ADD THIS
+        "get_categories",
+        "meesho_price",
+        "image_preview",
         "created_at",
     )
 
-    readonly_fields = ("image_preview", "uploaded_image", "created_at")
+    readonly_fields = (
+        "image_preview",
+        "uploaded_image",
+        "created_at",
+    )
 
-    # ✅ IMAGE PREVIEW FUNCTION
+    search_fields = (
+        "user__email",
+        "categories__name",
+    )
+
+    list_filter = (
+        "created_at",
+        "categories",
+    )
+
+    ordering = (
+        "-created_at",
+    )
+
+    filter_horizontal = (
+        "categories",
+    )
+
+    # ===============================
+    # CATEGORY LIST
+    # ===============================
+
+    def get_categories(self, obj):
+
+        return ", ".join([
+            category.name
+            for category in obj.categories.all()
+        ])
+
+    get_categories.short_description = "Categories"
+
+    # ===============================
+    # IMAGE PREVIEW
+    # ===============================
+
     def image_preview(self, obj):
+
         if obj.uploaded_image:
+
             return format_html(
-                '<img src="{}" style="width: 100px; height: auto;" />',
+                '''
+                <img
+                    src="{}"
+                    style="
+                        width:100px;
+                        height:100px;
+                        object-fit:cover;
+                        border-radius:10px;
+                        border:1px solid #ddd;
+                    "
+                />
+                ''',
                 obj.uploaded_image.url
             )
+
         return "No Image"
 
     image_preview.short_description = "Preview"
-
-
 
 # ===============================
 # Active Sessions Admin

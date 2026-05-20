@@ -28,7 +28,7 @@
 
 from django.db import models
 from django.conf import settings
-
+from products.models import SubSubCategory
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -37,21 +37,52 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.email
+    
 
 class GenerationHistory(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    category = models.CharField(max_length=100)
-    net_weight = models.FloatField(default=0)
 
-    meesho_price = models.FloatField(default=0)
-    return_price = models.FloatField(default=0)
-    mrp = models.FloatField(default=0)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="generations"
+    )
 
-    uploaded_image = models.ImageField(upload_to="uploaded_images/")
-    created_at = models.DateTimeField(auto_now_add=True)
+    # MULTIPLE CATEGORIES
+    categories = models.ManyToManyField(
+        SubSubCategory,
+        related_name="generation_histories"
+    )
+
+    meesho_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    uploaded_image = models.ImageField(
+        upload_to="uploaded_images/"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+
+        db_table = "generation_history"
+
+        ordering = ["-created_at"]
+
+        indexes = [
+            models.Index(fields=["created_at"]),
+            models.Index(fields=["user"]),
+        ]
 
     def __str__(self):
-        return f"{self.user} - {self.category} - {self.created_at}"
+
+        return (
+            f"{self.user.email} - "
+            f"{self.created_at}"
+        )
 
 class ActiveSession(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

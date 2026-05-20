@@ -6,215 +6,259 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meesho Image Generator | AVTools</title>
 <meta name="description" content="Generate optimized Meesho product images and calculate shipping slabs to reduce costs and increase profits.">
-
-<!-- ✅ Header CSS -->
 <link rel="stylesheet" href="{% static 'css/header.css' %}">
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --primary:#3b82f6;
+  --primary-dark:#2563eb;
+  --accent:#8b5cf6;
+  --text:#1e293b;
+  --text-light:#64748b;
+  --bg:#ffffff;
+  --bg-gray:#f8fafc;
+  --border:#e2e8f0;
+  --success:#16a34a;
+  --success-bg:#dcfce7;
+  --success-border:#86efac;
+  --teal:#0f766e;
 }
 
 body{
   font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:#f8fafc;
-  color:#0f172a;
+  background:var(--bg-gray);
+  color:var(--text);
   min-height:100vh;
 }
 
-/* NAVBAR */
-.navbar{
-  background:#fff;
-  border-bottom:1px solid #e2e8f0;
-  padding:16px 6%;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:100;
-  box-shadow:0 1px 3px rgba(0,0,0,0.04);
-}
-
-.logo img{
-  height:36px;
-}
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:32px;
-}
-
-.nav-links a{
-  text-decoration:none;
-  color:#64748b;
-  font-weight:500;
-  font-size:15px;
-  transition:color 0.3s;
-  position:relative;
-}
-
-.nav-links a:hover{
-  color:#3b82f6;
-}
-
-.nav-links a.active{
-  color:#3b82f6;
-  font-weight:600;
-}
-
-.nav-links a.active::after{
-  content:'';
-  position:absolute;
-  bottom:-18px;
-  left:0;
-  right:0;
-  height:2px;
-  background:#3b82f6;
-}
-
-.user-menu{
-  display:flex;
-  align-items:center;
-  gap:16px;
-}
-
-.credits-badge{
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  color:#fff;
-  padding:8px 16px;
-  border-radius:20px;
-  font-size:13px;
-  font-weight:700;
-}
-
-/* MAIN LAYOUT */
+/* ── PAGE WRAPPER ── */
 .wrapper{
-  max-width:1280px;
+  max-width:1300px;
   margin:0 auto;
   padding:48px 6%;
   display:grid;
-  grid-template-columns:440px 1fr;
+  grid-template-columns:420px 1fr;
   gap:40px;
+  align-items:start;
 }
 
-/* CARD */
+/* ── LEFT CARD ── */
 .card{
-  background:#fff;
-  padding:32px;
-  border-radius:20px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.06);
-  border:1px solid #e2e8f0;
+  background:var(--bg);
+  padding:36px;
+  border-radius:24px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.07);
+  border:1px solid var(--border);
   height:fit-content;
   position:sticky;
-  top:100px;
+  top:90px;
 }
 
-.card h3{
+.card-title{
   font-size:22px;
   font-weight:800;
-  margin-bottom:24px;
-  color:#1e293b;
+  color:var(--text);
+  margin-bottom:28px;
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
-/* FORM */
-.form-group{
-  margin-bottom:20px;
+.card-title::before{
+  content:'⚡';
+  font-size:20px;
 }
 
-label{
-  font-size:14px;
+/* ── FORM ── */
+.form-group{margin-bottom:22px;}
+
+.form-label{
+  font-size:13px;
   font-weight:700;
-  margin-bottom:8px;
-  display:block;
   color:#334155;
+  display:block;
+  margin-bottom:8px;
+  letter-spacing:0.02em;
 }
 
-input[type="number"],
-select{
+/* ── CATEGORY SEARCH ── */
+.category-wrapper{position:relative;}
+
+.category-input{
   width:100%;
-  padding:12px 14px;
-  border-radius:10px;
-  border:2px solid #e2e8f0;
+  padding:13px 16px;
+  border-radius:12px;
+  border:2px solid var(--border);
   font-size:14px;
-  transition:all 0.3s ease;
-  background:#fff;
-  color:#1e293b;
   font-family:inherit;
+  color:var(--text);
+  background:#fff;
+  transition:all 0.3s;
+  outline:none;
 }
 
-input:focus,
-select:focus{
-  outline:none;
-  border-color:#3b82f6;
+.category-input:focus{
+  border-color:var(--primary);
   box-shadow:0 0 0 3px rgba(59,130,246,0.1);
 }
 
-/* FILE UPLOAD */
+.category-results{
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  right:0;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.13);
+  z-index:9999;
+  max-height:380px;
+  overflow-y:auto;
+  display:none;
+  scrollbar-width:thin;
+  scrollbar-color:#cbd5e1 transparent;
+}
+
+.category-results.show{display:block;}
+
+.category-results::-webkit-scrollbar{width:6px;}
+.category-results::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px;}
+
+.category-item{
+  padding:14px 18px;
+  border-bottom:1px solid #f1f5f9;
+  cursor:pointer;
+  transition:background 0.18s;
+}
+
+.category-item:last-child{border-bottom:none;}
+
+.category-item:hover{background:#eff6ff;}
+
+.category-name{
+  font-size:15px;
+  font-weight:700;
+  color:var(--text);
+}
+
+.category-path{
+  font-size:12px;
+  color:var(--text-light);
+  margin-top:3px;
+  line-height:1.5;
+}
+
+.category-results-empty{
+  padding:24px;
+  text-align:center;
+  color:var(--text-light);
+  font-size:14px;
+}
+
+.category-results-loading{
+  padding:24px;
+  text-align:center;
+  color:var(--primary);
+  font-size:13px;
+}
+
+/* CHIPS */
+.selected-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+.chip{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;
+  padding:7px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  animation:chipIn 0.2s ease;
+}
+
+@keyframes chipIn{
+  from{opacity:0;transform:scale(0.85);}
+  to{opacity:1;transform:scale(1);}
+}
+
+.chip-remove{
+  cursor:pointer;
+  font-size:16px;
+  line-height:1;
+  opacity:0.8;
+  transition:opacity 0.2s;
+}
+.chip-remove:hover{opacity:1;}
+
+.chip-hint{
+  font-size:12px;
+  color:var(--text-light);
+  margin-top:8px;
+}
+
+/* ── FILE UPLOAD ── */
 .upload-area{
   border:2px dashed #cbd5e1;
-  border-radius:12px;
-  padding:32px;
+  border-radius:14px;
+  padding:36px 20px;
   text-align:center;
-  background:#f8fafc;
-  transition:all 0.3s ease;
+  background:var(--bg-gray);
   cursor:pointer;
+  transition:all 0.3s;
   position:relative;
 }
 
 .upload-area:hover{
-  border-color:#3b82f6;
+  border-color:var(--primary);
   background:#f0f9ff;
 }
 
 .upload-area.dragover{
-  border-color:#3b82f6;
+  border-color:var(--primary);
   background:#eff6ff;
   border-style:solid;
 }
 
-.upload-icon{
-  font-size:48px;
-  margin-bottom:12px;
-}
+.upload-icon{font-size:44px;margin-bottom:12px;display:block;}
 
 .upload-text{
   font-size:14px;
-  color:#64748b;
-  margin-bottom:8px;
+  color:var(--text-light);
 }
 
-.upload-text strong{
-  color:#3b82f6;
-}
+.upload-text strong{color:var(--primary);}
 
 .upload-hint{
   font-size:12px;
   color:#94a3b8;
+  margin-top:6px;
 }
 
-.file-input{
-  display:none;
-}
+.file-input{display:none;}
 
 .file-preview{
-  margin-top:16px;
-  padding:12px;
-  background:#f0fdf4;
-  border:1px solid #86efac;
-  border-radius:8px;
+  margin-top:12px;
+  padding:12px 16px;
+  background:var(--success-bg);
+  border:1px solid var(--success-border);
+  border-radius:10px;
   display:none;
   align-items:center;
-  gap:12px;
-  font-size:14px;
-  color:#166534;
+  gap:10px;
+  font-size:13px;
+  color:var(--success);
+  font-weight:600;
 }
 
-.file-preview.show{
-  display:flex;
-}
+.file-preview.show{display:flex;}
 
 .remove-file{
   margin-left:auto;
@@ -222,88 +266,127 @@ select:focus{
   border:none;
   color:#dc2626;
   cursor:pointer;
-  font-size:18px;
-  padding:0 8px;
+  font-size:20px;
+  padding:0 4px;
+  line-height:1;
 }
 
-/* BUTTON */
-.btn{
+/* ── INPUTS ── */
+.input{
   width:100%;
-  padding:16px;
-  margin-top:8px;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  padding:13px 16px;
+  border-radius:12px;
+  border:2px solid var(--border);
+  font-size:14px;
+  font-family:inherit;
+  color:var(--text);
+  background:#fff;
+  transition:all 0.3s;
+  outline:none;
+}
+
+.input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+}
+
+/* ── SUBMIT BTN ── */
+.btn-generate{
+  width:100%;
+  padding:15px;
+  margin-top:4px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   color:#fff;
   border:none;
-  border-radius:12px;
-  font-weight:700;
-  font-size:15px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:800;
   cursor:pointer;
-  transition:all 0.3s ease;
+  transition:all 0.3s;
   box-shadow:0 8px 24px rgba(59,130,246,0.3);
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:8px;
+  gap:10px;
+  letter-spacing:0.02em;
 }
 
-.btn:hover{
+.btn-generate:hover:not(:disabled){
   transform:translateY(-2px);
-  box-shadow:0 12px 32px rgba(59,130,246,0.4);
+  box-shadow:0 12px 32px rgba(59,130,246,0.42);
 }
 
-.btn:active{
-  transform:translateY(0);
-}
-
-.btn:disabled{
-  opacity:0.6;
+.btn-generate:disabled{
+  opacity:0.55;
   cursor:not-allowed;
   transform:none;
 }
 
 .credit-info{
   font-size:12px;
-  color:#64748b;
-  margin-top:12px;
+  color:var(--text-light);
+  margin-top:14px;
   text-align:center;
-  padding:12px;
-  background:#f8fafc;
-  border-radius:8px;
+  padding:12px 16px;
+  background:var(--bg-gray);
+  border-radius:10px;
+  border:1px solid var(--border);
 }
 
-/* RIGHT SECTION */
-.right-section h3{
-  font-size:22px;
+.credit-info b{color:var(--primary);}
+
+.no-credit-warn{
+  color:#dc2626;
+  font-weight:700;
+  text-align:center;
+  margin-top:10px;
+  font-size:13px;
+  padding:10px;
+  background:#fee2e2;
+  border-radius:10px;
+}
+
+/* ── RIGHT SECTION ── */
+.right-section{}
+
+.section-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:28px;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.section-title{
+  font-size:26px;
   font-weight:800;
-  color:#1e293b;
+  color:var(--text);
 }
 
-.empty-state{
-  text-align:center;
-  padding:80px 32px;
-  background:#fff;
-  border-radius:20px;
-  border:2px dashed #e2e8f0;
-}
-
-.empty-icon{
-  font-size:64px;
-  margin-bottom:16px;
-  opacity:0.5;
-}
-
-.empty-text{
-  font-size:16px;
-  color:#64748b;
-  margin-bottom:8px;
-}
-
-.empty-hint{
+/* BUY CREDITS BTN */
+.btn-credits{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  border:none;
+  padding:10px 20px;
+  border-radius:10px;
   font-size:14px;
-  color:#94a3b8;
+  font-weight:700;
+  cursor:pointer;
+  transition:all 0.3s;
+  box-shadow:0 4px 14px rgba(59,130,246,0.3);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
 }
 
-/* RECENT GRID */
+.btn-credits:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(59,130,246,0.4);
+}
+
+/* GENERATION GRID */
 .recent-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
@@ -312,72 +395,67 @@ select:focus{
 
 .generation-card{
   background:#fff;
-  border-radius:16px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+  border-radius:18px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.07);
   overflow:hidden;
-  transition:all 0.3s ease;
-  border:1px solid #e2e8f0;
+  border:1px solid var(--border);
+  transition:all 0.3s;
 }
 
 .generation-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 12px 36px rgba(0,0,0,0.12);
+  transform:translateY(-5px);
+  box-shadow:0 16px 40px rgba(0,0,0,0.13);
 }
 
-.gen-image{
+.gen-image-wrap{
   width:100%;
-  height:180px;
-  background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:48px;
+  height:190px;
   position:relative;
+  background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
+  overflow:hidden;
+}
+
+.gen-image-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
 .gen-status{
   position:absolute;
-  top:12px;
-  left:12px;
-  padding:6px 12px;
+  top:10px;
+  left:10px;
+  padding:5px 12px;
   border-radius:20px;
-  font-size:11px;
-  font-weight:700;
+  font-size:10px;
+  font-weight:800;
   text-transform:uppercase;
-  letter-spacing:0.5px;
+  letter-spacing:0.05em;
+  background:var(--success-bg);
+  color:var(--success);
+  border:1px solid var(--success-border);
 }
 
-.status-completed{
-  background:#dcfce7;
-  color:#166534;
-}
+.gen-info{padding:16px;}
 
-.status-processing{
-  background:#fef3c7;
-  color:#92400e;
-}
-
-.gen-info{
-  padding:16px;
-}
-
-.gen-category{
-  font-size:15px;
+.gen-cat{
+  font-size:14px;
   font-weight:700;
-  color:#1e293b;
-  margin-bottom:8px;
+  color:var(--text);
+  margin-bottom:6px;
 }
 
-.gen-details{
-  font-size:13px;
-  color:#64748b;
-  margin-bottom:4px;
+.gen-meta{
+  font-size:12px;
+  color:var(--text-light);
+  margin-bottom:3px;
 }
 
 .gen-price{
-  font-size:18px;
-  font-weight:800;
-  color:#3b82f6;
+  font-size:20px;
+  font-weight:900;
+  color:var(--primary);
   margin-top:8px;
 }
 
@@ -387,431 +465,386 @@ select:focus{
   margin-top:12px;
 }
 
-.btn-small{
+.btn-sm{
   flex:1;
   padding:8px;
   border-radius:8px;
-  border:1px solid #e2e8f0;
+  border:1.5px solid var(--border);
   background:#fff;
   font-size:12px;
-  font-weight:600;
+  font-weight:700;
   cursor:pointer;
+  transition:all 0.2s;
+  text-align:center;
+  text-decoration:none;
+  color:var(--text);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
+.btn-sm:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+  background:#f0f9ff;
+}
+
+/* EMPTY STATE */
+.empty-state{
+  background:#fff;
+  border-radius:20px;
+  border:2px dashed var(--border);
+  padding:80px 32px;
+  text-align:center;
+}
+
+.empty-icon{font-size:64px;margin-bottom:16px;opacity:0.45;}
+
+.empty-text{
+  font-size:18px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:8px;
+}
+
+.empty-hint{font-size:14px;color:var(--text-light);}
+
+/* ── CREDIT MODAL ── */
+.credit-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:1100;
+}
+
+.credit-modal.show{display:block;}
+
+.credit-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,0.5);
+  backdrop-filter:blur(4px);
+}
+
+.credit-box{
+  position:relative;
+  max-width:860px;
+  margin:80px auto;
+  background:#fff;
+  padding:44px;
+  border-radius:28px;
+  box-shadow:0 40px 100px rgba(0,0,0,0.2);
+  animation:modalIn 0.3s ease;
+}
+
+@keyframes modalIn{
+  from{opacity:0;transform:translateY(24px) scale(0.97);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+.close-modal{
+  position:absolute;
+  top:18px;right:22px;
+  font-size:24px;
+  background:none;border:none;
+  cursor:pointer;
+  color:var(--text-light);
+  width:36px;height:36px;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s;
+}
+
+.close-modal:hover{background:var(--bg-gray);}
+
+.credit-box h2{
+  font-size:28px;font-weight:900;
+  color:var(--text);margin-bottom:6px;
+}
+
+.credit-box .sub{
+  font-size:15px;color:var(--text-light);margin-bottom:32px;
+}
+
+.plans-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.plan{
+  border:2px solid var(--border);
+  padding:28px 24px;
+  border-radius:20px;
+  text-align:center;
   transition:all 0.3s;
+  position:relative;
 }
 
-.btn-small:hover{
-  background:#f8fafc;
-  border-color:#3b82f6;
-  color:#3b82f6;
+.plan:hover{
+  border-color:var(--primary);
+  box-shadow:0 12px 40px rgba(59,130,246,0.12);
+  transform:translateY(-4px);
 }
 
-/* FOOTER */
+.plan.popular{
+  border-color:var(--primary);
+  box-shadow:0 12px 40px rgba(59,130,246,0.15);
+}
+
+.plan-badge{
+  position:absolute;
+  top:-12px;left:50%;
+  transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  padding:5px 16px;
+  border-radius:20px;
+}
+
+.plan h3{font-size:20px;font-weight:800;margin-bottom:12px;}
+
+.plan-price{
+  font-size:40px;font-weight:900;
+  color:var(--primary);margin:16px 0;
+}
+
+.plan-features{
+  font-size:13px;color:var(--text-light);
+  line-height:2;margin-bottom:20px;
+}
+
+.plan-btn{
+  width:100%;padding:12px;
+  border-radius:12px;border:2px solid var(--border);
+  background:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;transition:all 0.3s;
+  color:var(--primary);
+}
+
+.plan-btn.primary{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;border:none;
+  box-shadow:0 6px 18px rgba(59,130,246,0.3);
+}
+
+.plan-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(59,130,246,0.2);
+}
+
+/* ── FOOTER ── */
 .footer{
-  border-top:1px solid #e2e8f0;
-  padding:32px 6%;
+  border-top:1px solid var(--border);
+  padding:28px 6%;
   margin-top:80px;
   background:#fff;
 }
 
 .footer-content{
-  max-width:1280px;
-  margin:0 auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:16px;
+  max-width:1300px;margin:0 auto;
+  display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:12px;
+  font-size:13px;color:var(--text-light);
 }
 
-.footer-links{
-  display:flex;
-  gap:24px;
-}
-
+.footer-links{display:flex;gap:20px;}
 .footer-links a{
-  color:#64748b;
-  text-decoration:none;
-  font-size:14px;
-  transition:color 0.3s;
+  color:var(--text-light);text-decoration:none;
+  font-size:13px;transition:color 0.2s;
 }
+.footer-links a:hover{color:var(--primary);}
 
-.footer-links a:hover{
-  color:#3b82f6;
-}
-
-/* RESPONSIVE */
-@media(max-width:1024px){
-  .wrapper{
-    grid-template-columns:1fr;
-    gap:32px;
-  }
-  
-  .card{
-    position:relative;
-    top:0;
-  }
-  
-  .user-menu{
-    display:none;
-  }
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .wrapper{grid-template-columns:1fr;gap:32px;}
+  .card{position:relative;top:0;}
+  .plans-grid{grid-template-columns:1fr;}
 }
 
 @media(max-width:768px){
-  .navbar{
-    padding:14px 5%;
-  }
-  
-  .nav-links{
-    gap:16px;
-  }
-  
-  .wrapper{
-    padding:32px 5%;
-  }
-  
-  .recent-grid{
-    grid-template-columns:1fr;
-  }
-  
-  .footer-content{
-    flex-direction:column;
-    text-align:center;
-  }
+  .wrapper{padding:28px 5%;}
+  .recent-grid{grid-template-columns:1fr 1fr;}
+  .section-header{flex-direction:column;align-items:flex-start;}
+  .credit-box{margin:40px 16px;padding:28px 20px;}
+  .plans-grid{grid-template-columns:1fr;}
 }
 
-/* BUY CREDIT BUTTON */
-.buy-credit-wrap{
-  display:flex;
-  justify-content:flex-end;
-  margin-bottom:18px;
+@media(max-width:480px){
+  .recent-grid{grid-template-columns:1fr;}
+  .credit-box{margin:20px 12px;padding:24px 16px;}
 }
-
-.buy-credit-btn{
-  background:#2563eb;
-  color:#fff;
-  border:none;
-  padding:10px 18px;
-  border-radius:10px;
-  font-size:14px;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.buy-credit-btn:hover{
-  background:#1e40af;
-}
-
-/* MODAL */
-.credit-modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:999;
-}
-.credit-modal.show{display:block}
-
-.credit-overlay{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.45);
-}
-
-.credit-box{
-  position:relative;
-  max-width:820px;
-  margin:90px auto;
-  background:#fff;
-  padding:36px;
-  border-radius:20px;
-}
-
-.close-credit{
-  position:absolute;
-  top:16px;
-  right:20px;
-  font-size:26px;
-  background:none;
-  border:none;
-  cursor:pointer;
-}
-
-.credit-plans{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:22px;
-  margin-top:28px;
-}
-
-.plan{
-  border:1px solid #e2e8f0;
-  padding:24px;
-  border-radius:16px;
-  text-align:center;
-}
-
-.plan.popular{
-  border:2px solid #2563eb;
-}
-
-.badge{
-  background:#2563eb;
-  color:#fff;
-  font-size:11px;
-  padding:4px 10px;
-  border-radius:20px;
-}
-
-.price{
-  font-size:30px;
-  font-weight:900;
-  margin:14px 0;
-}
-
-.plan button{
-  margin-top:18px;
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #e2e8f0;
-  background:#fff;
-  cursor:pointer;
-}
-
-.plan .primary{
-  background:#2563eb;
-  color:#fff;
-  border:none;
-}
-
-.section-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
-}
-
-@media(max-width:600px){
-  .section-header{
-    {% comment %} flex-direction:column; {% endcomment %}
-    align-items:flex-start;
-    gap:10px;
-  }
-}
-
 </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
 {% include "partials/header.html" %}
 
-
-<!-- MAIN -->
 <div class="wrapper">
-  
-  <!-- LEFT CARD -->
+
+  <!-- ═══ LEFT: FORM CARD ═══ -->
   <div class="card">
-    <h3>Create New Generation</h3>
-    
-    <form id="generatorForm" method="POST" action="{% url 'generator:generate' %}" enctype="multipart/form-data">
+    <div class="card-title">Create New Generation</div>
+
+    <form
+      id="generatorForm"
+      method="POST"
+      action="{% url 'generator:generate' %}"
+      enctype="multipart/form-data"
+    >
       {% csrf_token %}
-      
+
+      <!-- CATEGORY SEARCH -->
       <div class="form-group">
-        <label>Product Category</label>
-        <select name="category" required>
-          <option value="">Select a category</option>
-          <option value="necklace">Necklaces & Chains</option>
-          <option value="earring">Earrings</option>
-          <option value="bracelet">Bracelets & Bangles</option>
-          <option value="ring">Rings</option>
-          <option value="anklet">Anklets</option>
-          <option value="pendant">Pendants</option>
-        </select>
+        <label class="form-label">Product Categories <span style="color:#94a3b8;font-weight:500;">(Max 5)</span> <span id="catCount" style="background:#eff6ff;color:#2563eb;font-size:11px;font-weight:800;padding:2px 8px;border-radius:10px;display:none;">0 / 5</span></label>
+
+        <div class="category-wrapper">
+          <input
+            type="text"
+            id="categorySearch"
+            class="category-input"
+            placeholder="🔍  Search category..."
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <div id="categoryResults" class="category-results"></div>
+        </div>
+
+        <div id="selectedChips" class="selected-chips"></div>
+        <div class="chip-hint" id="chipHint" style="display:none;">Select up to 5 categories</div>
+
+        <!-- Hidden field stores selected IDs -->
+        <input type="hidden" name="selected_categories" id="selectedCategoriesInput">
+        <!-- Hidden field stores HMAC token (populated on page load) -->
+        <input type="hidden" id="apiToken" value="">
       </div>
 
+      <!-- IMAGE UPLOAD -->
       <div class="form-group">
-        <label>Net Weight (grams)</label>
-        <input type="number" name="net_weight" placeholder="e.g. 120" min="1" step="0.01" required>
-      </div>
-
-      <div class="form-group">
-        <label>Product Image</label>
+        <label class="form-label">Product Image</label>
         <div class="upload-area" id="uploadArea">
-          <div class="upload-icon">📸</div>
-          <div class="upload-text"><strong>Click to upload</strong> or drag and drop</div>
-          <div class="upload-hint">PNG, JPG up to 10MB</div>
+          <span class="upload-icon">📸</span>
+          <div class="upload-text"><strong>Click to upload</strong> or drag & drop</div>
+          <div class="upload-hint">PNG, JPG up to 10 MB</div>
           <input type="file" name="product_image" id="fileInput" class="file-input" accept="image/*" required>
         </div>
         <div class="file-preview" id="filePreview">
           <span>📄</span>
-          <span id="fileName"></span>
-          <button type="button" class="remove-file" id="removeFile">×</button>
+          <span id="fileName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+          <button type="button" class="remove-file" id="removeFile" title="Remove">×</button>
         </div>
       </div>
 
+      <!-- MEESHO PRICE -->
       <div class="form-group">
-        <label>Meesho Price (₹)</label>
-        <input type="number" name="meesho_price" placeholder="e.g. 199" min="1" step="0.01" required>
+        <label class="form-label">Meesho Price (₹)</label>
+        <input type="number" name="meesho_price" class="input" placeholder="e.g. 299" min="1" required>
       </div>
 
-      <div class="form-group">
-        <label>Wrong/Defective Returns Price (₹)</label>
-        <input type="number" name="return_price" placeholder="e.g. 150" min="0" step="0.01" required>
-      </div>
-
-      <div class="form-group">
-        <label>MRP (₹)</label>
-        <input type="number" name="mrp" placeholder="e.g. 299" min="1" step="0.01" required>
-      </div>
-
-      {% comment %} <div class="form-group">
-        <label>Number of Images</label>
-        <input type="number" name="num_images" value="55" min="12" max="100" required>
-      </div> {% endcomment %}
-
-      <button type="submit" class="btn" id="submitBtn" {% if credits < 1 %}disabled{% endif %}>
-  <span>⚡</span>
-  <span>
-    {% if credits < 1 %}
-      No Credits Left
-    {% else %}
-      Generate Images
-    {% endif %}
-  </span>
-</button>
-
-<div class="credit-info">
-  💡 Each generation uses 1 credit • Your balance: <b>{{ credits }}</b>
-</div>
-
-{% if credits < 1 %}
-  <p style="color:red; font-weight:700; text-align:center; margin-top:10px;">
-    ⚠️ You have 0 credits. Please recharge to generate images.
-  </p>
-{% endif %}
-
+      <!-- SUBMIT -->
+      <button
+        type="submit"
+        class="btn-generate"
+        id="submitBtn"
+        {% if credits < 1 %}disabled{% endif %}
+      >
+        {% if credits < 1 %}
+          <span>🚫</span><span>No Credits Left</span>
+        {% else %}
+          <span>⚡</span><span>Generate Images</span>
+        {% endif %}
+      </button>
 
       <div class="credit-info">
-        💡 Each generation uses 1 credit • Results in 30–60 seconds
+        💳 Each generation uses <b>1 credit</b> &nbsp;·&nbsp; Your balance: <b>{{ credits }}</b>
       </div>
+
+      {% if credits < 1 %}
+        <div class="no-credit-warn">⚠️ You have 0 credits. Please recharge to continue.</div>
+      {% endif %}
+
     </form>
   </div>
 
-  <!-- RIGHT SECTION -->
+  <!-- ═══ RIGHT: RECENT GENERATIONS ═══ -->
   <div class="right-section">
-    {% comment %} <div class="buy-credit-wrap">
-      <button class="buy-credit-btn" id="openCreditModal">
-        + Buy Credits
-      </button>
-    </div> {% endcomment %}
-
-    <div class="credit-modal" id="creditModal">
-      <div class="credit-overlay"></div>
-
-      <div class="credit-box">
-        <button class="close-credit" id="closeCreditModal">×</button>
-
-        <h2>Choose a plan</h2>
-        <p class="sub-text">Recharge credits to continue generating images</p>
-
-        <div class="credit-plans">
-
-          <div class="plan">
-            <h3>Starter</h3>
-            <div class="price">₹99</div>
-            <p>25 Credits</p>
-            <p>30 Days Validity</p>
-            <button>Buy Now</button>
-          </div>
-
-          <div class="plan popular">
-            <span class="badge">MOST POPULAR</span>
-            <h3>Growth</h3>
-            <div class="price">₹299</div>
-            <p>100 Credits</p>
-            <p>60 Days Validity</p>
-            <button class="primary">Buy Now</button>
-          </div>
-
-          <div class="plan">
-            <h3>Pro</h3>
-            <div class="price">₹699</div>
-            <p>400 Credits</p>
-            <p>90 Days Validity</p>
-            <button>Buy Now</button>
-          </div>
-
-        </div>
-      </div>
-    </div>
 
     <div class="section-header">
-      <h3>Recent Generations</h3>
-
-      <button class="buy-credit-btn" id="openCreditModal">
-        + Buy Credits
+      <div class="section-title">Recent Generations</div>
+      <button class="btn-credits" id="openCreditModal">
+        💳 Buy Credits
       </button>
     </div>
 
-      {% if recent_generations %}
-        <div class="recent-grid">
-
-          {% for gen in recent_generations %}
-          <div class="generation-card">
-
-            <!-- IMAGE -->
-            <div class="gen-image" style="padding:0;">
-              <img src="{{ gen.uploaded_image.url }}" 
-                  style="width:100%; height:180px; object-fit:cover;">
-
-              <div class="gen-status status-completed">
-                Completed
-              </div>
-            </div>
-
-            <!-- INFO -->
-            <div class="gen-info">
-              <div class="gen-category">
-                {{ gen.category|title }}
-              </div>
-
-              <div class="gen-details">
-                {{ gen.net_weight }}g • ₹{{ gen.meesho_price }}
-              </div>
-
-              <div class="gen-details">
-                {{ gen.created_at|date:"M d, H:i" }}
-              </div>
-
-              <div class="gen-actions">
-                <a href="{{ gen.uploaded_image.url }}" target="_blank" class="btn-small">
-                  👁 View
-                </a>
-
-                <a href="{% url 'generator:results' %}" class="btn-small">
-                  ⚡ Open
-                </a>
-              </div>
-            </div>
-
+    {% if recent_generations %}
+      <div class="recent-grid">
+        {% for gen in recent_generations %}
+        <div class="generation-card">
+          <div class="gen-image-wrap">
+            <img src="{{ gen.uploaded_image.url }}" alt="Generation">
+            <div class="gen-status">✓ Done</div>
           </div>
-          {% endfor %}
-
+          <div class="gen-info">
+            <div class="gen-cat">
+              {% for cat in gen.categories.all %}{{ cat.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </div>
+            <div class="gen-meta">{{ gen.created_at|date:"M d, Y · H:i" }}</div>
+            <div class="gen-price">₹{{ gen.meesho_price }}</div>
+            <div class="gen-actions">
+              <a href="{{ gen.uploaded_image.url }}" target="_blank" class="btn-sm">👁 View</a>
+              <a href="{% url 'generator:results' %}" class="btn-sm">⚡ Open</a>
+            </div>
+          </div>
         </div>
+        {% endfor %}
+      </div>
 
-      {% else %}
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">🎨</div>
+        <div class="empty-text">No generations yet</div>
+        <div class="empty-hint">Your generated images will appear here after your first generation.</div>
+      </div>
+    {% endif %}
 
-        <div class="empty-state">
-          <div class="empty-icon">🎨</div>
-          <div class="empty-text">No generations yet</div>
-          <div class="empty-hint">Your generated images will appear here</div>
-        </div>
+  </div>
+</div>
 
-      {% endif %}
-      
+<!-- ═══ CREDIT MODAL ═══ -->
+<div class="credit-modal" id="creditModal">
+  <div class="credit-overlay" id="creditOverlay"></div>
+  <div class="credit-box">
+    <button class="close-modal" id="closeCreditModal">✕</button>
+    <h2>Choose a Plan</h2>
+    <p class="sub">Recharge credits to continue generating images</p>
+
+    <div class="plans-grid">
+      <div class="plan">
+        <h3>Starter</h3>
+        <div class="plan-price">₹99</div>
+        <div class="plan-features">25 Credits<br>30 Days Validity<br>All Basic Features<br>Email Support</div>
+        <button class="plan-btn" onclick="location.href='/signup'">Buy Now</button>
+      </div>
+      <div class="plan popular">
+        <span class="plan-badge">Most Popular</span>
+        <h3>Growth</h3>
+        <div class="plan-price">₹299</div>
+        <div class="plan-features">100 Credits<br>60 Days Validity<br>All Premium Features<br>Priority Support</div>
+        <button class="plan-btn primary" onclick="location.href='/signup'">Buy Now</button>
+      </div>
+      <div class="plan">
+        <h3>Pro</h3>
+        <div class="plan-price">₹699</div>
+        <div class="plan-features">400 Credits<br>90 Days Validity<br>All Features Unlocked<br>Dedicated Support</div>
+        <button class="plan-btn" onclick="location.href='/signup'">Buy Now</button>
+      </div>
     </div>
   </div>
-
 </div>
 
 <!-- FOOTER -->
@@ -821,144 +854,352 @@ select:focus{
     <div class="footer-links">
       <a href="/privacy">Privacy Policy</a>
       <a href="/terms">Terms of Service</a>
-      <a href="/refund-policy">Refund & Cancellation Policy</a>
+      <a href="/refund-policy">Refund Policy</a>
     </div>
   </div>
 </footer>
 
-<script>
-// File upload handling
-const uploadArea = document.getElementById('uploadArea');
-const fileInput = document.getElementById('fileInput');
-const filePreview = document.getElementById('filePreview');
-const fileName = document.getElementById('fileName');
-const removeFile = document.getElementById('removeFile');
-const submitBtn = document.getElementById('submitBtn');
-const generatorForm = document.getElementById('generatorForm');
-
-// Click to upload
-uploadArea.addEventListener('click', () => fileInput.click());
-
-// Drag over
-uploadArea.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  uploadArea.classList.add('dragover');
-});
-
-// Drag leave
-uploadArea.addEventListener('dragleave', () => {
-  uploadArea.classList.remove('dragover');
-});
-
-// Drop file
-uploadArea.addEventListener('drop', (e) => {
-  e.preventDefault();
-  uploadArea.classList.remove('dragover');
-  const files = e.dataTransfer.files;
-  if (files.length) {
-    fileInput.files = files;
-    handleFileSelect(files[0]);
-  }
-});
-
-// File input change
-fileInput.addEventListener('change', (e) => {
-  if (e.target.files.length) {
-    handleFileSelect(e.target.files[0]);
-  }
-});
-
-// Remove file
-removeFile.addEventListener('click', () => {
-  fileInput.value = '';
-  filePreview.classList.remove('show');
-});
-
-// Handle file selection
-function handleFileSelect(file) {
-  // Validate file size (10MB limit)
-  if (file.size > 10 * 1024 * 1024) {
-    alert('File size must be less than 10MB');
-    fileInput.value = '';
-    return;
-  }
-  
-  // Validate file type
-  if (!file.type.startsWith('image/')) {
-    alert('Please upload an image file');
-    fileInput.value = '';
-    return;
-  }
-  
-  fileName.textContent = file.name;
-  filePreview.classList.add('show');
-}
-
-// Form submission
-generatorForm.addEventListener('submit', (e) => {
-  // Validate form before submission
-  const category = document.querySelector('select[name="category"]').value;
-  const netWeight = document.querySelector('input[name="net_weight"]').value;
-  const meeshoPrice = document.querySelector('input[name="meesho_price"]').value;
-  const returnPrice = document.querySelector('input[name="return_price"]').value;
-  const mrp = document.querySelector('input[name="mrp"]').value;
-  const numImages = document.querySelector('input[name="num_images"]').value;
-  
-  if (!category || !netWeight || !meeshoPrice || !returnPrice || !mrp || !numImages) {
-    e.preventDefault();
-    alert('Please fill in all fields');
-    return;
-  }
-  
-  if (!fileInput.files.length) {
-    e.preventDefault();
-    alert('Please upload a product image');
-    return;
-  }
-  
-  // Disable button and show loading state
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span>⏳</span><span>Generating...</span>';
-  
-  // Form will submit normally - no e.preventDefault()
-  console.log('Form is submitting...');
-});
-
- /* ===============================
-     BUY CREDITS MODAL (NEW CODE)
-     =============================== */
-
-  const openCreditBtn = document.getElementById("openCreditModal");
-  const closeCreditBtn = document.getElementById("closeCreditModal");
-  const creditModal = document.getElementById("creditModal");
-
-  if (openCreditBtn && closeCreditBtn && creditModal) {
-
-    const overlay = creditModal.querySelector(".credit-overlay");
-
-    openCreditBtn.addEventListener("click", () => {
-      creditModal.classList.add("show");
-    });
-
-    closeCreditBtn.addEventListener("click", () => {
-      creditModal.classList.remove("show");
-    });
-
-    overlay.addEventListener("click", () => {
-      creditModal.classList.remove("show");
-    });
-  }
-
-// Toggle between empty state and grid (for demo purposes)
-const emptyState = document.getElementById('emptyState');
-const recentGrid = document.getElementById('recentGrid');
-
-// Uncomment to show grid instead of empty state for testing
-// emptyState.style.display = 'none';
-// recentGrid.style.display = 'grid';
-</script>
-
 {% include "partials/account_modal.html" %}
 <script src="{% static 'js/header.js' %}"></script>
+
+<script>
+(function(){
+"use strict";
+
+/* ═══════════════════════════════════════════════
+   TOKEN: fetch short-lived HMAC token on load
+═══════════════════════════════════════════════ */
+let _apiToken = "";
+let _tokenTimer = null;
+
+async function fetchToken(){
+  try{
+    const r = await fetch("/api/products/category-token/", {
+      headers:{"X-Requested-With":"XMLHttpRequest"}
+    });
+    if(!r.ok) return;
+    const d = await r.json();
+    _apiToken = d.t || "";
+    document.getElementById("apiToken").value = _apiToken;
+    // Auto-refresh before expiry
+    clearTimeout(_tokenTimer);
+    const ttl = (d.ttl || 300) - 30;  // refresh 30s before expiry
+    _tokenTimer = setTimeout(fetchToken, ttl * 1000);
+  }catch(e){
+    console.warn("token fetch failed");
+  }
+}
+
+fetchToken();  // run immediately on page load
+
+/* ═══════════════════════════════════════════════
+   CATEGORY SEARCH (secure)
+═══════════════════════════════════════════════ */
+const searchInput       = document.getElementById("categorySearch");
+const resultsBox        = document.getElementById("categoryResults");
+const chipsBox          = document.getElementById("selectedChips");
+const hiddenInput       = document.getElementById("selectedCategoriesInput");
+const chipHint          = document.getElementById("chipHint");
+
+let selectedCategories  = [];
+let searchTimer         = null;
+
+searchInput.addEventListener("input", function(){
+  clearTimeout(searchTimer);
+  const q = this.value.trim();
+
+  if(q.length < 2){
+    hideResults();
+    return;
+  }
+
+  // Debounce 320ms
+  searchTimer = setTimeout(() => doSearch(q), 320);
+});
+
+async function doSearch(q){
+  if(!_apiToken){
+    await fetchToken();
+  }
+
+  showLoading();
+
+  try{
+    // Keys deliberately not matching what a scraper would expect
+    const url = `/api/products/search-categories/?q=${encodeURIComponent(q)}&_t=${encodeURIComponent(_apiToken)}`;
+    const res = await fetch(url, {
+      headers:{
+        "X-Requested-With":"XMLHttpRequest",
+        "Accept":"application/json"
+      }
+    });
+
+    if(res.status === 403){
+      // Token expired — refresh and retry once
+      await fetchToken();
+      return doSearch(q);
+    }
+
+    if(res.status === 429){
+      showError("Too many searches. Please wait a moment.");
+      return;
+    }
+
+    if(!res.ok){
+      hideResults();
+      return;
+    }
+
+    const data = await res.json();
+    // Server returns { r: [{k, v, p}, ...] }  (shuffled keys)
+    renderResults(data.r || []);
+
+  }catch(err){
+    hideResults();
+  }
+}
+
+function renderResults(items){
+  resultsBox.innerHTML = "";
+
+  if(!items.length){
+    resultsBox.innerHTML = `<div class="category-results-empty">No categories found for this search.</div>`;
+    resultsBox.classList.add("show");
+    return;
+  }
+
+  items.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "category-item";
+    // v = name, p = path, k = id  (server-side shuffled keys)
+    div.innerHTML = `
+      <div class="category-name">${escHtml(item.v)}</div>
+      <div class="category-path">${escHtml(item.p)}</div>
+    `;
+    div.addEventListener("click", () => addCategory({id: item.k, name: item.v}));
+    resultsBox.appendChild(div);
+  });
+
+  resultsBox.classList.add("show");
+}
+
+function showLoading(){
+  resultsBox.innerHTML = `<div class="category-results-loading">🔍 Searching...</div>`;
+  resultsBox.classList.add("show");
+}
+
+function showError(msg){
+  resultsBox.innerHTML = `<div class="category-results-empty">⚠️ ${escHtml(msg)}</div>`;
+  resultsBox.classList.add("show");
+}
+
+function hideResults(){
+  resultsBox.innerHTML = "";
+  resultsBox.classList.remove("show");
+}
+
+function addCategory(cat){
+  if(selectedCategories.length >= 5){
+    alert("Maximum 5 categories allowed.");
+    return;
+  }
+  if(selectedCategories.find(x => x.id == cat.id)) return;
+
+  selectedCategories.push(cat);
+  renderChips();
+  hideResults();
+  searchInput.value = "";
+  searchInput.focus();
+}
+
+function removeCategory(id){
+  selectedCategories = selectedCategories.filter(x => x.id != id);
+  renderChips();
+}
+
+function renderChips(){
+  chipsBox.innerHTML = "";
+  selectedCategories.forEach(cat => {
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.innerHTML = `
+      <span>${escHtml(cat.name)}</span>
+      <span class="chip-remove" title="Remove">×</span>
+    `;
+    chip.querySelector(".chip-remove").onclick = () => removeCategory(cat.id);
+    chipsBox.appendChild(chip);
+  });
+
+  // Always keep hidden input in sync
+  hiddenInput.value = selectedCategories.map(x => x.id).join(",");
+
+  // Update counter badge
+  const counter = document.getElementById("catCount");
+  if(selectedCategories.length > 0){
+    counter.style.display = "inline";
+    counter.textContent   = `${selectedCategories.length} / 5`;
+    counter.style.background = selectedCategories.length >= 5 ? "#dcfce7" : "#eff6ff";
+    counter.style.color       = selectedCategories.length >= 5 ? "#16a34a" : "#2563eb";
+  } else {
+    counter.style.display = "none";
+  }
+
+  chipHint.style.display = selectedCategories.length ? "block" : "none";
+
+  // Clear any category error when user adds/removes chips
+  const err = document.getElementById("formError_cat");
+  if(err) err.remove();
+}
+
+// Close dropdown on outside click
+document.addEventListener("click", e => {
+  if(!e.target.closest(".category-wrapper")){
+    hideResults();
+  }
+});
+
+/* ═══════════════════════════════════════════════
+   FILE UPLOAD
+═══════════════════════════════════════════════ */
+const uploadArea  = document.getElementById("uploadArea");
+const fileInput   = document.getElementById("fileInput");
+const filePreview = document.getElementById("filePreview");
+const fileNameEl  = document.getElementById("fileName");
+const removeFile  = document.getElementById("removeFile");
+
+uploadArea.addEventListener("click", () => fileInput.click());
+
+uploadArea.addEventListener("dragover", e => {
+  e.preventDefault();
+  uploadArea.classList.add("dragover");
+});
+
+uploadArea.addEventListener("dragleave", () => {
+  uploadArea.classList.remove("dragover");
+});
+
+uploadArea.addEventListener("drop", e => {
+  e.preventDefault();
+  uploadArea.classList.remove("dragover");
+  const f = e.dataTransfer.files[0];
+  if(f) setFile(f);
+});
+
+fileInput.addEventListener("change", e => {
+  if(e.target.files[0]) setFile(e.target.files[0]);
+});
+
+removeFile.addEventListener("click", () => {
+  fileInput.value = "";
+  filePreview.classList.remove("show");
+});
+
+function setFile(file){
+  if(file.size > 10 * 1024 * 1024){ alert("Max file size is 10 MB."); return; }
+  if(!file.type.startsWith("image/")){ alert("Please upload an image file."); return; }
+  fileNameEl.textContent = file.name;
+  filePreview.classList.add("show");
+}
+
+/* ═══════════════════════════════════════════════
+   FORM SUBMIT
+═══════════════════════════════════════════════ */
+const form      = document.getElementById("generatorForm");
+const submitBtn = document.getElementById("submitBtn");
+
+form.addEventListener("submit", e => {
+
+  // ── 1. Force-sync hidden input RIGHT before submit ─────────────────────────
+  //    This guarantees the POST body always has the latest IDs even if
+  //    renderChips() was somehow missed.
+  hiddenInput.value = selectedCategories.map(x => x.id).join(",");
+
+  // ── 2. Validate categories ─────────────────────────────────────────────────
+  if(selectedCategories.length === 0){
+    e.preventDefault();
+    showFormError("cat", "⚠️ Please select at least 1 product category.");
+    searchInput.focus();
+    return;
+  }
+
+  // ── 3. Validate image ──────────────────────────────────────────────────────
+  if(!fileInput.files.length){
+    e.preventDefault();
+    showFormError("img", "⚠️ Please upload a product image.");
+    return;
+  }
+
+  // ── 4. Double-check hidden input is non-empty (safety net) ─────────────────
+  if(!hiddenInput.value){
+    e.preventDefault();
+    showFormError("cat", "⚠️ Category sync failed. Please remove and re-add your categories.");
+    return;
+  }
+
+  // ── 5. All good — disable button to prevent double-submit ──────────────────
+  clearFormErrors();
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = "<span>⏳</span><span>Generating…</span>";
+});
+
+// ── Inline error helpers ────────────────────────────────────────────────────
+function showFormError(type, msg){
+  clearFormErrors();
+  const div = document.createElement("div");
+  div.id = "formError_" + type;
+  div.style.cssText = [
+    "color:#dc2626",
+    "background:#fee2e2",
+    "border:1px solid #fecaca",
+    "border-radius:10px",
+    "padding:10px 14px",
+    "font-size:13px",
+    "font-weight:700",
+    "margin-top:10px",
+    "animation:chipIn 0.2s ease"
+  ].join(";");
+  div.textContent = msg;
+
+  if(type === "cat"){
+    document.getElementById("selectedChips").after(div);
+  } else {
+    filePreview.after(div);
+  }
+  div.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function clearFormErrors(){
+  document.querySelectorAll('[id^="formError_"]').forEach(el => el.remove());
+}
+
+/* ═══════════════════════════════════════════════
+   CREDIT MODAL
+═══════════════════════════════════════════════ */
+const creditModal   = document.getElementById("creditModal");
+const openCreditBtn = document.getElementById("openCreditModal");
+const closeCreditBtn= document.getElementById("closeCreditModal");
+const creditOverlay = document.getElementById("creditOverlay");
+
+openCreditBtn.addEventListener("click",  () => creditModal.classList.add("show"));
+closeCreditBtn.addEventListener("click", () => creditModal.classList.remove("show"));
+creditOverlay.addEventListener("click",  () => creditModal.classList.remove("show"));
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") creditModal.classList.remove("show");
+});
+
+/* ═══════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════ */
+function escHtml(str){
+  return String(str)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+})();
+</script>
+
 </body>
 </html>

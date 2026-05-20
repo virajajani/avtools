@@ -1,12 +1,14 @@
 # Python cache
-_pycache_/
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 
 # Virtual environment
 venv/
-# .env
+
+# Environment files
+.env
 
 # Django
 db.sqlite3
@@ -15,6 +17,9 @@ db.sqlite3
 # VS Code
 .vscode/
 
-# OS
+# OS files
 .DS_Store
 Thumbs.db
+
+# Data files
+categories.json
