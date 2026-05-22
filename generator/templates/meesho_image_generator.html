@@ -7,48 +7,70 @@
 <title>Meesho Image Generator | AVTools</title>
 <meta name="description" content="Generate optimized Meesho product images and calculate shipping slabs to reduce costs and increase profits.">
 <link rel="stylesheet" href="{% static 'css/header.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --primary:#3b82f6;
-  --primary-dark:#2563eb;
-  --accent:#8b5cf6;
-  --text:#1e293b;
+  --primary:#2563eb;
+  --primary-light:#3b82f6;
+  --primary-glow:rgba(37,99,235,0.18);
+  --accent:#7c3aed;
+  --accent-light:#8b5cf6;
+  --teal:#0d9488;
+  --text:#0f172a;
+  --text-mid:#334155;
   --text-light:#64748b;
-  --bg:#ffffff;
-  --bg-gray:#f8fafc;
+  --text-muted:#94a3b8;
+  --bg:#f1f5f9;
+  --bg-card:#ffffff;
   --border:#e2e8f0;
-  --success:#16a34a;
+  --border-focus:#2563eb;
+  --success:#15803d;
   --success-bg:#dcfce7;
   --success-border:#86efac;
-  --teal:#0f766e;
+  --danger:#dc2626;
+  --danger-bg:#fee2e2;
+  --warning:#d97706;
+  --warning-bg:#fef3c7;
+  --radius-sm:10px;
+  --radius:14px;
+  --radius-lg:20px;
+  --radius-xl:28px;
+  --shadow-sm:0 2px 8px rgba(15,23,42,0.06);
+  --shadow:0 8px 32px rgba(15,23,42,0.09);
+  --shadow-lg:0 20px 60px rgba(15,23,42,0.13);
+  --shadow-xl:0 40px 100px rgba(15,23,42,0.18);
 }
 
 body{
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  background:var(--bg-gray);
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:var(--bg);
   color:var(--text);
   min-height:100vh;
+  -webkit-font-smoothing:antialiased;
 }
 
 /* ── PAGE WRAPPER ── */
 .wrapper{
-  max-width:1300px;
+  max-width:1340px;
   margin:0 auto;
   padding:48px 6%;
   display:grid;
-  grid-template-columns:420px 1fr;
-  gap:40px;
+  grid-template-columns:400px 1fr;
+  gap:36px;
   align-items:start;
 }
 
 /* ── LEFT CARD ── */
 .card{
-  background:var(--bg);
+  background:var(--bg-card);
   padding:36px;
-  border-radius:24px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.07);
+  border-radius:var(--radius-xl);
+  box-shadow:var(--shadow);
   border:1px solid var(--border);
   height:fit-content;
   position:sticky;
@@ -56,30 +78,37 @@ body{
 }
 
 .card-title{
-  font-size:22px;
+  font-family:'Sora',sans-serif;
+  font-size:20px;
   font-weight:800;
   color:var(--text);
   margin-bottom:28px;
   display:flex;
   align-items:center;
   gap:10px;
+  letter-spacing:-0.02em;
 }
 
-.card-title::before{
-  content:'⚡';
-  font-size:20px;
+.card-title-icon{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  flex-shrink:0;
 }
 
 /* ── FORM ── */
 .form-group{margin-bottom:22px;}
 
 .form-label{
-  font-size:13px;
+  font-size:12px;
   font-weight:700;
-  color:#334155;
+  color:var(--text-mid);
   display:block;
   margin-bottom:8px;
-  letter-spacing:0.02em;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
 }
 
 /* ── CATEGORY SEARCH ── */
@@ -87,33 +116,43 @@ body{
 
 .category-input{
   width:100%;
-  padding:13px 16px;
-  border-radius:12px;
+  padding:12px 16px 12px 44px;
+  border-radius:var(--radius);
   border:2px solid var(--border);
   font-size:14px;
   font-family:inherit;
   color:var(--text);
   background:#fff;
-  transition:all 0.3s;
+  transition:border-color 0.25s,box-shadow 0.25s;
   outline:none;
+}
+
+.category-input-wrap{position:relative;}
+
+.category-input-wrap::before{
+  content:'🔍';
+  position:absolute;
+  left:14px;top:50%;transform:translateY(-50%);
+  font-size:16px;
+  pointer-events:none;
+  z-index:1;
 }
 
 .category-input:focus{
   border-color:var(--primary);
-  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+  box-shadow:0 0 0 4px var(--primary-glow);
 }
 
 .category-results{
   position:absolute;
-  top:calc(100% + 6px);
-  left:0;
-  right:0;
+  top:calc(100% + 8px);
+  left:0;right:0;
   background:#fff;
   border:1px solid var(--border);
-  border-radius:16px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.13);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);
   z-index:9999;
-  max-height:380px;
+  max-height:360px;
   overflow-y:auto;
   display:none;
   scrollbar-width:thin;
@@ -121,135 +160,109 @@ body{
 }
 
 .category-results.show{display:block;}
-
-.category-results::-webkit-scrollbar{width:6px;}
+.category-results::-webkit-scrollbar{width:5px;}
 .category-results::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px;}
 
 .category-item{
-  padding:14px 18px;
-  border-bottom:1px solid #f1f5f9;
+  padding:13px 18px;
+  border-bottom:1px solid #f8fafc;
   cursor:pointer;
-  transition:background 0.18s;
+  transition:background 0.15s;
 }
 
 .category-item:last-child{border-bottom:none;}
+.category-item:hover{background:#f0f7ff;}
 
-.category-item:hover{background:#eff6ff;}
+.category-name{font-size:14px;font-weight:700;color:var(--text);}
+.category-path{font-size:11px;color:var(--text-light);margin-top:3px;line-height:1.5;}
 
-.category-name{
-  font-size:15px;
-  font-weight:700;
-  color:var(--text);
-}
-
-.category-path{
-  font-size:12px;
-  color:var(--text-light);
-  margin-top:3px;
-  line-height:1.5;
-}
-
-.category-results-empty{
-  padding:24px;
+.category-feedback{
+  padding:22px;
   text-align:center;
-  color:var(--text-light);
-  font-size:14px;
-}
-
-.category-results-loading{
-  padding:24px;
-  text-align:center;
-  color:var(--primary);
   font-size:13px;
+  color:var(--text-light);
 }
 
 /* CHIPS */
-.selected-chips{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:12px;
-}
+.selected-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
 
 .chip{
   background:linear-gradient(135deg,var(--primary),var(--accent));
   color:#fff;
-  padding:7px 14px;
+  padding:6px 12px;
   border-radius:999px;
   font-size:12px;
   font-weight:700;
   display:inline-flex;
   align-items:center;
-  gap:8px;
+  gap:7px;
   animation:chipIn 0.2s ease;
+  letter-spacing:0.01em;
 }
 
 @keyframes chipIn{
-  from{opacity:0;transform:scale(0.85);}
-  to{opacity:1;transform:scale(1);}
+  from{opacity:0;transform:scale(0.8) translateY(4px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
 }
 
 .chip-remove{
   cursor:pointer;
-  font-size:16px;
+  font-size:15px;
   line-height:1;
-  opacity:0.8;
+  opacity:0.75;
   transition:opacity 0.2s;
+  display:flex;align-items:center;justify-content:center;
+  width:16px;height:16px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.2);
 }
-.chip-remove:hover{opacity:1;}
 
-.chip-hint{
-  font-size:12px;
-  color:var(--text-light);
-  margin-top:8px;
+.chip-remove:hover{opacity:1;background:rgba(255,255,255,0.35);}
+
+.cat-counter{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  background:#eff6ff;
+  color:#2563eb;
+  font-size:11px;
+  font-weight:800;
+  padding:2px 9px;
+  border-radius:10px;
+  margin-left:auto;
 }
+
+.cat-counter.full{background:#dcfce7;color:#15803d;}
 
 /* ── FILE UPLOAD ── */
 .upload-area{
   border:2px dashed #cbd5e1;
-  border-radius:14px;
-  padding:36px 20px;
+  border-radius:var(--radius-lg);
+  padding:32px 20px;
   text-align:center;
-  background:var(--bg-gray);
+  background:#fafbfc;
   cursor:pointer;
-  transition:all 0.3s;
-  position:relative;
+  transition:all 0.25s;
 }
 
-.upload-area:hover{
+.upload-area:hover,.upload-area.dragover{
   border-color:var(--primary);
-  background:#f0f9ff;
-}
-
-.upload-area.dragover{
-  border-color:var(--primary);
-  background:#eff6ff;
+  background:#f0f7ff;
   border-style:solid;
 }
 
-.upload-icon{font-size:44px;margin-bottom:12px;display:block;}
-
-.upload-text{
-  font-size:14px;
-  color:var(--text-light);
-}
-
+.upload-icon{font-size:40px;margin-bottom:10px;display:block;}
+.upload-text{font-size:14px;color:var(--text-light);}
 .upload-text strong{color:var(--primary);}
-
-.upload-hint{
-  font-size:12px;
-  color:#94a3b8;
-  margin-top:6px;
-}
-
+.upload-hint{font-size:12px;color:var(--text-muted);margin-top:5px;}
 .file-input{display:none;}
 
 .file-preview{
-  margin-top:12px;
-  padding:12px 16px;
+  margin-top:10px;
+  padding:11px 14px;
   background:var(--success-bg);
   border:1px solid var(--success-border);
-  border-radius:10px;
+  border-radius:var(--radius-sm);
   display:none;
   align-items:center;
   gap:10px;
@@ -262,141 +275,111 @@ body{
 
 .remove-file{
   margin-left:auto;
-  background:none;
-  border:none;
-  color:#dc2626;
-  cursor:pointer;
-  font-size:20px;
-  padding:0 4px;
-  line-height:1;
+  background:none;border:none;
+  color:var(--danger);cursor:pointer;
+  font-size:20px;padding:0 4px;line-height:1;
 }
 
 /* ── INPUTS ── */
 .input{
   width:100%;
-  padding:13px 16px;
-  border-radius:12px;
+  padding:12px 16px;
+  border-radius:var(--radius);
   border:2px solid var(--border);
   font-size:14px;
   font-family:inherit;
   color:var(--text);
   background:#fff;
-  transition:all 0.3s;
+  transition:border-color 0.25s,box-shadow 0.25s;
   outline:none;
 }
 
 .input:focus{
   border-color:var(--primary);
-  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+  box-shadow:0 0 0 4px var(--primary-glow);
 }
 
 /* ── SUBMIT BTN ── */
 .btn-generate{
   width:100%;
   padding:15px;
-  margin-top:4px;
+  margin-top:6px;
   background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:#fff;
-  border:none;
-  border-radius:14px;
-  font-size:16px;
-  font-weight:800;
+  color:#fff;border:none;
+  border-radius:var(--radius-lg);
+  font-family:'Sora',sans-serif;
+  font-size:15px;font-weight:800;
   cursor:pointer;
   transition:all 0.3s;
-  box-shadow:0 8px 24px rgba(59,130,246,0.3);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  box-shadow:0 8px 24px rgba(37,99,235,0.28);
+  display:flex;align-items:center;justify-content:center;
   gap:10px;
-  letter-spacing:0.02em;
+  letter-spacing:0.01em;
 }
 
 .btn-generate:hover:not(:disabled){
   transform:translateY(-2px);
-  box-shadow:0 12px 32px rgba(59,130,246,0.42);
+  box-shadow:0 14px 36px rgba(37,99,235,0.4);
 }
 
 .btn-generate:disabled{
-  opacity:0.55;
-  cursor:not-allowed;
-  transform:none;
+  opacity:0.5;cursor:not-allowed;transform:none;
 }
 
 .credit-info{
-  font-size:12px;
-  color:var(--text-light);
-  margin-top:14px;
-  text-align:center;
-  padding:12px 16px;
-  background:var(--bg-gray);
-  border-radius:10px;
+  font-size:12px;color:var(--text-light);
+  margin-top:14px;text-align:center;
+  padding:11px 16px;
+  background:var(--bg);
+  border-radius:var(--radius-sm);
   border:1px solid var(--border);
 }
 
 .credit-info b{color:var(--primary);}
 
 .no-credit-warn{
-  color:#dc2626;
-  font-weight:700;
-  text-align:center;
-  margin-top:10px;
-  font-size:13px;
-  padding:10px;
-  background:#fee2e2;
-  border-radius:10px;
+  color:var(--danger);font-weight:700;
+  text-align:center;margin-top:10px;font-size:13px;
+  padding:10px;background:var(--danger-bg);border-radius:var(--radius-sm);
 }
 
 /* ── RIGHT SECTION ── */
-.right-section{}
-
 .section-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:28px;
-  flex-wrap:wrap;
-  gap:12px;
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:28px;flex-wrap:wrap;gap:12px;
 }
 
 .section-title{
-  font-size:26px;
-  font-weight:800;
-  color:var(--text);
+  font-family:'Sora',sans-serif;
+  font-size:26px;font-weight:800;
+  color:var(--text);letter-spacing:-0.03em;
 }
 
 /* BUY CREDITS BTN */
 .btn-credits{
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;
-  border:none;
-  padding:10px 20px;
-  border-radius:10px;
-  font-size:14px;
-  font-weight:700;
-  cursor:pointer;
-  transition:all 0.3s;
-  box-shadow:0 4px 14px rgba(59,130,246,0.3);
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  color:#fff;border:none;
+  padding:11px 22px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;
+  font-size:13px;font-weight:700;
+  cursor:pointer;transition:all 0.25s;
+  box-shadow:0 4px 16px rgba(37,99,235,0.28);
+  display:inline-flex;align-items:center;gap:8px;
 }
 
-.btn-credits:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 20px rgba(59,130,246,0.4);
-}
+.btn-credits:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,99,235,0.38);}
 
 /* GENERATION GRID */
 .recent-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:24px;
+  gap:22px;
 }
 
 .generation-card{
-  background:#fff;
-  border-radius:18px;
-  box-shadow:0 8px 28px rgba(0,0,0,0.07);
+  background:var(--bg-card);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-sm);
   overflow:hidden;
   border:1px solid var(--border);
   transition:all 0.3s;
@@ -404,168 +387,125 @@ body{
 
 .generation-card:hover{
   transform:translateY(-5px);
-  box-shadow:0 16px 40px rgba(0,0,0,0.13);
+  box-shadow:var(--shadow-lg);
 }
 
 .gen-image-wrap{
-  width:100%;
-  height:190px;
+  width:100%;height:190px;
   position:relative;
   background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
   overflow:hidden;
 }
 
-.gen-image-wrap img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
+.gen-image-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
 
 .gen-status{
-  position:absolute;
-  top:10px;
-  left:10px;
-  padding:5px 12px;
-  border-radius:20px;
-  font-size:10px;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:0.05em;
-  background:var(--success-bg);
-  color:var(--success);
+  position:absolute;top:10px;left:10px;
+  padding:5px 12px;border-radius:20px;
+  font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:0.06em;
+  background:var(--success-bg);color:var(--success);
   border:1px solid var(--success-border);
 }
 
 .gen-info{padding:16px;}
 
-.gen-cat{
-  font-size:14px;
-  font-weight:700;
-  color:var(--text);
-  margin-bottom:6px;
-}
-
-.gen-meta{
-  font-size:12px;
-  color:var(--text-light);
-  margin-bottom:3px;
-}
+.gen-cat{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.gen-meta{font-size:12px;color:var(--text-light);margin-bottom:3px;}
 
 .gen-price{
-  font-size:20px;
-  font-weight:900;
-  color:var(--primary);
-  margin-top:8px;
+  font-family:'Sora',sans-serif;
+  font-size:20px;font-weight:900;
+  color:var(--primary);margin-top:8px;
 }
 
-.gen-actions{
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-}
+.gen-actions{display:flex;gap:8px;margin-top:12px;}
 
 .btn-sm{
-  flex:1;
-  padding:8px;
-  border-radius:8px;
+  flex:1;padding:8px;
+  border-radius:var(--radius-sm);
   border:1.5px solid var(--border);
-  background:#fff;
-  font-size:12px;
-  font-weight:700;
-  cursor:pointer;
-  transition:all 0.2s;
-  text-align:center;
-  text-decoration:none;
-  color:var(--text);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
+  background:#fff;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all 0.2s;
+  text-align:center;text-decoration:none;color:var(--text);
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
 }
 
-.btn-sm:hover{
-  border-color:var(--primary);
-  color:var(--primary);
-  background:#f0f9ff;
-}
+.btn-sm:hover{border-color:var(--primary);color:var(--primary);background:#f0f7ff;}
 
 /* EMPTY STATE */
 .empty-state{
-  background:#fff;
-  border-radius:20px;
+  background:var(--bg-card);
+  border-radius:var(--radius-xl);
   border:2px dashed var(--border);
-  padding:80px 32px;
-  text-align:center;
+  padding:80px 32px;text-align:center;
 }
 
-.empty-icon{font-size:64px;margin-bottom:16px;opacity:0.45;}
-
-.empty-text{
-  font-size:18px;
-  font-weight:700;
-  color:var(--text);
-  margin-bottom:8px;
-}
-
+.empty-icon{font-size:64px;margin-bottom:16px;opacity:0.4;}
+.empty-text{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px;}
 .empty-hint{font-size:14px;color:var(--text-light);}
 
-/* ── CREDIT MODAL ── */
+/* ── INLINE ERROR ── */
+.form-error{
+  color:var(--danger);background:var(--danger-bg);
+  border:1px solid #fecaca;border-radius:var(--radius-sm);
+  padding:10px 14px;font-size:13px;font-weight:700;
+  margin-top:10px;animation:chipIn 0.2s ease;
+}
+
+/* ══════════════════════════════════════════════════
+   CREDIT MODAL
+══════════════════════════════════════════════════ */
 .credit-modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:1100;
+  display:none;position:fixed;inset:0;z-index:1100;
+  /* FIX: overflow scroll on the modal wrapper so tall content is reachable */
+  overflow-y:auto;
+  padding:40px 16px;
 }
 
 .credit-modal.show{display:block;}
 
 .credit-overlay{
-  position:absolute;
-  inset:0;
-  background:rgba(15,23,42,0.5);
-  backdrop-filter:blur(4px);
+  position:fixed;inset:0;
+  background:rgba(15,23,42,0.55);
+  backdrop-filter:blur(6px);
+  z-index:-1;
 }
 
 .credit-box{
-  position:relative;
-  max-width:860px;
-  margin:80px auto;
+  position:relative;max-width:960px;
+  margin:0 auto;
   background:#fff;
-  padding:44px;
-  border-radius:28px;
-  box-shadow:0 40px 100px rgba(0,0,0,0.2);
-  animation:modalIn 0.3s ease;
+  padding:48px;border-radius:var(--radius-xl);
+  box-shadow:var(--shadow-xl);
+  animation:modalIn 0.3s cubic-bezier(0.22,1,0.36,1);
+  /* FIX: removed max-height/overflow-y — let the modal wrapper scroll instead */
 }
 
 @keyframes modalIn{
-  from{opacity:0;transform:translateY(24px) scale(0.97);}
+  from{opacity:0;transform:translateY(32px) scale(0.96);}
   to{opacity:1;transform:translateY(0) scale(1);}
 }
 
 .close-modal{
-  position:absolute;
-  top:18px;right:22px;
-  font-size:24px;
-  background:none;border:none;
-  cursor:pointer;
-  color:var(--text-light);
-  width:36px;height:36px;
-  border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
+  position:absolute;top:20px;right:24px;
+  font-size:22px;background:none;border:none;cursor:pointer;
+  color:var(--text-light);width:36px;height:36px;
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
   transition:background 0.2s;
 }
 
-.close-modal:hover{background:var(--bg-gray);}
+.close-modal:hover{background:var(--bg);}
 
-.credit-box h2{
-  font-size:28px;font-weight:900;
-  color:var(--text);margin-bottom:6px;
+.credit-box-header{margin-bottom:32px;}
+
+.credit-box-header h2{
+  font-family:'Sora',sans-serif;
+  font-size:28px;font-weight:900;color:var(--text);
+  letter-spacing:-0.03em;margin-bottom:6px;
 }
 
-.credit-box .sub{
-  font-size:15px;color:var(--text-light);margin-bottom:32px;
-}
+.credit-box-header .sub{font-size:15px;color:var(--text-light);}
 
 .plans-grid{
   display:grid;
@@ -573,84 +513,200 @@ body{
   gap:20px;
 }
 
+/* PLAN CARD */
 .plan{
   border:2px solid var(--border);
-  padding:28px 24px;
-  border-radius:20px;
+  padding:28px 22px;
+  border-radius:var(--radius-lg);
   text-align:center;
   transition:all 0.3s;
   position:relative;
+  cursor:default;
+  /* FIX: ensure card has enough top space for the badge */
+  margin-top:12px;
 }
 
 .plan:hover{
   border-color:var(--primary);
-  box-shadow:0 12px 40px rgba(59,130,246,0.12);
+  box-shadow:0 12px 40px rgba(37,99,235,0.1);
   transform:translateY(-4px);
 }
 
 .plan.popular{
   border-color:var(--primary);
-  box-shadow:0 12px 40px rgba(59,130,246,0.15);
+  box-shadow:0 12px 40px rgba(37,99,235,0.14);
 }
 
 .plan-badge{
-  position:absolute;
-  top:-12px;left:50%;
-  transform:translateX(-50%);
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
   background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:#fff;
-  font-size:10px;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:0.08em;
-  padding:5px 16px;
-  border-radius:20px;
+  color:#fff;font-size:10px;font-weight:800;
+  text-transform:uppercase;letter-spacing:0.08em;
+  padding:5px 16px;border-radius:20px;white-space:nowrap;
 }
 
-.plan h3{font-size:20px;font-weight:800;margin-bottom:12px;}
+.plan-icon{font-size:32px;margin-bottom:10px;display:block;}
+
+.plan h3{
+  font-family:'Sora',sans-serif;
+  font-size:20px;font-weight:800;color:var(--text);
+  margin-bottom:4px;
+}
+
+/* FIX: Only show original price line when there's actually a discount */
+.plan-orig-price{
+  font-size:13px;color:var(--text-muted);
+  text-decoration:line-through;
+  min-height:20px;  /* reserves space to prevent layout shift */
+  margin-bottom:2px;
+}
 
 .plan-price{
+  font-family:'Sora',sans-serif;
   font-size:40px;font-weight:900;
-  color:var(--primary);margin:16px 0;
+  color:var(--primary);
+  margin-bottom:4px;
+  letter-spacing:-0.03em;
+}
+
+.plan-price sup{font-size:20px;vertical-align:super;}
+
+/* FIX: Only show offer badge when there's an actual offer; otherwise hidden */
+.plan-offer-badge{
+  display:none;   /* hidden by default; JS shows it only when offer_percent > 0 */
+  background:#dcfce7;color:#15803d;
+  font-size:11px;font-weight:800;
+  padding:3px 10px;border-radius:20px;
+  margin-bottom:14px;
+}
+
+.plan-offer-badge.has-offer{
+  display:inline-block;
+}
+
+/* FIX: Spacer fills the gap when there's no offer badge */
+.plan-offer-spacer{
+  display:block;
+  height:22px;
+  margin-bottom:14px;
 }
 
 .plan-features{
   font-size:13px;color:var(--text-light);
-  line-height:2;margin-bottom:20px;
+  line-height:1.95;margin-bottom:22px;
+  text-align:left;
+}
+
+.plan-features li{
+  list-style:none;
+  padding-left:0;
+  display:flex;align-items:flex-start;gap:8px;
+}
+
+.plan-features li::before{
+  content:'✓';
+  color:var(--success);
+  font-weight:800;
+  flex-shrink:0;
+  margin-top:1px;
 }
 
 .plan-btn{
   width:100%;padding:12px;
-  border-radius:12px;border:2px solid var(--border);
-  background:#fff;font-size:14px;font-weight:700;
-  cursor:pointer;transition:all 0.3s;
+  border-radius:var(--radius);
+  border:2px solid var(--border);
+  background:#fff;
+  font-family:'Sora',sans-serif;
+  font-size:14px;font-weight:700;
+  cursor:pointer;transition:all 0.25s;
   color:var(--primary);
+  display:flex;align-items:center;justify-content:center;gap:8px;
 }
 
 .plan-btn.primary{
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   color:#fff;border:none;
-  box-shadow:0 6px 18px rgba(59,130,246,0.3);
+  box-shadow:0 6px 20px rgba(37,99,235,0.28);
 }
 
-.plan-btn:hover{
+.plan-btn:hover:not(:disabled){
   transform:translateY(-2px);
-  box-shadow:0 8px 20px rgba(59,130,246,0.2);
+  box-shadow:0 10px 28px rgba(37,99,235,0.22);
+}
+
+.plan-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+
+.plan-btn .btn-spinner{
+  width:16px;height:16px;
+  border:2px solid rgba(255,255,255,0.35);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+  display:none;
+}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── PAYMENT STATUS SECTION (inside modal) ── */
+.payment-result{
+  display:none;
+  padding:32px;text-align:center;
+  background:var(--bg);
+  border-radius:var(--radius-lg);
+  border:2px solid var(--border);
+  margin-top:28px;
+  animation:chipIn 0.3s ease;
+}
+
+.payment-result.show{display:block;}
+
+.payment-result-icon{font-size:48px;margin-bottom:12px;}
+
+.payment-result-title{
+  font-family:'Sora',sans-serif;
+  font-size:20px;font-weight:800;margin-bottom:8px;
+}
+
+.payment-result-msg{font-size:14px;color:var(--text-light);margin-bottom:18px;}
+
+.payment-result.success .payment-result-title{color:var(--success);}
+.payment-result.error   .payment-result-title{color:var(--danger);}
+.payment-result.verifying .payment-result-title{color:var(--primary);}
+
+.payment-result-credits{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--success-bg);color:var(--success);
+  font-weight:800;font-size:15px;
+  padding:10px 20px;border-radius:var(--radius);
+  border:1px solid var(--success-border);
+}
+
+/* ── LOADING PLANS SKELETON ── */
+.plans-loading{
+  text-align:center;padding:40px;
+  color:var(--text-light);font-size:14px;
+}
+
+.plans-loading .spinner{
+  width:32px;height:32px;
+  border:3px solid var(--border);
+  border-top-color:var(--primary);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+  margin:0 auto 12px;
 }
 
 /* ── FOOTER ── */
 .footer{
   border-top:1px solid var(--border);
-  padding:28px 6%;
-  margin-top:80px;
-  background:#fff;
+  padding:28px 6%;margin-top:80px;
+  background:var(--bg-card);
 }
 
 .footer-content{
-  max-width:1300px;margin:0 auto;
-  display:flex;justify-content:space-between;
-  align-items:center;flex-wrap:wrap;gap:12px;
-  font-size:13px;color:var(--text-light);
+  max-width:1340px;margin:0 auto;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;font-size:13px;color:var(--text-light);
 }
 
 .footer-links{display:flex;gap:20px;}
@@ -660,24 +716,53 @@ body{
 }
 .footer-links a:hover{color:var(--primary);}
 
+/* ── TOAST ── */
+.toast-container{
+  position:fixed;bottom:28px;right:28px;
+  z-index:9999;
+  display:flex;flex-direction:column;gap:10px;
+}
+
+.toast{
+  background:#1e293b;color:#fff;
+  padding:14px 20px;
+  border-radius:var(--radius);
+  font-size:14px;font-weight:600;
+  box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;gap:10px;
+  animation:toastIn 0.35s cubic-bezier(0.22,1,0.36,1);
+  max-width:340px;
+}
+
+.toast.success{background:#166534;border-left:4px solid #4ade80;}
+.toast.error{background:#7f1d1d;border-left:4px solid #f87171;}
+.toast.info{background:#1e3a8a;border-left:4px solid #60a5fa;}
+
+@keyframes toastIn{
+  from{opacity:0;transform:translateX(32px);}
+  to{opacity:1;transform:translateX(0);}
+}
+
 /* ── RESPONSIVE ── */
 @media(max-width:1100px){
-  .wrapper{grid-template-columns:1fr;gap:32px;}
+  .wrapper{grid-template-columns:1fr;gap:28px;}
   .card{position:relative;top:0;}
   .plans-grid{grid-template-columns:1fr;}
 }
 
 @media(max-width:768px){
-  .wrapper{padding:28px 5%;}
+  .wrapper{padding:24px 5%;}
   .recent-grid{grid-template-columns:1fr 1fr;}
   .section-header{flex-direction:column;align-items:flex-start;}
-  .credit-box{margin:40px 16px;padding:28px 20px;}
+  .credit-box{margin:0;padding:28px 20px;}
   .plans-grid{grid-template-columns:1fr;}
+  .credit-modal{padding:20px 12px;}
 }
 
 @media(max-width:480px){
   .recent-grid{grid-template-columns:1fr;}
-  .credit-box{margin:20px 12px;padding:24px 16px;}
+  .credit-modal{padding:16px 8px;}
+  .credit-box{padding:22px 16px;}
 }
 </style>
 </head>
@@ -689,7 +774,10 @@ body{
 
   <!-- ═══ LEFT: FORM CARD ═══ -->
   <div class="card">
-    <div class="card-title">Create New Generation</div>
+    <div class="card-title">
+      <div class="card-title-icon">⚡</div>
+      Create New Generation
+    </div>
 
     <form
       id="generatorForm"
@@ -701,26 +789,28 @@ body{
 
       <!-- CATEGORY SEARCH -->
       <div class="form-group">
-        <label class="form-label">Product Categories <span style="color:#94a3b8;font-weight:500;">(Max 5)</span> <span id="catCount" style="background:#eff6ff;color:#2563eb;font-size:11px;font-weight:800;padding:2px 8px;border-radius:10px;display:none;">0 / 5</span></label>
+        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Product Categories</span>
+          <span id="catCounter" class="cat-counter" style="display:none;">0 / 5</span>
+        </label>
 
         <div class="category-wrapper">
-          <input
-            type="text"
-            id="categorySearch"
-            class="category-input"
-            placeholder="🔍  Search category..."
-            autocomplete="off"
-            spellcheck="false"
-          >
+          <div class="category-input-wrap">
+            <input
+              type="text"
+              id="categorySearch"
+              class="category-input"
+              placeholder="Search category…"
+              autocomplete="off"
+              spellcheck="false"
+            >
+          </div>
           <div id="categoryResults" class="category-results"></div>
         </div>
 
         <div id="selectedChips" class="selected-chips"></div>
-        <div class="chip-hint" id="chipHint" style="display:none;">Select up to 5 categories</div>
 
-        <!-- Hidden field stores selected IDs -->
         <input type="hidden" name="selected_categories" id="selectedCategoriesInput">
-        <!-- Hidden field stores HMAC token (populated on page load) -->
         <input type="hidden" id="apiToken" value="">
       </div>
 
@@ -729,12 +819,12 @@ body{
         <label class="form-label">Product Image</label>
         <div class="upload-area" id="uploadArea">
           <span class="upload-icon">📸</span>
-          <div class="upload-text"><strong>Click to upload</strong> or drag & drop</div>
+          <div class="upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
           <div class="upload-hint">PNG, JPG up to 10 MB</div>
           <input type="file" name="product_image" id="fileInput" class="file-input" accept="image/*" required>
         </div>
         <div class="file-preview" id="filePreview">
-          <span>📄</span>
+          <span>🖼️</span>
           <span id="fileName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
           <button type="button" class="remove-file" id="removeFile" title="Remove">×</button>
         </div>
@@ -761,11 +851,11 @@ body{
       </button>
 
       <div class="credit-info">
-        💳 Each generation uses <b>1 credit</b> &nbsp;·&nbsp; Your balance: <b>{{ credits }}</b>
+        💳 Each generation uses <b>1 credit</b> &nbsp;·&nbsp; Balance: <b id="liveCredits">{{ credits }}</b>
       </div>
 
       {% if credits < 1 %}
-        <div class="no-credit-warn">⚠️ You have 0 credits. Please recharge to continue.</div>
+        <div class="no-credit-warn" id="noCreditWarn">⚠️ You have 0 credits. Please recharge to continue.</div>
       {% endif %}
 
     </form>
@@ -786,7 +876,7 @@ body{
         {% for gen in recent_generations %}
         <div class="generation-card">
           <div class="gen-image-wrap">
-            <img src="{{ gen.uploaded_image.url }}" alt="Generation">
+            <img src="{{ gen.uploaded_image.url }}" alt="Generation" loading="lazy">
             <div class="gen-status">✓ Done</div>
           </div>
           <div class="gen-info">
@@ -816,36 +906,36 @@ body{
 </div>
 
 <!-- ═══ CREDIT MODAL ═══ -->
-<div class="credit-modal" id="creditModal">
+<div class="credit-modal" id="creditModal" role="dialog" aria-modal="true" aria-label="Choose a plan">
   <div class="credit-overlay" id="creditOverlay"></div>
   <div class="credit-box">
-    <button class="close-modal" id="closeCreditModal">✕</button>
-    <h2>Choose a Plan</h2>
-    <p class="sub">Recharge credits to continue generating images</p>
+    <button class="close-modal" id="closeCreditModal" aria-label="Close">✕</button>
 
-    <div class="plans-grid">
-      <div class="plan">
-        <h3>Starter</h3>
-        <div class="plan-price">₹99</div>
-        <div class="plan-features">25 Credits<br>30 Days Validity<br>All Basic Features<br>Email Support</div>
-        <button class="plan-btn" onclick="location.href='/signup'">Buy Now</button>
+    <div class="credit-box-header">
+      <h2>💳 Choose a Plan</h2>
+      <p class="sub">Recharge credits to keep generating images</p>
+    </div>
+
+    <!-- Plans rendered by JS -->
+    <div id="plansContainer">
+      <div class="plans-loading">
+        <div class="spinner"></div>
+        Loading plans…
       </div>
-      <div class="plan popular">
-        <span class="plan-badge">Most Popular</span>
-        <h3>Growth</h3>
-        <div class="plan-price">₹299</div>
-        <div class="plan-features">100 Credits<br>60 Days Validity<br>All Premium Features<br>Priority Support</div>
-        <button class="plan-btn primary" onclick="location.href='/signup'">Buy Now</button>
-      </div>
-      <div class="plan">
-        <h3>Pro</h3>
-        <div class="plan-price">₹699</div>
-        <div class="plan-features">400 Credits<br>90 Days Validity<br>All Features Unlocked<br>Dedicated Support</div>
-        <button class="plan-btn" onclick="location.href='/signup'">Buy Now</button>
-      </div>
+    </div>
+
+    <!-- Payment result banner — shown inline after payment; page never redirects -->
+    <div id="paymentResult" class="payment-result" role="status" aria-live="polite">
+      <div class="payment-result-icon" id="payResultIcon"></div>
+      <div class="payment-result-title" id="payResultTitle"></div>
+      <div class="payment-result-msg" id="payResultMsg"></div>
+      <div id="payResultCredits"></div>
     </div>
   </div>
 </div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
 <!-- FOOTER -->
 <footer class="footer">
@@ -862,134 +952,141 @@ body{
 {% include "partials/account_modal.html" %}
 <script src="{% static 'js/header.js' %}"></script>
 
+<!--
+  Razorpay Checkout SDK — loaded from Razorpay CDN.
+  MUST come before the inline script so `Razorpay` is available.
+-->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <script>
 (function(){
 "use strict";
 
-/* ═══════════════════════════════════════════════
-   TOKEN: fetch short-lived HMAC token on load
-═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   CSRF HELPER
+   Reads the csrftoken cookie (Django default cookie name).
+   Falls back to the meta tag if cookie is HttpOnly.
+═══════════════════════════════════════════════════════════ */
+function getCsrf(){
+  // Try cookie first
+  const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+  if(match) return match[1];
+  // Fallback: Django injects {{ csrf_token }} into the page
+  return "{{ csrf_token }}";
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST HELPER
+═══════════════════════════════════════════════════════════ */
+function showToast(msg, type="info", duration=4000){
+  const icons = {success:"✅", error:"❌", info:"ℹ️"};
+  const container = document.getElementById("toastContainer");
+  const toast = document.createElement("div");
+  toast.className = "toast " + type;
+  toast.innerHTML = `<span>${icons[type]||"ℹ️"}</span><span>${escHtml(msg)}</span>`;
+  container.appendChild(toast);
+  setTimeout(()=>{
+    toast.style.animation = "toastIn 0.35s cubic-bezier(0.22,1,0.36,1) reverse";
+    setTimeout(()=>toast.remove(), 340);
+  }, duration);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CATEGORY TOKEN: short-lived HMAC token fetched on load
+═══════════════════════════════════════════════════════════ */
 let _apiToken = "";
 let _tokenTimer = null;
 
 async function fetchToken(){
   try{
     const r = await fetch("/api/products/category-token/", {
-      headers:{"X-Requested-With":"XMLHttpRequest"}
+      headers:{"X-Requested-With":"XMLHttpRequest"},
+      credentials:"include"
     });
     if(!r.ok) return;
     const d = await r.json();
     _apiToken = d.t || "";
     document.getElementById("apiToken").value = _apiToken;
-    // Auto-refresh before expiry
     clearTimeout(_tokenTimer);
-    const ttl = (d.ttl || 300) - 30;  // refresh 30s before expiry
+    const ttl = (d.ttl || 300) - 30;
     _tokenTimer = setTimeout(fetchToken, ttl * 1000);
   }catch(e){
-    console.warn("token fetch failed");
+    console.warn("token fetch failed", e);
   }
 }
 
-fetchToken();  // run immediately on page load
+fetchToken();
 
-/* ═══════════════════════════════════════════════
-   CATEGORY SEARCH (secure)
-═══════════════════════════════════════════════ */
-const searchInput       = document.getElementById("categorySearch");
-const resultsBox        = document.getElementById("categoryResults");
-const chipsBox          = document.getElementById("selectedChips");
-const hiddenInput       = document.getElementById("selectedCategoriesInput");
-const chipHint          = document.getElementById("chipHint");
+/* ═══════════════════════════════════════════════════════════
+   CATEGORY SEARCH
+═══════════════════════════════════════════════════════════ */
+const searchInput     = document.getElementById("categorySearch");
+const resultsBox      = document.getElementById("categoryResults");
+const chipsBox        = document.getElementById("selectedChips");
+const hiddenInput     = document.getElementById("selectedCategoriesInput");
+const catCounter      = document.getElementById("catCounter");
 
-let selectedCategories  = [];
-let searchTimer         = null;
+let selectedCategories = [];
+let searchTimer        = null;
 
 searchInput.addEventListener("input", function(){
   clearTimeout(searchTimer);
   const q = this.value.trim();
-
-  if(q.length < 2){
-    hideResults();
-    return;
-  }
-
-  // Debounce 320ms
-  searchTimer = setTimeout(() => doSearch(q), 320);
+  if(q.length < 2){ hideResults(); return; }
+  searchTimer = setTimeout(()=> doSearch(q), 320);
 });
 
 async function doSearch(q){
-  if(!_apiToken){
-    await fetchToken();
-  }
-
-  showLoading();
-
+  if(!_apiToken) await fetchToken();
+  showCatLoading();
   try{
-    // Keys deliberately not matching what a scraper would expect
     const url = `/api/products/search-categories/?q=${encodeURIComponent(q)}&_t=${encodeURIComponent(_apiToken)}`;
     const res = await fetch(url, {
       headers:{
         "X-Requested-With":"XMLHttpRequest",
         "Accept":"application/json"
-      }
+      },
+      credentials:"include"
     });
 
-    if(res.status === 403){
-      // Token expired — refresh and retry once
-      await fetchToken();
-      return doSearch(q);
-    }
-
-    if(res.status === 429){
-      showError("Too many searches. Please wait a moment.");
-      return;
-    }
-
-    if(!res.ok){
-      hideResults();
-      return;
-    }
+    if(res.status === 403){ await fetchToken(); return doSearch(q); }
+    if(res.status === 429){ showCatMsg("⚠️ Too many searches. Please wait."); return; }
+    if(!res.ok){ hideResults(); return; }
 
     const data = await res.json();
-    // Server returns { r: [{k, v, p}, ...] }  (shuffled keys)
-    renderResults(data.r || []);
-
+    renderCatResults(data.r || []);
   }catch(err){
     hideResults();
   }
 }
 
-function renderResults(items){
+function renderCatResults(items){
   resultsBox.innerHTML = "";
-
   if(!items.length){
-    resultsBox.innerHTML = `<div class="category-results-empty">No categories found for this search.</div>`;
+    resultsBox.innerHTML = `<div class="category-feedback">No categories found.</div>`;
     resultsBox.classList.add("show");
     return;
   }
-
   items.forEach(item => {
     const div = document.createElement("div");
     div.className = "category-item";
-    // v = name, p = path, k = id  (server-side shuffled keys)
     div.innerHTML = `
       <div class="category-name">${escHtml(item.v)}</div>
       <div class="category-path">${escHtml(item.p)}</div>
     `;
-    div.addEventListener("click", () => addCategory({id: item.k, name: item.v}));
+    div.addEventListener("click", ()=> addCategory({id:item.k, name:item.v}));
     resultsBox.appendChild(div);
   });
-
   resultsBox.classList.add("show");
 }
 
-function showLoading(){
-  resultsBox.innerHTML = `<div class="category-results-loading">🔍 Searching...</div>`;
+function showCatLoading(){
+  resultsBox.innerHTML = `<div class="category-feedback">🔍 Searching…</div>`;
   resultsBox.classList.add("show");
 }
 
-function showError(msg){
-  resultsBox.innerHTML = `<div class="category-results-empty">⚠️ ${escHtml(msg)}</div>`;
+function showCatMsg(msg){
+  resultsBox.innerHTML = `<div class="category-feedback">${escHtml(msg)}</div>`;
   resultsBox.classList.add("show");
 }
 
@@ -999,12 +1096,8 @@ function hideResults(){
 }
 
 function addCategory(cat){
-  if(selectedCategories.length >= 5){
-    alert("Maximum 5 categories allowed.");
-    return;
-  }
+  if(selectedCategories.length >= 5){ showToast("Maximum 5 categories allowed.", "error"); return; }
   if(selectedCategories.find(x => x.id == cat.id)) return;
-
   selectedCategories.push(cat);
   renderChips();
   hideResults();
@@ -1022,61 +1115,42 @@ function renderChips(){
   selectedCategories.forEach(cat => {
     const chip = document.createElement("div");
     chip.className = "chip";
-    chip.innerHTML = `
-      <span>${escHtml(cat.name)}</span>
-      <span class="chip-remove" title="Remove">×</span>
-    `;
-    chip.querySelector(".chip-remove").onclick = () => removeCategory(cat.id);
+    chip.innerHTML = `<span>${escHtml(cat.name)}</span><span class="chip-remove" title="Remove">×</span>`;
+    chip.querySelector(".chip-remove").onclick = ()=> removeCategory(cat.id);
     chipsBox.appendChild(chip);
   });
-
-  // Always keep hidden input in sync
   hiddenInput.value = selectedCategories.map(x => x.id).join(",");
 
-  // Update counter badge
-  const counter = document.getElementById("catCount");
-  if(selectedCategories.length > 0){
-    counter.style.display = "inline";
-    counter.textContent   = `${selectedCategories.length} / 5`;
-    counter.style.background = selectedCategories.length >= 5 ? "#dcfce7" : "#eff6ff";
-    counter.style.color       = selectedCategories.length >= 5 ? "#16a34a" : "#2563eb";
-  } else {
-    counter.style.display = "none";
-  }
+  const count = selectedCategories.length;
+  catCounter.style.display = count > 0 ? "inline-flex" : "none";
+  catCounter.textContent   = `${count} / 5`;
+  catCounter.className     = "cat-counter" + (count >= 5 ? " full" : "");
 
-  chipHint.style.display = selectedCategories.length ? "block" : "none";
-
-  // Clear any category error when user adds/removes chips
   const err = document.getElementById("formError_cat");
   if(err) err.remove();
 }
 
-// Close dropdown on outside click
 document.addEventListener("click", e => {
-  if(!e.target.closest(".category-wrapper")){
-    hideResults();
-  }
+  if(!e.target.closest(".category-wrapper")) hideResults();
 });
 
-/* ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    FILE UPLOAD
-═══════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 const uploadArea  = document.getElementById("uploadArea");
 const fileInput   = document.getElementById("fileInput");
 const filePreview = document.getElementById("filePreview");
 const fileNameEl  = document.getElementById("fileName");
 const removeFile  = document.getElementById("removeFile");
 
-uploadArea.addEventListener("click", () => fileInput.click());
+uploadArea.addEventListener("click", ()=> fileInput.click());
 
 uploadArea.addEventListener("dragover", e => {
   e.preventDefault();
   uploadArea.classList.add("dragover");
 });
 
-uploadArea.addEventListener("dragleave", () => {
-  uploadArea.classList.remove("dragover");
-});
+uploadArea.addEventListener("dragleave", ()=> uploadArea.classList.remove("dragover"));
 
 uploadArea.addEventListener("drop", e => {
   e.preventDefault();
@@ -1089,77 +1163,58 @@ fileInput.addEventListener("change", e => {
   if(e.target.files[0]) setFile(e.target.files[0]);
 });
 
-removeFile.addEventListener("click", () => {
+removeFile.addEventListener("click", ()=> {
   fileInput.value = "";
   filePreview.classList.remove("show");
+  const err = document.getElementById("formError_img");
+  if(err) err.remove();
 });
 
 function setFile(file){
-  if(file.size > 10 * 1024 * 1024){ alert("Max file size is 10 MB."); return; }
-  if(!file.type.startsWith("image/")){ alert("Please upload an image file."); return; }
+  if(file.size > 10 * 1024 * 1024){ showToast("Max file size is 10 MB.", "error"); return; }
+  if(!file.type.startsWith("image/")){ showToast("Please upload an image file.", "error"); return; }
   fileNameEl.textContent = file.name;
   filePreview.classList.add("show");
 }
 
-/* ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    FORM SUBMIT
-═══════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 const form      = document.getElementById("generatorForm");
 const submitBtn = document.getElementById("submitBtn");
 
 form.addEventListener("submit", e => {
-
-  // ── 1. Force-sync hidden input RIGHT before submit ─────────────────────────
-  //    This guarantees the POST body always has the latest IDs even if
-  //    renderChips() was somehow missed.
+  // Always sync hidden input before validating
   hiddenInput.value = selectedCategories.map(x => x.id).join(",");
 
-  // ── 2. Validate categories ─────────────────────────────────────────────────
   if(selectedCategories.length === 0){
     e.preventDefault();
     showFormError("cat", "⚠️ Please select at least 1 product category.");
     searchInput.focus();
     return;
   }
-
-  // ── 3. Validate image ──────────────────────────────────────────────────────
   if(!fileInput.files.length){
     e.preventDefault();
     showFormError("img", "⚠️ Please upload a product image.");
     return;
   }
-
-  // ── 4. Double-check hidden input is non-empty (safety net) ─────────────────
   if(!hiddenInput.value){
     e.preventDefault();
     showFormError("cat", "⚠️ Category sync failed. Please remove and re-add your categories.");
     return;
   }
 
-  // ── 5. All good — disable button to prevent double-submit ──────────────────
   clearFormErrors();
   submitBtn.disabled = true;
   submitBtn.innerHTML = "<span>⏳</span><span>Generating…</span>";
 });
 
-// ── Inline error helpers ────────────────────────────────────────────────────
 function showFormError(type, msg){
   clearFormErrors();
   const div = document.createElement("div");
   div.id = "formError_" + type;
-  div.style.cssText = [
-    "color:#dc2626",
-    "background:#fee2e2",
-    "border:1px solid #fecaca",
-    "border-radius:10px",
-    "padding:10px 14px",
-    "font-size:13px",
-    "font-weight:700",
-    "margin-top:10px",
-    "animation:chipIn 0.2s ease"
-  ].join(";");
+  div.className = "form-error";
   div.textContent = msg;
-
   if(type === "cat"){
     document.getElementById("selectedChips").after(div);
   } else {
@@ -1172,24 +1227,407 @@ function clearFormErrors(){
   document.querySelectorAll('[id^="formError_"]').forEach(el => el.remove());
 }
 
-/* ═══════════════════════════════════════════════
-   CREDIT MODAL
-═══════════════════════════════════════════════ */
-const creditModal   = document.getElementById("creditModal");
-const openCreditBtn = document.getElementById("openCreditModal");
-const closeCreditBtn= document.getElementById("closeCreditModal");
-const creditOverlay = document.getElementById("creditOverlay");
 
-openCreditBtn.addEventListener("click",  () => creditModal.classList.add("show"));
-closeCreditBtn.addEventListener("click", () => creditModal.classList.remove("show"));
-creditOverlay.addEventListener("click",  () => creditModal.classList.remove("show"));
-document.addEventListener("keydown", e => {
-  if(e.key === "Escape") creditModal.classList.remove("show");
+/* ╔═══════════════════════════════════════════════════════════╗
+   ║          RAZORPAY PAYMENT INTEGRATION                     ║
+   ║                                                           ║
+   ║  Flow:                                                    ║
+   ║  1. openCreditModal → loadPlans() → fetch /credit-plans/  ║
+   ║  2. User clicks "Buy Now" → createOrder() → POST          ║
+   ║     /api/payments/create-order/                           ║
+   ║  3. Open Razorpay Checkout popup                          ║
+   ║  4. On success → verifyPayment() → POST                   ║
+   ║     /api/payments/verify-payment/                         ║
+   ║  5. Show inline success banner; UPDATE credit counter.    ║
+   ║     PAGE NEVER REDIRECTS OR RELOADS.                      ║
+   ╚═══════════════════════════════════════════════════════════╝ */
+
+const creditModal    = document.getElementById("creditModal");
+const openCreditBtn  = document.getElementById("openCreditModal");
+const closeCreditBtn = document.getElementById("closeCreditModal");
+const creditOverlay  = document.getElementById("creditOverlay");
+const plansContainer = document.getElementById("plansContainer");
+const paymentResult  = document.getElementById("paymentResult");
+
+let plansCache = null;
+
+/* ── Open / Close ── */
+openCreditBtn.addEventListener("click", ()=>{
+  creditModal.classList.add("show");
+  // Scroll the modal back to top in case it was scrolled previously
+  creditModal.scrollTop = 0;
+  paymentResult.classList.remove("show");
+  loadPlans();
 });
 
-/* ═══════════════════════════════════════════════
+function closeModal(){
+  creditModal.classList.remove("show");
+}
+
+closeCreditBtn.addEventListener("click",  closeModal);
+creditOverlay.addEventListener("click",   closeModal);
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && creditModal.classList.contains("show")) closeModal();
+});
+
+/* ── 1. Load Plans ── */
+async function loadPlans(){
+  if(plansCache){
+    renderPlans(plansCache);
+    return;
+  }
+
+  plansContainer.innerHTML = `
+    <div class="plans-loading">
+      <div class="spinner"></div>
+      Loading plans…
+    </div>`;
+
+  try{
+    const res = await fetch("/api/payments/credit-plans/", {
+      headers:{
+        "X-Requested-With":"XMLHttpRequest",
+        "Accept":"application/json"
+      },
+      credentials:"include"
+    });
+
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const plans = await res.json();
+    plansCache = plans;
+    renderPlans(plans);
+
+  }catch(err){
+    plansContainer.innerHTML = `
+      <div style="text-align:center;padding:40px;color:var(--danger);">
+        ⚠️ Failed to load plans. Please refresh and try again.
+        <br><small style="color:var(--text-muted);margin-top:8px;display:block;">${escHtml(err.message)}</small>
+      </div>`;
+  }
+}
+
+/* ── Render Plan Cards ── */
+const PLAN_ICONS = { STARTER:"🌱", GROWTH:"🚀", PRO:"💎" };
+
+/* FIX: Build clean feature list from structured data, NOT from the
+   description field (which is a raw text blob).
+   The description is shown as a single extra bullet only if it's short
+   (≤60 chars) and doesn't duplicate info already shown. */
+function buildFeatureItems(plan){
+  const items = [];
+  items.push(`${plan.credits} Credits`);
+  items.push(`${plan.validity_days} Days Validity`);
+
+  // Only append description if it's a concise tagline, not a long data dump
+  if(plan.description){
+    const desc = plan.description.trim();
+    // Skip if it looks like a data dump (contains numbers followed by "Credits" or "Days")
+    const looksLikeDataDump = /\d+\s*(Credits|Days|Image)/i.test(desc);
+    if(!looksLikeDataDump && desc.length <= 80){
+      items.push(desc);
+    }
+  }
+  return items;
+}
+
+function renderPlans(plans){
+  if(!plans || !plans.length){
+    plansContainer.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-light);">No plans available.</div>`;
+    return;
+  }
+
+  const popularIdx = plans.length > 2 ? 1 : 0;
+
+  const grid = document.createElement("div");
+  grid.className = "plans-grid";
+
+  plans.forEach((plan, idx)=>{
+    const isPopular  = idx === popularIdx;
+    const icon       = PLAN_ICONS[plan.name] || "📦";
+    const finalPrice = parseFloat(plan.final_price ?? plan.price);
+    const origPrice  = parseFloat(plan.price);
+    const hasOffer   = plan.offer_percent > 0;
+
+    // Build feature list cleanly
+    const featureItems = buildFeatureItems(plan);
+    const featureHtml  = featureItems.map(f => `<li>${escHtml(f)}</li>`).join("");
+
+    const card = document.createElement("div");
+    card.className = "plan" + (isPopular ? " popular" : "");
+
+    card.innerHTML = `
+      ${isPopular ? `<span class="plan-badge">⭐ Most Popular</span>` : ""}
+      <span class="plan-icon">${icon}</span>
+      <h3>${escHtml(plan.name.charAt(0) + plan.name.slice(1).toLowerCase())}</h3>
+
+      <div class="plan-orig-price">${hasOffer ? `₹${origPrice}` : "&nbsp;"}</div>
+      <div class="plan-price"><sup>₹</sup>${Math.round(finalPrice)}</div>
+
+      ${hasOffer
+        ? `<span class="plan-offer-badge has-offer">🏷️ ${plan.offer_percent}% OFF</span>`
+        : `<span class="plan-offer-spacer"></span>`
+      }
+
+      <ul class="plan-features">${featureHtml}</ul>
+
+      <button
+        class="plan-btn ${isPopular ? "primary" : ""}"
+        id="planBtn_${escHtml(plan.name)}"
+        data-plan="${escHtml(plan.name)}"
+      >
+        <span class="btn-spinner" id="spinner_${escHtml(plan.name)}"></span>
+        <span class="btn-label">Buy Now ₹${Math.round(finalPrice)}</span>
+      </button>
+    `;
+
+    card.querySelector(`#planBtn_${plan.name}`)
+        .addEventListener("click", ()=> handleBuyClick(plan));
+
+    grid.appendChild(card);
+  });
+
+  plansContainer.innerHTML = "";
+  plansContainer.appendChild(grid);
+}
+
+/* ── 2. Handle Buy Click → Create Order ── */
+async function handleBuyClick(plan){
+  const btn     = document.getElementById(`planBtn_${plan.name}`);
+  const spinner = document.getElementById(`spinner_${plan.name}`);
+  const label   = btn ? btn.querySelector(".btn-label") : null;
+
+  if(!btn) return;
+
+  // Disable ALL plan buttons while processing
+  document.querySelectorAll(".plan-btn").forEach(b => b.disabled = true);
+  spinner.style.display = "block";
+  if(label) label.textContent = "Creating order…";
+
+  try{
+    const res = await fetch("/api/payments/create-order/", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "X-CSRFToken": getCsrf(),
+        "X-Requested-With":"XMLHttpRequest"
+      },
+      credentials:"include",
+      body: JSON.stringify({ plan: plan.name })
+    });
+
+    let data;
+    try{
+      data = await res.json();
+    }catch{
+      throw new Error("Server returned an unexpected response. Please try again.");
+    }
+
+    if(!res.ok || !data.success){
+      throw new Error(data.error || "Failed to create order.");
+    }
+
+    // ── 3. Open Razorpay Checkout ──
+    openRazorpayCheckout({
+      order_id: data.order_id,
+      amount:   data.amount,
+      currency: data.currency,
+      key:      data.key,
+      plan,
+    });
+
+  }catch(err){
+    showToast(err.message || "Something went wrong. Please try again.", "error");
+    resetPlanButtons(plan);
+  }finally{
+    spinner.style.display = "none";
+    if(label){
+      const fp = parseFloat(plan.final_price ?? plan.price);
+      label.textContent = `Buy Now ₹${Math.round(fp)}`;
+    }
+  }
+}
+
+/* ── 3. Razorpay Checkout Popup ── */
+function openRazorpayCheckout({ order_id, amount, currency, key, plan }){
+
+  const isLocalhost = ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
+
+  const options = {
+    key,
+    amount,
+    currency,
+    name:        "AVTools",
+    description: `${plan.name} Plan — ${plan.credits} Credits`,
+    order_id,
+
+    // callback_url tells Razorpay where to redirect for methods like Netbanking.
+    // MUST be a publicly reachable HTTPS URL — never localhost.
+    // On localhost we omit it so Razorpay uses its own hosted result page
+    // (acceptable for dev/test). In production this MUST be set.
+    ...(isLocalhost ? {} : {
+      callback_url: `${window.location.origin}/api/payments/payment-callback/`,
+    }),
+
+    // Called for in-popup methods: Cards, UPI-intent, most Wallets.
+    handler: function(response){
+      (async ()=>{
+        try{
+          resetPlanButtons(plan);
+          showPaymentVerifying();
+          await verifyPayment(response, plan);
+        }catch(err){
+          showPaymentFailure(err.message || "An unexpected error occurred.");
+        }
+      })();
+    },
+
+    prefill:{
+      email: "{{ request.user.email|escapejs }}",
+      name:  "{{ request.user.get_full_name|escapejs|default:request.user.username|escapejs }}",
+    },
+
+    theme:{ color:"#2563eb" },
+
+    modal:{
+      ondismiss: function(){
+        resetPlanButtons(plan);
+        showToast("Payment cancelled.", "info");
+      },
+      escape:     true,
+      handleback: true,
+    }
+  };
+
+  const rzp = new Razorpay(options);
+
+  rzp.on("payment.failed", function(response){
+    resetPlanButtons(plan);
+    const msg =
+      response.error?.description ||
+      response.error?.reason      ||
+      "Payment failed. Please try again.";
+    showPaymentFailure(msg);
+  });
+
+  rzp.open();
+}
+
+/* ── 4. Verify Payment with backend ── */
+async function verifyPayment(rzpResponse, plan){
+  const res = await fetch("/api/payments/verify-payment/", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "X-CSRFToken": getCsrf(),
+      "X-Requested-With":"XMLHttpRequest"
+    },
+    credentials:"include",
+    body: JSON.stringify({
+      razorpay_order_id:   rzpResponse.razorpay_order_id,
+      razorpay_payment_id: rzpResponse.razorpay_payment_id,
+      razorpay_signature:  rzpResponse.razorpay_signature,
+    })
+  });
+
+  let data;
+  try{
+    data = await res.json();
+  }catch{
+    throw new Error("Server returned an invalid response during verification.");
+  }
+
+  if(!res.ok || !data.success){
+    throw new Error(data.error || "Payment verification failed.");
+  }
+
+  // ── 5. Success! ──
+  showPaymentSuccess(plan, data);
+}
+
+/* ── Payment result UI helpers ── */
+function showPaymentVerifying(){
+  paymentResult.className = "payment-result verifying show";
+  document.getElementById("payResultIcon").textContent  = "⏳";
+  document.getElementById("payResultTitle").textContent = "Verifying payment…";
+  document.getElementById("payResultMsg").textContent   = "Please wait, do not close this window.";
+  document.getElementById("payResultCredits").innerHTML = "";
+  // Scroll to result within the modal
+  paymentResult.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function showPaymentSuccess(plan, data){
+  // Invalidate plan cache so next open re-fetches (shows updated state)
+  plansCache = null;
+
+  paymentResult.className = "payment-result success show";
+  document.getElementById("payResultIcon").textContent  = "🎉";
+  document.getElementById("payResultTitle").textContent = "Payment Successful!";
+  document.getElementById("payResultMsg").textContent   =
+    `Your ${plan.name.charAt(0) + plan.name.slice(1).toLowerCase()} plan is now active.`;
+  document.getElementById("payResultCredits").innerHTML =
+    `<div class="payment-result-credits">✅ +${plan.credits} credits added to your account</div>`;
+
+  // FIX: Update the live credit counter using the authoritative balance
+  // returned by the backend (data.new_balance), not a local calculation.
+  const liveCredits = document.getElementById("liveCredits");
+  if(liveCredits){
+    const newBalance = data.new_balance != null
+      ? data.new_balance
+      : (parseInt(liveCredits.textContent, 10) || 0) + plan.credits;
+    liveCredits.textContent = newBalance;
+  }
+
+  // Re-enable generate button if it was disabled due to 0 credits
+  const genBtn = document.getElementById("submitBtn");
+  if(genBtn && genBtn.disabled){
+    genBtn.disabled = false;
+    genBtn.innerHTML = "<span>⚡</span><span>Generate Images</span>";
+  }
+
+  // Remove the "0 credits" warning if present
+  const warn = document.getElementById("noCreditWarn");
+  if(warn) warn.remove();
+
+  showToast(`🎉 ${plan.credits} credits added successfully!`, "success", 6000);
+  paymentResult.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function showPaymentFailure(msg){
+  paymentResult.className = "payment-result error show";
+  document.getElementById("payResultIcon").textContent  = "❌";
+  document.getElementById("payResultTitle").textContent = "Payment Failed";
+  document.getElementById("payResultMsg").textContent   = msg;
+  document.getElementById("payResultCredits").innerHTML =
+    `<button onclick="document.getElementById('paymentResult').classList.remove('show')"
+       style="margin-top:12px;padding:8px 20px;border-radius:10px;border:2px solid var(--border);
+              background:#fff;font-weight:700;cursor:pointer;color:var(--primary);">
+       Try Again
+     </button>`;
+  showToast(msg, "error", 6000);
+  paymentResult.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function resetPlanButtons(plan){
+  document.querySelectorAll(".plan-btn").forEach(btn => {
+    btn.disabled = false;
+  });
+  // Restore label for the specific plan that was processing
+  if(plan){
+    const label = document.querySelector(`#planBtn_${plan.name} .btn-label`);
+    if(label){
+      const fp = parseFloat(plan.final_price ?? plan.price);
+      label.textContent = `Buy Now ₹${Math.round(fp)}`;
+    }
+    const spinner = document.getElementById(`spinner_${plan.name}`);
+    if(spinner) spinner.style.display = "none";
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
    UTILS
-═══════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 function escHtml(str){
   return String(str)
     .replace(/&/g,"&amp;")

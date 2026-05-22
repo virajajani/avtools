@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if success %}Payment Successful{% else %}Payment Failed{% endif %} | AVTools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --primary:#2563eb;
+  --accent:#7c3aed;
+  --success:#15803d;
+  --success-bg:#dcfce7;
+  --success-border:#86efac;
+  --danger:#dc2626;
+  --danger-bg:#fee2e2;
+  --danger-border:#fecaca;
+  --text:#0f172a;
+  --text-light:#64748b;
+  --bg:#f1f5f9;
+  --border:#e2e8f0;
+  --radius:16px;
+  --radius-lg:24px;
+  --shadow:0 20px 60px rgba(15,23,42,0.12);
+}
+
+body{
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Subtle animated background */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 20%,
+      {% if success %}rgba(21,128,61,0.07){% else %}rgba(220,38,38,0.07){% endif %} 0%,transparent 70%),
+    radial-gradient(ellipse 50% 60% at 80% 80%,
+      rgba(37,99,235,0.06) 0%,transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+.card{
+  position:relative;
+  z-index:1;
+  background:#fff;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+  padding:56px 48px;
+  max-width:520px;
+  width:100%;
+  text-align:center;
+  animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(28px) scale(0.96);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* ── Icon circle ── */
+.icon-circle{
+  width:96px;height:96px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 28px;
+  font-size:44px;
+  animation:iconPop 0.5s 0.15s cubic-bezier(0.22,1,0.36,1) both;
+  {% if success %}
+  background:var(--success-bg);
+  border:3px solid var(--success-border);
+  {% else %}
+  background:var(--danger-bg);
+  border:3px solid var(--danger-border);
+  {% endif %}
+}
+
+@keyframes iconPop{
+  from{opacity:0;transform:scale(0.5);}
+  to{opacity:1;transform:scale(1);}
+}
+
+/* ── Heading ── */
+.heading{
+  font-family:'Sora',sans-serif;
+  font-size:28px;font-weight:900;
+  letter-spacing:-0.03em;
+  margin-bottom:12px;
+  {% if success %}color:var(--success);{% else %}color:var(--danger);{% endif %}
+}
+
+.sub{
+  font-size:15px;color:var(--text-light);
+  line-height:1.6;margin-bottom:32px;
+}
+
+/* ── Credits badge ── */
+.credits-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--success-bg);
+  border:1.5px solid var(--success-border);
+  color:var(--success);
+  font-family:'Sora',sans-serif;
+  font-size:16px;font-weight:800;
+  padding:14px 28px;border-radius:var(--radius);
+  margin-bottom:36px;
+  animation:badgeIn 0.4s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes badgeIn{
+  from{opacity:0;transform:scale(0.85);}
+  to{opacity:1;transform:scale(1);}
+}
+
+/* ── CTA button ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;border:none;
+  padding:15px 36px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;
+  font-size:15px;font-weight:700;
+  cursor:pointer;text-decoration:none;
+  box-shadow:0 8px 24px rgba(37,99,235,0.3);
+  transition:all 0.25s;
+  width:100%;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 36px rgba(37,99,235,0.4);
+}
+
+.btn-secondary{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:none;
+  color:var(--text-light);
+  border:2px solid var(--border);
+  padding:12px 28px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;
+  font-size:14px;font-weight:600;
+  cursor:pointer;text-decoration:none;
+  margin-top:12px;width:100%;
+  transition:all 0.2s;
+}
+
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);}
+
+/* ── Auto-redirect notice ── */
+.redirect-notice{
+  font-size:12px;color:var(--text-light);
+  margin-top:20px;
+}
+
+.redirect-notice b{color:var(--primary);}
+
+/* ── Progress bar for auto-redirect ── */
+.progress-wrap{
+  height:3px;background:var(--bg);
+  border-radius:999px;margin-top:10px;
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  border-radius:999px;
+  animation:progressCountdown 5s linear forwards;
+  transform-origin:left;
+}
+
+@keyframes progressCountdown{
+  from{width:100%;}
+  to{width:0%;}
+}
+
+/* ── Support note for failures ── */
+.support-note{
+  margin-top:24px;padding:16px 20px;
+  background:var(--bg);border-radius:var(--radius);
+  border:1px solid var(--border);
+  font-size:13px;color:var(--text-light);
+  text-align:left;
+}
+
+.support-note b{color:var(--text);}
+
+@media(max-width:480px){
+  .card{padding:36px 24px;}
+  .heading{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  {% if success %}
+
+    <div class="icon-circle">🎉</div>
+    <div class="heading">Payment Successful!</div>
+    <p class="sub">
+      {% if plan_name %}
+        Your <strong>{{ plan_name|title }}</strong> plan is now active.
+      {% else %}
+        Your payment has been confirmed and credits are ready to use.
+      {% endif %}
+    </p>
+
+    {% if credits_added %}
+      <div class="credits-badge">
+        ✅ +{{ credits_added }} credits added to your account
+      </div>
+    {% endif %}
+
+    <a href="{{ redirect_url|default:'/' }}" class="btn">
+      ⚡ Start Generating Images
+    </a>
+
+    <div class="redirect-notice">
+      You'll be redirected automatically in <b id="countdown">5</b> seconds.
+      <div class="progress-wrap"><div class="progress-bar"></div></div>
+    </div>
+
+  {% else %}
+
+    <div class="icon-circle">❌</div>
+    <div class="heading">Payment Failed</div>
+    <p class="sub">{{ message }}</p>
+
+    <a href="{{ redirect_url|default:'/' }}" class="btn">
+      🔄 Try Again
+    </a>
+
+    <a href="/" class="btn-secondary">
+      ← Back to Home
+    </a>
+
+    <div class="support-note">
+      <b>Need help?</b> If money was debited from your account but credits weren't added,
+      please contact us at <b>support@avtools.in</b> with your order details.
+    </div>
+
+  {% endif %}
+
+</div>
+
+{% if success %}
+<script>
+  // Auto-redirect countdown
+  let secs = 5;
+  const el = document.getElementById("countdown");
+  const timer = setInterval(()=>{
+    secs--;
+    if(el) el.textContent = secs;
+    if(secs <= 0){
+      clearInterval(timer);
+      window.location.href = "{{ redirect_url|default:'/'|escapejs }}";
+    }
+  }, 1000);
+</script>
+{% endif %}
+
+</body>
+</html>

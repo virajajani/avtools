@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razorpay Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Select a Credit Plan</h2>
+
+    <!-- Auth Token Input -->
+    <label for="authToken">Enter Your Auth Token:</label>
+    <input type="text" id="authToken" placeholder="Paste your token here">
+
+    <!-- Credit Plans will be rendered here -->
+    <div id="plans-container" style="margin-top: 20px;"></div>
+
+    <hr>
+
+    <h2>Test Hotel Booking</h2>
+    <label for="bookingAmount">Enter Hotel Booking Amount (INR):</label>
+    <input type="number" id="bookingAmount" placeholder="e.g. 5000">
+    <button id="hotelPayBtn">Pay for Hotel Booking</button>
+
+    <hr>
+
+    <h2>Test Flight Booking</h2>
+    <label for="flightAmount">Enter Flight Booking Amount (INR):</label>
+    <input type="number" id="flightAmount" placeholder="e.g. 8000">
+    <button id="flightPayBtn">Pay for Flight Booking</button>
+
+    <hr>
+
+    <h2>Test Bus Booking</h2>
+    <label for="busAmount">Enter Bus Booking Amount (INR):</label>
+    <input type="number" id="busAmount" placeholder="e.g. 1200">
+    <button id="busPayBtn">Pay for Bus Booking</button>
+
+    <script>
+        const plansUrl = "http://127.0.0.1:8000/api/payment/bobo-credit-plans/";
+
+        $(document).ready(function () {
+            $("#authToken").on("input", function () {
+                let authToken = $(this).val().trim();
+                if (!authToken) return;
+
+                // Fetch credit plans
+                $.ajax({
+                    url: plansUrl,
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Token " + authToken
+                    },
+                    success: function (data) {
+                        $("#plans-container").empty();
+                        if (Array.isArray(data)) {
+                            data.forEach(function (plan) {
+                                const btn = `
+                                    <div style="margin-bottom: 10px;">
+                                        <button class="pay-btn" data-plan="${plan.name}">
+                                            Buy ${plan.name} – ₹${plan.price} for ${plan.credits} credits
+                                            ${plan.offer_percent > 0 ? `<strong> (${plan.offer_percent}% OFF)</strong>` : ''}
+                                        </button>
+                                    </div>
+                                `;
+                                $("#plans-container").append(btn);
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        alert("Failed to load plans: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+
+        // Handle Bobo Credit Plan Purchase
+        $(document).on("click", ".pay-btn", function () {
+            let plan = $(this).data("plan");
+            let authToken = $("#authToken").val().trim();
+            if (!authToken) {
+                alert("Please enter your authorization token!");
+                return;
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8000/api/payment/create-order/",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Token " + authToken
+                },
+                data: JSON.stringify({ plan: plan }),
+                success: function (response) {
+                    openRazorpay(response, authToken, plan);
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+
+        // Handle Hotel Booking Payment
+        $("#hotelPayBtn").on("click", function () {
+            const amount = $("#bookingAmount").val().trim();
+            const authToken = $("#authToken").val().trim();
+
+            if (!authToken) {
+                alert("Please enter your authorization token!");
+                return;
+            }
+
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                alert("Please enter a valid hotel booking amount!");
+                return;
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8000/api/payment/create-order/",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Token " + authToken
+                },
+                data: JSON.stringify({ amount: amount, type: "HOTEL_BOOKING" }),
+                success: function (response) {
+                    openRazorpay(response, authToken, "Hotel Booking");
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+
+        // Handle Flight Booking Payment
+        $("#flightPayBtn").on("click", function () {
+            const amount = $("#flightAmount").val().trim();
+            const authToken = $("#authToken").val().trim();
+
+            if (!authToken) {
+                alert("Please enter your authorization token!");
+                return;
+            }
+
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                alert("Please enter a valid flight booking amount!");
+                return;
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8000/api/payment/create-order/",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Token " + authToken
+                },
+                data: JSON.stringify({ amount: amount, type: "FLIGHT_BOOKING" }),
+                success: function (response) {
+                    openRazorpay(response, authToken, "Flight Booking");
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+
+        // Handle Bus Booking Payment
+        $("#busPayBtn").on("click", function () {
+            const amount = $("#busAmount").val().trim();
+            const authToken = $("#authToken").val().trim();
+
+            if (!authToken) {
+                alert("Please enter your authorization token!");
+                return;
+            }
+
+            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                alert("Please enter a valid bus booking amount!");
+                return;
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8000/api/payment/create-order/",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Token " + authToken
+                },
+                data: JSON.stringify({ amount: amount, type: "BUS_BOOKING" }),
+                success: function (response) {
+                    openRazorpay(response, authToken, "Bus Booking");
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+
+        // Razorpay checkout
+        function openRazorpay(response, authToken, label) {
+            let options = {
+                "key": response.key,
+                "amount": response.amount,
+                "order_id": response.order_id,
+                "name": "Buy Credits / Booking",
+                "description": "Payment for " + label,
+                "timeout": 200, 
+                "handler": function (paymentResponse) {
+                    verifyPayment(paymentResponse, response.order_id, authToken);
+                },
+                "prefill": {
+                    "email": "test@example.com",
+                    "contact": "9999999999"
+                },
+                "theme": {
+                    "color": "#3399CC"
+                }
+            };
+            let rzp = new Razorpay(options);
+            rzp.open();
+        }
+
+        // Verify payment
+        function verifyPayment(paymentResponse, orderId, authToken) {
+            $.ajax({
+                url: "http://127.0.0.1:8000/api/payment/verify-payment/",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Token " + authToken
+                },
+                data: JSON.stringify({
+                    razorpay_order_id: orderId,
+                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                    razorpay_signature: paymentResponse.razorpay_signature
+                }),
+                success: function (resp) {
+                    alert(resp.message || "Payment verified successfully!");
+                },
+                error: function (xhr) {
+                    alert("Payment verification failed: " + xhr.responseText);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

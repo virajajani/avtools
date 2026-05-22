@@ -1,3 +1,4 @@
+from decouple import config
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -54,11 +55,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'import_export',
+    'django_filters',
     
     # Local apps
     'generator',
     'accounts',
     'products',
+    'payments',
 ]
 
 # --------------------------------------------------
@@ -154,6 +157,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --------------------------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -188,3 +193,7 @@ if not DEBUG:
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600
 FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600
+
+
+RAZORPAY_API_KEY = config("RAZORPAY_API_KEY")
+RAZORPAY_API_SECRET_KEY = config("RAZORPAY_API_SECRET_KEY")
