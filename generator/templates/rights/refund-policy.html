@@ -94,11 +94,17 @@ ul{margin-left:20px;margin-top:10px;}
 <div class="container">
   <h1>Refund & Cancellation Policy</h1>
   <div class="updated">Last Updated: May 2026</div>
-
+{% comment %} 
   <div class="info-box">
     <p>This policy applies to all digital services offered by <strong>AVTools</strong>, operated by <strong>Ajani Virajbhai Jentibhai</strong>.<br>
     Address: Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India.<br>
     Payments are processed via <strong>PayU India</strong>.</p>
+  </div> {% endcomment %}
+
+  <div class="info-box">
+    <p>This policy applies to all digital services offered by <strong>AVTools</strong><br>
+    {% comment %} Address: Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India.<br> {% endcomment %}
+    </p>
   </div>
 
   <p>At <strong>AVTools</strong>, we strive to provide reliable digital tools for our users. This policy outlines how cancellations and refunds are handled for all our services.</p>
@@ -111,21 +117,21 @@ ul{margin-left:20px;margin-top:10px;}
   <h2>2. Cancellation Policy</h2>
 
   <div class="warning-box">
-    <p>⏱ <strong>Cancellation Window: 24 Hours from Purchase</strong><br>
-    Cancellation requests are only accepted within <strong>24 hours</strong> of the original purchase, and <strong>only if zero credits have been consumed</strong>. Once even one credit is used, cancellation is not possible for that purchase.</p>
+    <p>⏱ <strong>Cancellation Window: 1 Hour from Purchase</strong><br>
+    Cancellation requests are only accepted within <strong>1 hour</strong> of the original purchase, and <strong>only if zero credits have been consumed</strong>. Once even one credit is used, cancellation is not possible for that purchase.</p>
   </div>
 
   <table class="cancel-table">
     <tr>
       <th>Cancellation Scenario</th>
-      <th>Eligible?</th>
+      <th>Eligible?
       <th>Time Limit</th>
       <th>Outcome</th>
     </tr>
     <tr>
       <td>Credit pack purchased — <strong>0 credits used</strong></td>
       <td>✅ Yes</td>
-      <td><strong>Within 24 hours</strong> of purchase</td>
+      <td><strong>Within 1 hour</strong> of purchase</td>
       <td>Full refund processed to original payment method within 7–10 business days</td>
     </tr>
     <tr>
@@ -135,7 +141,7 @@ ul{margin-left:20px;margin-top:10px;}
       <td>Not eligible; used credits are consumed upon service delivery</td>
     </tr>
     <tr>
-      <td>Cancellation request <strong>after 24 hours</strong></td>
+      <td>Cancellation request <strong>after 1 hour</strong></td>
       <td>❌ No</td>
       <td>Window expired</td>
       <td>Not accepted regardless of unused credit balance</td>
@@ -160,7 +166,7 @@ ul{margin-left:20px;margin-top:10px;}
   <h2>3. Refund Policy</h2>
 
   <div class="success-box">
-    <p>✅ Eligible refunds are always returned to the <strong>original payment source</strong> (UPI, Debit/Credit Card, or Net Banking) used at the time of purchase via PayU.</p>
+    <p>✅ Eligible refunds are always returned to the <strong>original payment source</strong> (UPI, Debit/Credit Card, or Net Banking) used at the time of purchase via payment gateway.</p>
   </div>
 
   <table class="refund-table">
@@ -174,13 +180,13 @@ ul{margin-left:20px;margin-top:10px;}
       <td>Payment deducted but credits not added (transaction failure)</td>
       <td>✅ Full Refund</td>
       <td>5–7 business days</td>
-      <td>Original payment method via PayU</td>
+      <td>Original payment method via payment gateway</td>
     </tr>
     <tr>
       <td>Duplicate / double payment for the same order</td>
       <td>✅ Full Refund of duplicate amount</td>
       <td>5–7 business days after verification</td>
-      <td>Original payment method via PayU</td>
+      <td>Original payment method via payment gateway</td>
     </tr>
     <tr>
       <td>Service not delivered due to verified technical error on our end</td>
@@ -189,10 +195,10 @@ ul{margin-left:20px;margin-top:10px;}
       <td>Original payment method or AVTools credits</td>
     </tr>
     <tr>
-      <td>Credits purchased but not used — cancellation within 24 hours</td>
+      <td>Credits purchased but not used — cancellation within 1 hour</td>
       <td>✅ Eligible (request required)</td>
       <td>7–10 business days after approval</td>
-      <td>Original payment method via PayU</td>
+      <td>Original payment method via payment gateway</td>
     </tr>
     <tr>
       <td>Credits partially or fully used</td>
@@ -221,11 +227,11 @@ ul{margin-left:20px;margin-top:10px;}
   </table>
 
   <!-- ===================== SECTION 4 ===================== -->
-  <h2>4. Refund Mode</h2>
-  <p>All eligible refunds are processed to the <strong>original payment source</strong> — UPI ID, Debit/Credit Card, or Net Banking account — used at the time of purchase. Refunds are initiated through <strong>PayU India</strong> and are subject to your bank's processing schedule (typically 3–7 additional business days after initiation). We do not issue refunds in cash, by cheque, or via any third-party wallet.</p>
+  {% comment %} <h2>4. Refund Mode</h2>
+  <p>All eligible refunds are processed to the <strong>original payment source</strong> — UPI ID, Debit/Credit Card, or Net Banking account — used at the time of purchase. Refunds are initiated through <strong>PayU India</strong> and are subject to your bank's processing schedule (typically 3–7 additional business days after initiation). We do not issue refunds in cash, by cheque, or via any third-party wallet.</p> {% endcomment %}
 
   <!-- ===================== SECTION 5 ===================== -->
-  <h2>5. Shipping Policy</h2>
+  <h2>4. Shipping Policy</h2>
 
   <div class="info-box">
     <p>📦 <strong>AVTools is a fully digital platform.</strong> We do not ship any physical products. There is no courier, no postal delivery, and no physical address required for service delivery.</p>
@@ -235,36 +241,36 @@ ul{margin-left:20px;margin-top:10px;}
   <ul style="margin-top:12px;">
     <li><strong>AI-generated images</strong> are available for immediate browser download upon generation.</li>
     <li><strong>Cropped label files</strong> are ready for download within seconds of upload and processing.</li>
-    <li><strong>Credit packs</strong> are activated instantly in your account dashboard upon successful PayU payment confirmation.</li>
+    <li><strong>Credit packs</strong> are activated instantly in your account dashboard upon successful payment confirmation.</li>
     <li>In the rare event of a technical delay exceeding 24 hours, you are entitled to a full refund under Section 3 of this policy.</li>
   </ul>
   <p style="margin-top:12px;">Since all services are digital, there are no shipping charges, no delivery timelines, and no physical address requirements associated with any AVTools purchase.</p>
 
   <!-- ===================== SECTION 6 ===================== -->
-  <h2>6. How to Request a Refund or Cancellation</h2>
+  <h2>5. How to Request a Refund or Cancellation</h2>
   <ul class="step-list">
     <li>Email <strong>avtools.in@gmail.com</strong> with subject: <em>"Refund Request – [Your Email / Order ID]"</em> or <em>"Cancellation Request – [Your Email / Order ID]"</em></li>
     <li>Include your registered email address, the date of transaction, PayU transaction/order ID, and your reason.</li>
     <li>Attach a screenshot of your payment confirmation if available.</li>
     <li>We will acknowledge your request within <strong>2 business days</strong>.</li>
-    <li>After verification, eligible refunds are processed within <strong>5–10 business days</strong> and credited via PayU to your original payment method.</li>
+    <li>After verification, eligible refunds are processed within <strong>5–10 business days</strong> and credited via the payment gateway to your original payment method.</li>
   </ul>
 
   <!-- ===================== SECTION 7 ===================== -->
-  <h2>7. Dispute Resolution</h2>
-  <p>If you believe a transaction has been incorrectly charged or a refund has not been processed, contact us at <strong>avtools.in@gmail.com</strong>. We aim to resolve all disputes within <strong>10 business days</strong>. If unresolved, disputes are subject to the exclusive jurisdiction of courts in <strong>Rajkot, Gujarat, India</strong>.</p>
+  <h2>6. Dispute Resolution</h2>
+  <p>If you believe a transaction has been incorrectly charged or a refund has not been processed, contact us at <strong>avtools.in@gmail.com</strong>. We aim to resolve all disputes within <strong>10 business days</strong>. If unresolved, disputes are subject to the exclusive jurisdiction of courts in <strong>India</strong>.</p>
 
   <!-- ===================== SECTION 8 ===================== -->
-  <h2>8. Policy Updates</h2>
+  <h2>7. Policy Updates</h2>
   <p>We may update this policy at any time without prior notice. Continued use of our services means acceptance of the updated policy. The latest version is always available at <strong>avtools.in/refund-policy</strong>.</p>
 
   <!-- ===================== SECTION 9 ===================== -->
-  <h2>9. Contact</h2>
+  <h2>8. Contact</h2>
   <p>
-    <strong>Operator:</strong> Ajani Virajbhai Jentibhai<br>
-    <strong>Business:</strong> AVTools<br>
+    {% comment %} <strong>Operator:</strong> Ajani Virajbhai Jentibhai<br> {% endcomment %}
+    <strong>Operator:</strong> AVTools<br>
     <strong>Email:</strong> avtools.in@gmail.com<br>
-    <strong>Address:</strong> Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India
+    {% comment %} <strong>Address:</strong> Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India {% endcomment %}
   </p>
 </div>
 
@@ -274,10 +280,10 @@ ul{margin-left:20px;margin-top:10px;}
       <img src="/static/images/avtools.png" alt="AVTools" style="height:32px;filter:brightness(10);">
       <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
       <div class="address">
-        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
+        {% comment %} 📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
         Near Green Land Chokdi, Behind HP Petrol Pump,<br>
         Rajkot, Gujarat – 360003, India<br><br>
-        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br>
+        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br> {% endcomment %}
         📧 avtools.in@gmail.com
       </div>
     </div>
@@ -303,8 +309,9 @@ ul{margin-left:20px;margin-top:10px;}
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
-    <div>Rajkot, Gujarat, India</div>
+    {% comment %} <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div> {% endcomment %}
+    <div>© 2026 AVTools. All rights reserved.</div>
+    {% comment %} <div>Rajkot, Gujarat, India</div> {% endcomment %}
   </div>
 </footer>
 

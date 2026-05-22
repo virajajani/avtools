@@ -84,8 +84,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
   <div class="card">
     <div class="card-icon">🚀</div>
     <h2>Who We Are</h2>
-    <p><strong>AVTools</strong> (operated by <strong>Ajani Virajbhai Jentibhai</strong>) is a product-first technology platform built specifically for Meesho sellers and Indian online marketplace sellers. We understand the real challenges you face every day — from managing product images to controlling shipping costs — and we've built tools to solve them.</p>
-    <p>We are headquartered in Rajkot, Gujarat, India, and serve thousands of active sellers across the country.</p>
+    {% comment %} <p><strong>AVTools</strong> (operated by <strong>Ajani Virajbhai Jentibhai</strong>) is a product-first technology platform built specifically for Meesho sellers and Indian online marketplace sellers. We understand the real challenges you face every day — from managing product images to controlling shipping costs — and we've built tools to solve them.</p> {% endcomment %}
+    <p><strong>AVTools</strong> is a product-first technology platform built specifically for Meesho sellers and Indian online marketplace sellers. We understand the real challenges you face every day — from managing product images to controlling shipping costs — and we've built tools to solve them.</p>
+    <p>We are headquartered in India, and serve thousands of active sellers across the country.</p>
   </div>
 
   <div class="card">
@@ -149,23 +150,24 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
     <div class="info-grid">
       <div class="info-item">
         <label>Operator / Owner</label>
-        <span>Ajani Virajbhai Jentibhai</span>
-      </div>
-      <div class="info-item">
-        <label>Business Name</label>
         <span>AVTools</span>
       </div>
-      <div class="info-item">
+      {% comment %} <div class="info-item">
+        <label>Business Name</label>
+        <span>AVTools</span>
+      </div> {% endcomment %}
+      {% comment %} <div class="info-item">
         <label>Registered Address</label>
         <span>Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003</span>
-      </div>
+      </div> {% endcomment %}
       <div class="info-item">
         <label>Email</label>
         <span>avtools.in@gmail.com</span>
       </div>
       <div class="info-item">
         <label>Location</label>
-        <span>Rajkot, Gujarat, India</span>
+        {% comment %} <span>Rajkot, Gujarat, India</span> {% endcomment %}
+        <span>Indian online marketplace sellers (Meesho, Flipkart, Amazon, etc.)</span>
       </div>
       <div class="info-item">
         <label>Services</label>
@@ -182,10 +184,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
       <img src="{% static 'images/avtools.png' %}" alt="AVTools" style="height:32px;filter:brightness(10);">
       <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
       <div class="address">
-        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
+        {% comment %} 📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
         Near Green Land Chokdi, Behind HP Petrol Pump,<br>
         Rajkot, Gujarat – 360003, India<br><br>
-        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br>
+        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br> {% endcomment %}
         📧 avtools.in@gmail.com
       </div>
     </div>
@@ -211,8 +213,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg-
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
-    <div>Rajkot, Gujarat, India</div>
+    {% comment %} <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div> {% endcomment %}
+    <div>© 2026 AVTools. All rights reserved.</div>
+    {% comment %} <div>Rajkot, Gujarat, India</div> {% endcomment %}
   </div>
 </footer>
 

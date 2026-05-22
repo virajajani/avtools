@@ -3,22 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVTools – Smart Tools for Meesho Sellers | Shipping Label & Image Generator</title>
-<meta name="description" content="AVTools helps Meesho sellers reduce shipping charges, generate product images, export shipping labels, improve profit margins, and grow faster with data-driven tools.">
-<meta name="keywords" content="Meesho seller tools, shipping label cropper, Meesho image generator, shipping slab optimizer, India e-commerce tools, Meesho profit calculator">
+<title>AVTools – Free Shipping Label Export & Image Generator for Meesho Sellers</title>
+<meta name="description" content="AVTools helps Meesho sellers export shipping labels FREE, generate optimized product images, reduce shipping costs, and grow faster. No login required for label export.">
+<meta name="keywords" content="Meesho shipping label export free, Meesho seller tools, shipping label cropper, Meesho image generator, shipping slab optimizer, India e-commerce tools">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
 :root{
   --primary:#3b82f6;
   --primary-dark:#2563eb;
-  --primary-light:#60a5fa;
   --accent:#8b5cf6;
+  --teal:#0f766e;
+  --teal-dark:#0d6b63;
   --text:#1e293b;
   --text-light:#64748b;
   --bg:#ffffff;
   --bg-gray:#f8fafc;
   --border:#e2e8f0;
+  --gold:#f59e0b;
+  --gold-light:#fbbf24;
 }
 
 body{
@@ -29,670 +32,1495 @@ body{
   overflow-x:hidden;
 }
 
-/* ─── BUTTONS ─── */
-.btn{
-  padding:11px 24px;
-  border-radius:10px;
-  font-weight:600;
-  text-decoration:none;
-  transition:all 0.3s;
-  font-size:14px;
-  display:inline-block;
-}
-.btn-primary{
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff !important;
-  box-shadow:0 4px 14px rgba(59,130,246,0.3);
-}
-.btn-primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 20px rgba(59,130,246,0.4);
-}
-.btn-secondary{
-  background:transparent;
-  color:var(--primary);
-  border:1px solid #fff;
-}
-.btn-secondary:hover{
-  background:var(--primary);
+/* ═══════════════════════════════════════
+   FREE ANNOUNCEMENT BAR
+═══════════════════════════════════════ */
+.announcement-bar{
+  background:linear-gradient(90deg,#0f766e,#0d9488,#0f766e);
+  background-size:200% 100%;
+  animation:slideGrad 4s linear infinite;
   color:#fff;
-  border:none;
+  text-align:center;
+  padding:10px 20px;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.02em;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  position:relative;
+  z-index:999;
 }
 
-/* ─── HERO ─── */
+@keyframes slideGrad{
+  0%{background-position:0% 50%}
+  100%{background-position:200% 50%}
+}
+
+.announcement-bar .pill{
+  background:rgba(255,255,255,0.22);
+  border:1px solid rgba(255,255,255,0.35);
+  padding:3px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  animation:pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:0.85;transform:scale(1.04);}
+}
+
+.announcement-bar a{
+  color:#fff;
+  text-decoration:underline;
+  font-weight:800;
+  transition:opacity 0.2s;
+}
+.announcement-bar a:hover{opacity:0.85;}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
 .hero{
-  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  background:linear-gradient(135deg,#1e1b4b 0%,#312e81 35%,#4c1d95 65%,#6d28d9 100%);
   position:relative;
   overflow:hidden;
-  padding:140px 6% 120px;
+  padding:100px 6% 90px;
 }
+
 .hero::before{
   content:'';
   position:absolute;
   top:0;left:0;right:0;bottom:0;
-  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  opacity:0.4;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
+
+/* Glowing orbs */
+.hero::after{
+  content:'';
+  position:absolute;
+  top:-200px;right:-100px;
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(139,92,246,0.3) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.hero-orb2{
+  position:absolute;
+  bottom:-150px;left:-100px;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(59,130,246,0.25) 0%,transparent 70%);
+  pointer-events:none;
+}
+
 .hero-content{
   max-width:1200px;
   margin:0 auto;
-  text-align:center;
   position:relative;
   z-index:1;
 }
+
+/* Top badge */
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  color:#fff;
+  padding:8px 18px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:28px;
+  backdrop-filter:blur(8px);
+  animation:fadeInUp 0.6s ease;
+}
+
+.hero-badge .dot{
+  width:8px;height:8px;
+  background:#4ade80;
+  border-radius:50%;
+  animation:blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
 .hero h1{
-  font-size:58px;
+  font-size:60px;
   font-weight:900;
   color:#fff;
-  line-height:1.15;
-  margin-bottom:24px;
-  animation:fadeInUp 0.8s ease;
+  line-height:1.1;
+  margin-bottom:20px;
+  animation:fadeInUp 0.7s ease 0.1s backwards;
 }
-.hero h1 span{
+
+.hero h1 .line2{
+  display:block;
+  font-size:52px;
+}
+
+.hero h1 .highlight{
+  background:linear-gradient(135deg,#fbbf24,#f59e0b,#fbbf24);
+  background-size:200%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:shimmer 3s linear infinite;
+}
+
+@keyframes shimmer{
+  0%{background-position:0% 50%}
+  100%{background-position:200% 50%}
+}
+
+.hero-sub{
+  font-size:19px;
+  color:rgba(255,255,255,0.82);
+  max-width:640px;
+  line-height:1.65;
+  margin-bottom:44px;
+  animation:fadeInUp 0.7s ease 0.2s backwards;
+}
+
+/* Hero CTA Pair */
+.hero-ctas{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:60px;
+  animation:fadeInUp 0.7s ease 0.3s backwards;
+}
+
+/* FREE CTA — big teal */
+.cta-free{
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  background:linear-gradient(135deg,#0f766e,#0d9488);
+  color:#fff;
+  padding:16px 32px;
+  border-radius:14px;
+  font-size:17px;
+  font-weight:800;
+  text-decoration:none;
+  box-shadow:0 8px 30px rgba(15,118,110,0.5);
+  transition:all 0.3s;
+  position:relative;
+  overflow:hidden;
+}
+
+.cta-free::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent);
+  opacity:0;
+  transition:opacity 0.3s;
+}
+
+.cta-free:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 40px rgba(15,118,110,0.6);
+}
+.cta-free:hover::before{opacity:1;}
+
+.cta-free .free-badge{
+  background:rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.3);
+  padding:3px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+}
+
+/* Secondary CTA */
+.cta-secondary{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:rgba(255,255,255,0.1);
+  color:#fff;
+  padding:16px 28px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:700;
+  text-decoration:none;
+  border:1.5px solid rgba(255,255,255,0.25);
+  backdrop-filter:blur(8px);
+  transition:all 0.3s;
+}
+
+.cta-secondary:hover{
+  background:rgba(255,255,255,0.18);
+  transform:translateY(-3px);
+}
+
+/* Trust row */
+.trust-row{
+  display:flex;
+  gap:32px;
+  flex-wrap:wrap;
+  animation:fadeInUp 0.7s ease 0.4s backwards;
+}
+
+.trust-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:rgba(255,255,255,0.75);
+  font-size:13px;
+  font-weight:600;
+}
+
+.trust-item .icon{
+  width:28px;height:28px;
+  background:rgba(255,255,255,0.12);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+}
+
+/* Stats row */
+.hero-stats{
+  display:flex;
+  gap:0;
+  margin-top:64px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:20px;
+  backdrop-filter:blur(8px);
+  overflow:hidden;
+  animation:fadeInUp 0.7s ease 0.5s backwards;
+}
+
+.hero-stat{
+  flex:1;
+  text-align:center;
+  padding:24px 16px;
+  border-right:1px solid rgba(255,255,255,0.1);
+}
+.hero-stat:last-child{border-right:none;}
+
+.stat-num{
+  font-size:36px;
+  font-weight:900;
+  color:#fff;
+  display:block;
+  line-height:1;
+  margin-bottom:6px;
+}
+
+.stat-num.teal{color:#5eead4;}
+.stat-num.gold{color:#fbbf24;}
+
+.stat-lbl{
+  font-size:12px;
+  color:rgba(255,255,255,0.65);
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+}
+
+/* ═══════════════════════════════════════
+   FREE LABEL SECTION  (hero promo)
+═══════════════════════════════════════ */
+.free-hero{
+  background:#fff;
+  padding:0 6%;
+  margin-top:-2px;
+}
+
+.free-hero-inner{
+  max-width:1200px;
+  margin:0 auto;
+  background:linear-gradient(135deg,#0f766e 0%,#0369a1 100%);
+  border-radius:0 0 28px 28px;
+  padding:52px 56px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:40px;
+  align-items:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.free-hero-inner::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:300px;height:300px;
+  background:rgba(255,255,255,0.06);
+  border-radius:50%;
+}
+
+.free-hero-inner::after{
+  content:'';
+  position:absolute;
+  bottom:-80px;left:200px;
+  width:200px;height:200px;
+  background:rgba(255,255,255,0.04);
+  border-radius:50%;
+}
+
+.free-label{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,0.18);
+  border:1px solid rgba(255,255,255,0.3);
+  color:#fff;
+  padding:6px 16px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  margin-bottom:18px;
+}
+
+.free-label .star{color:#fbbf24;}
+
+.free-hero-text h2{
+  font-size:36px;
+  font-weight:900;
+  color:#fff;
+  line-height:1.2;
+  margin-bottom:14px;
+  position:relative;z-index:1;
+}
+
+.free-hero-text h2 .free-word{
   background:linear-gradient(135deg,#fbbf24,#f59e0b);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
-}
-.hero p{
-  font-size:20px;
-  color:rgba(255,255,255,0.9);
-  max-width:680px;
-  margin:0 auto 40px;
-  line-height:1.6;
-  animation:fadeInUp 0.8s ease 0.2s backwards;
-}
-.hero-actions{
-  display:flex;
-  gap:16px;
-  justify-content:center;
-  flex-wrap:wrap;
-  animation:fadeInUp 0.8s ease 0.4s backwards;
-}
-.hero-actions .btn{
-  padding:14px 32px;
-  font-size:16px;
-}
-.stats{
-  display:flex;
-  gap:48px;
-  justify-content:center;
-  margin-top:80px;
-  animation:fadeInUp 0.8s ease 0.6s backwards;
-}
-.stat-item{ text-align:center; }
-.stat-number{
-  font-size:42px;
-  font-weight:800;
-  color:#fff;
-  display:block;
-}
-.stat-label{
-  font-size:14px;
-  color:rgba(255,255,255,0.8);
-  margin-top:8px;
+  font-size:44px;
 }
 
-/* ─── SECTION BASE ─── */
+.free-hero-text p{
+  font-size:16px;
+  color:rgba(255,255,255,0.88);
+  line-height:1.7;
+  max-width:500px;
+  margin-bottom:28px;
+  position:relative;z-index:1;
+}
+
+.free-features{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:28px;
+  position:relative;z-index:1;
+}
+
+.free-feat{
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.22);
+  color:#fff;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.free-feat::before{content:'✓';color:#4ade80;font-weight:800;}
+
+.cta-free-big{
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  background:#fff;
+  color:#0f766e;
+  padding:16px 36px;
+  border-radius:14px;
+  font-size:17px;
+  font-weight:900;
+  text-decoration:none;
+  box-shadow:0 8px 30px rgba(0,0,0,0.2);
+  transition:all 0.3s;
+  position:relative;z-index:1;
+}
+
+.cta-free-big:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 40px rgba(0,0,0,0.28);
+  color:#0d6b63;
+}
+
+.free-cta-note{
+  font-size:12px;
+  color:rgba(255,255,255,0.65);
+  margin-top:12px;
+  position:relative;z-index:1;
+}
+
+/* Right side: feature cards */
+.free-hero-cards{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  position:relative;z-index:1;
+  min-width:260px;
+}
+
+.free-card-item{
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:14px;
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  backdrop-filter:blur(6px);
+}
+
+.free-card-icon{
+  width:38px;height:38px;
+  background:rgba(255,255,255,0.15);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  flex-shrink:0;
+}
+
+.free-card-text h4{
+  font-size:14px;
+  font-weight:700;
+  color:#fff;
+  margin-bottom:2px;
+}
+
+.free-card-text p{
+  font-size:12px;
+  color:rgba(255,255,255,0.7);
+  margin:0;
+}
+
+/* ═══════════════════════════════════════
+   SECTION BASE
+═══════════════════════════════════════ */
 .section{
   max-width:1200px;
   margin:100px auto;
   padding:0 6%;
 }
-.section-header{
-  text-align:center;
-  margin-bottom:60px;
+
+.section-header{text-align:center;margin-bottom:60px;}
+
+.section-eyebrow{
+  display:inline-block;
+  font-size:12px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:var(--primary);
+  background:#eff6ff;
+  padding:6px 16px;
+  border-radius:999px;
+  margin-bottom:16px;
 }
+
 .section-title{
   font-size:42px;
-  font-weight:800;
+  font-weight:900;
   margin-bottom:16px;
-  background:linear-gradient(135deg,var(--text),var(--primary));
+  color:var(--text);
+  line-height:1.2;
+}
+
+.section-title span{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-clip:text;
 }
+
 .section-subtitle{
   font-size:18px;
   color:var(--text-light);
-  max-width:600px;
+  max-width:580px;
   margin:0 auto;
+  line-height:1.65;
 }
 
-/* ─── FEATURED TOOLS ─── */
-.featured-tools{
-  max-width:1200px;
-  margin:100px auto;
-  padding:0 6%;
-}
+/* ═══════════════════════════════════════
+   TOOL CARDS  (Image Generator + Label)
+═══════════════════════════════════════ */
 .tool-showcase{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:32px;
+  gap:28px;
 }
+
 .tool-card{
   border-radius:24px;
   overflow:hidden;
-  position:relative;
+  box-shadow:0 12px 48px rgba(0,0,0,0.1);
   transition:all 0.4s ease;
-  box-shadow:0 10px 40px rgba(0,0,0,0.08);
+  background:var(--bg);
 }
+
 .tool-card:hover{
   transform:translateY(-10px);
-  box-shadow:0 30px 80px rgba(0,0,0,0.18);
+  box-shadow:0 28px 80px rgba(0,0,0,0.17);
 }
-.tool-card-img{
-  background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);
-  padding:48px 40px 40px;
+
+.tool-card-header{
+  padding:44px 40px 36px;
   position:relative;
   overflow:hidden;
-  min-height:220px;
+  min-height:230px;
   display:flex;
-  align-items:center;
+  flex-direction:column;
+  justify-content:flex-end;
 }
-.tool-card-img.label-bg{
+
+.tool-card-header.blue-grad{
+  background:linear-gradient(135deg,#2563eb 0%,#7c3aed 100%);
+}
+
+.tool-card-header.teal-grad{
   background:linear-gradient(135deg,#0f766e 0%,#0369a1 100%);
 }
-.tool-card-img::before{
+
+/* Decorative circles */
+.tool-card-header::before{
   content:'';
   position:absolute;
-  top:-40px;right:-40px;
-  width:200px;height:200px;
-  background:rgba(255,255,255,0.06);
+  top:-60px;right:-60px;
+  width:240px;height:240px;
+  background:rgba(255,255,255,0.07);
   border-radius:50%;
 }
-.tool-card-img::after{
+
+.tool-card-header::after{
   content:'';
   position:absolute;
-  bottom:-60px;right:60px;
-  width:140px;height:140px;
-  background:rgba(255,255,255,0.04);
+  bottom:-80px;right:80px;
+  width:160px;height:160px;
+  background:rgba(255,255,255,0.05);
   border-radius:50%;
 }
-.tool-emoji-big{
-  font-size:80px;
+
+.tool-card-emoji{
   position:absolute;
-  right:32px;bottom:20px;
-  opacity:0.25;
+  top:24px;right:28px;
+  font-size:72px;
+  opacity:0.18;
+  line-height:1;
 }
-.tool-card-img-content{ position:relative;z-index:1; }
-.tool-badge{
-  display:inline-block;
-  background:rgba(255,255,255,0.2);
+
+.tool-type-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(255,255,255,0.18);
+  border:1px solid rgba(255,255,255,0.28);
   color:#fff;
+  padding:5px 14px;
+  border-radius:999px;
   font-size:11px;
-  font-weight:700;
+  font-weight:800;
   text-transform:uppercase;
   letter-spacing:0.1em;
-  padding:5px 14px;
-  border-radius:20px;
-  margin-bottom:16px;
+  margin-bottom:14px;
+  width:fit-content;
+  position:relative;z-index:1;
 }
-.tool-card-img h3{
-  font-size:28px;
-  font-weight:800;
+
+/* FREE badge version */
+.tool-type-badge.free-badge{
+  background:rgba(251,191,36,0.22);
+  border-color:rgba(251,191,36,0.4);
+  color:#fbbf24;
+}
+
+.tool-card-header h3{
+  font-size:26px;
+  font-weight:900;
   color:#fff;
   margin-bottom:10px;
   line-height:1.2;
+  position:relative;z-index:1;
 }
-.tool-card-img p{
-  font-size:15px;
-  color:rgba(255,255,255,0.85);
-  line-height:1.5;
-  max-width:280px;
+
+.tool-card-header p{
+  font-size:14px;
+  color:rgba(255,255,255,0.82);
+  line-height:1.6;
+  max-width:300px;
+  position:relative;z-index:1;
 }
+
 .tool-card-body{
-  background:var(--bg);
-  padding:32px 40px;
+  padding:28px 36px 32px;
   border:1px solid var(--border);
   border-top:none;
+  border-radius:0 0 24px 24px;
 }
-.tool-features-list{
-  list-style:none;
-  margin-bottom:28px;
+
+.tool-feat-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px 16px;
+  gap:9px 16px;
+  margin-bottom:24px;
 }
-.tool-features-list li{
-  font-size:14px;
+
+.tool-feat{
+  display:flex;
+  align-items:flex-start;
+  gap:7px;
+  font-size:13px;
   color:var(--text-light);
-  padding-left:22px;
-  position:relative;
   line-height:1.4;
 }
-.tool-features-list li::before{
-  content:'✓';
-  position:absolute;
-  left:0;
-  color:var(--primary);
-  font-weight:700;
-  font-size:13px;
+
+.tool-feat-check{
+  width:18px;height:18px;
+  border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;
+  font-weight:900;
+  flex-shrink:0;
+  margin-top:1px;
 }
-.label-card .tool-features-list li::before{ color:#0f766e; }
-.tool-card-actions{
+
+.check-blue{background:#eff6ff;color:#2563eb;}
+.check-teal{background:#f0fdfa;color:#0f766e;}
+
+.tool-card-ctas{
   display:flex;
-  gap:12px;
+  gap:10px;
   align-items:center;
   flex-wrap:wrap;
 }
-.btn-tool{
-  padding:13px 28px;
-  border-radius:10px;
-  font-weight:700;
-  text-decoration:none;
-  font-size:15px;
+
+.btn-card-primary{
   display:inline-flex;
   align-items:center;
   gap:8px;
+  padding:13px 26px;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:800;
+  text-decoration:none;
   transition:all 0.3s;
-}
-.btn-tool-primary{
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
   color:#fff;
-  box-shadow:0 4px 14px rgba(59,130,246,0.35);
-}
-.btn-tool-primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(59,130,246,0.45);
-}
-.btn-tool-teal{
-  background:linear-gradient(135deg,#0f766e,#0369a1);
-  color:#fff;
-  box-shadow:0 4px 14px rgba(15,118,110,0.35);
-}
-.btn-tool-teal:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(15,118,110,0.45);
-}
-.btn-tool-outline{
-  background:transparent;
-  color:var(--text-light);
-  border:1.5px solid var(--border);
-  font-size:14px;
-}
-.btn-tool-outline:hover{
-  border-color:var(--primary);
-  color:var(--primary);
 }
 
-/* ─── HOW IT WORKS ─── */
-.how-it-works{
+.btn-card-primary.blue{
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  box-shadow:0 6px 20px rgba(37,99,235,0.35);
+}
+
+.btn-card-primary.blue:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 28px rgba(37,99,235,0.45);
+}
+
+.btn-card-primary.teal{
+  background:linear-gradient(135deg,#0f766e,#0369a1);
+  box-shadow:0 6px 20px rgba(15,118,110,0.35);
+}
+
+.btn-card-primary.teal:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 28px rgba(15,118,110,0.45);
+}
+
+.btn-card-ghost{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:13px 20px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:700;
+  text-decoration:none;
+  color:var(--text-light);
+  border:1.5px solid var(--border);
+  transition:all 0.25s;
+}
+
+.btn-card-ghost:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+  background:#f8fafc;
+}
+
+/* ═══════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════ */
+.how-section{
   background:var(--bg);
   padding:100px 6%;
 }
-.how-inner{ max-width:1200px; margin:0 auto; }
-.steps-grid{
+
+.how-inner{max-width:1200px;margin:0 auto;}
+
+.how-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:80px;
+  gap:60px;
   margin-top:60px;
-  align-items:start;
-}
-.steps-col h3{
-  font-size:22px;
-  font-weight:800;
-  color:var(--text);
-  margin-bottom:32px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.col-icon{
-  width:44px;height:44px;
-  border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;flex-shrink:0;
-}
-.col-icon-blue{ background:linear-gradient(135deg,#3b82f6,#8b5cf6); }
-.col-icon-teal{ background:linear-gradient(135deg,#0f766e,#0369a1); }
-.step-item{
-  display:flex;
-  gap:16px;
-  margin-bottom:28px;
-  align-items:flex-start;
-}
-.step-num{
-  width:32px;height:32px;
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:800;
-  flex-shrink:0;margin-top:2px;
-}
-.step-num-blue{ background:#eff6ff; color:#2563eb; }
-.step-num-teal{ background:#f0fdfa; color:#0f766e; }
-.step-text h4{
-  font-size:16px;font-weight:700;
-  color:var(--text);margin-bottom:5px;
-}
-.step-text p{
-  font-size:14px;color:var(--text-light);line-height:1.5;
 }
 
-/* ─── FEATURES ─── */
+.how-col-label{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:32px;
+}
+
+.how-col-icon{
+  width:42px;height:42px;
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+
+.how-col-icon.blue{background:linear-gradient(135deg,#2563eb,#7c3aed);}
+.how-col-icon.teal{background:linear-gradient(135deg,#0f766e,#0369a1);}
+
+.how-col-label h3{
+  font-size:20px;
+  font-weight:800;
+  color:var(--text);
+}
+
+.how-step{
+  display:flex;
+  gap:16px;
+  margin-bottom:24px;
+  padding:18px;
+  border-radius:14px;
+  transition:all 0.25s;
+  border:1px solid transparent;
+}
+
+.how-step:hover{
+  background:#f8fafc;
+  border-color:var(--border);
+}
+
+.step-bubble{
+  width:34px;height:34px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;
+  flex-shrink:0;margin-top:1px;
+}
+
+.bubble-blue{background:#eff6ff;color:#2563eb;}
+.bubble-teal{background:#f0fdfa;color:#0f766e;}
+
+.step-body h4{
+  font-size:15px;font-weight:700;
+  color:var(--text);margin-bottom:5px;
+}
+
+.step-body p{
+  font-size:13px;color:var(--text-light);line-height:1.55;
+}
+
+.how-cta{
+  margin-top:8px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 24px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:800;
+  text-decoration:none;
+  transition:all 0.3s;
+  color:#fff;
+}
+
+.how-cta.blue{
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  box-shadow:0 6px 18px rgba(37,99,235,0.32);
+}
+.how-cta.teal{
+  background:linear-gradient(135deg,#0f766e,#0369a1);
+  box-shadow:0 6px 18px rgba(15,118,110,0.32);
+}
+.how-cta:hover{transform:translateY(-2px);}
+
+/* ═══════════════════════════════════════
+   FEATURES GRID
+═══════════════════════════════════════ */
 .features-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:32px;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:24px;
 }
+
 .feature-card{
   background:var(--bg);
-  padding:36px;
+  padding:32px;
   border-radius:20px;
-  box-shadow:0 10px 40px rgba(0,0,0,0.06);
-  transition:all 0.3s ease;
+  box-shadow:0 6px 28px rgba(0,0,0,0.06);
   border:1px solid var(--border);
+  transition:all 0.3s;
   position:relative;
   overflow:hidden;
 }
+
 .feature-card::before{
   content:'';
   position:absolute;
   top:0;left:0;right:0;
-  height:4px;
+  height:3px;
   background:linear-gradient(90deg,var(--primary),var(--accent));
   transform:scaleX(0);
-  transition:transform 0.3s ease;
+  transition:transform 0.3s;
 }
+
 .feature-card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 20px 60px rgba(0,0,0,0.12);
+  transform:translateY(-6px);
+  box-shadow:0 18px 56px rgba(0,0,0,0.11);
 }
-.feature-card:hover::before{ transform:scaleX(1); }
+.feature-card:hover::before{transform:scaleX(1);}
+
 .feature-icon{
-  width:56px;height:56px;
+  width:52px;height:52px;
   background:linear-gradient(135deg,var(--primary),var(--accent));
   border-radius:14px;
   display:flex;align-items:center;justify-content:center;
-  font-size:28px;margin-bottom:20px;
-}
-.feature-card h3{
-  font-size:22px;font-weight:700;
-  margin-bottom:12px;color:var(--text);
-}
-.feature-card p{
-  font-size:15px;color:var(--text-light);line-height:1.6;
+  font-size:26px;margin-bottom:18px;
 }
 
-/* ─── AIM ─── */
-.aim-section{
-  background:var(--bg);
-  padding:80px 6%;
+.feature-card h3{font-size:20px;font-weight:700;margin-bottom:10px;color:var(--text);}
+.feature-card p{font-size:14px;color:var(--text-light);line-height:1.65;}
+
+/* ═══════════════════════════════════════
+   SOCIAL PROOF / TESTIMONIALS
+═══════════════════════════════════════ */
+.proof-section{
+  background:linear-gradient(135deg,#1e1b4b,#312e81);
+  padding:90px 6%;
+  position:relative;
+  overflow:hidden;
 }
-.aim-content{
+
+.proof-section::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.proof-inner{
+  max-width:1200px;
+  margin:0 auto;
+  position:relative;z-index:1;
+}
+
+.proof-inner .section-eyebrow{
+  background:rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.9);
+}
+
+.proof-inner .section-title{color:#fff;}
+.proof-inner .section-subtitle{color:rgba(255,255,255,0.7);}
+
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  margin-top:52px;
+}
+
+.testi-card{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:20px;
+  padding:28px;
+  backdrop-filter:blur(8px);
+  transition:all 0.3s;
+}
+
+.testi-card:hover{
+  background:rgba(255,255,255,0.12);
+  transform:translateY(-4px);
+}
+
+.testi-stars{
+  display:flex;
+  gap:3px;
+  margin-bottom:14px;
+}
+.testi-stars span{color:#fbbf24;font-size:16px;}
+
+.testi-text{
+  font-size:15px;
+  color:rgba(255,255,255,0.88);
+  line-height:1.7;
+  margin-bottom:20px;
+  font-style:italic;
+}
+
+.testi-author{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.testi-avatar{
+  width:42px;height:42px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:#fff;
+  flex-shrink:0;
+}
+
+.testi-author-info h4{font-size:14px;font-weight:700;color:#fff;}
+.testi-author-info p{font-size:12px;color:rgba(255,255,255,0.55);}
+
+/* Proof numbers strip */
+.proof-numbers{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  background:rgba(255,255,255,0.08);
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:60px;
+}
+
+.proof-num{
+  background:rgba(255,255,255,0.06);
+  padding:28px 20px;
+  text-align:center;
+}
+
+.proof-num-val{
+  font-size:40px;
+  font-weight:900;
+  color:#fff;
+  display:block;
+  margin-bottom:6px;
+}
+.proof-num-val.g{color:#4ade80;}
+.proof-num-val.t{color:#5eead4;}
+.proof-num-val.y{color:#fbbf24;}
+
+.proof-num-label{
+  font-size:13px;
+  color:rgba(255,255,255,0.6);
+  font-weight:600;
+}
+
+/* ═══════════════════════════════════════
+   MISSION
+═══════════════════════════════════════ */
+.mission-section{
+  background:var(--bg);
+  padding:90px 6%;
+}
+
+.mission-inner{
   max-width:900px;
   margin:0 auto;
   text-align:center;
 }
-.aim-content h2{
-  font-size:42px;font-weight:800;margin-bottom:24px;
-  background:linear-gradient(135deg,var(--text),var(--primary));
+
+.mission-inner h2{
+  font-size:42px;font-weight:900;margin-bottom:20px;color:var(--text);
+}
+
+.mission-inner h2 span{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.aim-content p{
+
+.mission-inner p{
   font-size:19px;color:var(--text-light);line-height:1.8;
 }
 
-/* ─── PRICING ─── */
+/* ═══════════════════════════════════════
+   PRICING
+═══════════════════════════════════════ */
 .pricing-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:32px;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
   margin-top:60px;
 }
+
 .price-card{
   background:var(--bg);
   border-radius:24px;
-  padding:40px;
+  padding:36px;
   border:2px solid var(--border);
   text-align:center;
-  transition:all 0.3s ease;
+  transition:all 0.3s;
   position:relative;
 }
+
 .price-card.popular{
   border-color:var(--primary);
-  transform:scale(1.05);
-  box-shadow:0 20px 60px rgba(59,130,246,0.2);
+  transform:scale(1.04);
+  box-shadow:0 20px 60px rgba(59,130,246,0.18);
 }
+
 .popular-badge{
   position:absolute;
   top:-12px;left:50%;
   transform:translateX(-50%);
   background:linear-gradient(135deg,var(--primary),var(--accent));
   color:#fff;
-  padding:6px 20px;
-  border-radius:20px;
-  font-size:12px;font-weight:700;text-transform:uppercase;
-}
-.price-card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 20px 60px rgba(0,0,0,0.12);
-}
-.price-card h3{ font-size:24px;font-weight:700;margin-bottom:16px; }
-.price{ font-size:48px;font-weight:900;color:var(--primary);margin:20px 0; }
-.price-card ul{ list-style:none;margin:28px 0;text-align:left; }
-.price-card li{
-  font-size:15px;color:var(--text-light);
-  margin-bottom:14px;padding-left:28px;position:relative;
-}
-.price-card li::before{
-  content:'✓';position:absolute;left:0;
-  color:var(--primary);font-weight:700;
+  padding:5px 18px;
+  border-radius:999px;
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;
+  white-space:nowrap;
 }
 
-/* ─── CTA ─── */
-.cta-section{
-  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-  padding:80px 6%;
+.price-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.1);
+}
+.price-card.popular:hover{
+  transform:scale(1.04) translateY(-6px);
+}
+
+.price-card h3{font-size:22px;font-weight:800;margin-bottom:12px;color:var(--text);}
+
+.price{font-size:48px;font-weight:900;color:var(--primary);margin:16px 0;}
+
+.price sub{font-size:18px;font-weight:600;}
+
+.price-features{
+  list-style:none;
+  margin:24px 0;
+  text-align:left;
+}
+
+.price-features li{
+  font-size:14px;color:var(--text-light);
+  padding:6px 0 6px 24px;position:relative;
+  border-bottom:1px solid var(--bg-gray);
+}
+.price-features li:last-child{border-bottom:none;}
+.price-features li::before{
+  content:'✓';position:absolute;left:0;
+  color:var(--primary);font-weight:800;
+}
+
+.btn-price{
+  display:block;
+  padding:13px;
+  border-radius:12px;
+  font-weight:800;
+  font-size:15px;
+  text-decoration:none;
+  text-align:center;
+  transition:all 0.3s;
+}
+
+.btn-price.outline{
+  color:var(--primary);
+  border:2px solid var(--primary);
+}
+.btn-price.outline:hover{background:var(--primary);color:#fff;}
+
+.btn-price.filled{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  box-shadow:0 6px 18px rgba(59,130,246,0.3);
+}
+.btn-price.filled:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 28px rgba(59,130,246,0.4);
+}
+
+/* ═══════════════════════════════════════
+   CTA BAND
+═══════════════════════════════════════ */
+.cta-band{
+  background:linear-gradient(135deg,#1e1b4b,#312e81,#4c1d95);
+  padding:90px 6%;
   text-align:center;
   position:relative;
   overflow:hidden;
 }
-.cta-section::before{
+
+.cta-band::before{
   content:'';
   position:absolute;inset:0;
-  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-.cta-content{
-  max-width:700px;margin:0 auto;
-  position:relative;z-index:1;
-}
-.cta-content h2{
-  font-size:42px;font-weight:900;color:#fff;margin-bottom:20px;
-}
-.cta-content p{
-  font-size:19px;color:rgba(255,255,255,0.9);margin-bottom:36px;
-}
-.cta-content .btn{
-  background:#fff;color:var(--primary);
-  padding:16px 40px;font-size:17px;font-weight:700;
-}
-.cta-content .btn:hover{
-  transform:translateY(-4px);
-  box-shadow:0 10px 30px rgba(255,255,255,0.3);
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* ─── FOOTER ─── */
-.footer{
-  background:var(--text);
-  color:rgba(255,255,255,0.7);
-  padding:56px 6% 32px;
+.cta-band-content{
+  max-width:680px;
+  margin:0 auto;
+  position:relative;z-index:1;
 }
+
+.cta-band h2{font-size:44px;font-weight:900;color:#fff;margin-bottom:16px;line-height:1.15;}
+
+.cta-band h2 span{
+  background:linear-gradient(135deg,#fbbf24,#f59e0b);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.cta-band p{font-size:18px;color:rgba(255,255,255,0.82);margin-bottom:36px;line-height:1.65;}
+
+.cta-band-btns{
+  display:flex;
+  gap:14px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.cta-band-btns .btn-w{
+  display:inline-flex;
+  align-items:center;gap:10px;
+  padding:15px 32px;
+  border-radius:14px;
+  font-size:16px;font-weight:800;
+  text-decoration:none;
+  transition:all 0.3s;
+  background:#fff;
+  color:var(--primary);
+  box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
+
+.cta-band-btns .btn-w:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.22);}
+
+.cta-band-btns .btn-teal{
+  display:inline-flex;
+  align-items:center;gap:10px;
+  padding:15px 32px;
+  border-radius:14px;
+  font-size:16px;font-weight:800;
+  text-decoration:none;
+  transition:all 0.3s;
+  background:linear-gradient(135deg,#0f766e,#0d9488);
+  color:#fff;
+  box-shadow:0 6px 24px rgba(15,118,110,0.45);
+}
+
+.cta-band-btns .btn-teal:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(15,118,110,0.55);}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+.footer{
+  background:#0f172a;
+  color:rgba(255,255,255,0.6);
+  padding:60px 6% 32px;
+}
+
 .footer-top{
   max-width:1200px;margin:0 auto;
   display:grid;
-  grid-template-columns:2.2fr 1fr 1fr 1fr;
+  grid-template-columns:2fr 1fr 1fr 1fr;
   gap:48px;
   padding-bottom:40px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
+
 .footer-brand p{
-  font-size:14px;color:rgba(255,255,255,0.6);
-  line-height:1.7;margin-top:14px;max-width:280px;
+  font-size:14px;color:rgba(255,255,255,0.55);
+  line-height:1.75;margin-top:14px;max-width:260px;
 }
-.footer-brand .address{
+
+.footer-brand .contact-row{
+  display:flex;align-items:center;gap:8px;
   font-size:13px;color:rgba(255,255,255,0.5);
-  margin-top:16px;line-height:1.8;
+  margin-top:14px;
 }
+
 .footer-col h4{
-  color:#fff;font-size:13px;font-weight:700;
-  margin-bottom:18px;text-transform:uppercase;letter-spacing:0.07em;
+  color:#fff;font-size:12px;font-weight:800;
+  margin-bottom:18px;text-transform:uppercase;letter-spacing:0.1em;
 }
+
 .footer-col a{
-  display:block;color:rgba(255,255,255,0.6);
+  display:block;color:rgba(255,255,255,0.55);
   text-decoration:none;font-size:14px;
-  margin-bottom:11px;transition:color 0.3s;
+  margin-bottom:12px;transition:color 0.2s;
 }
-.footer-col a:hover{ color:#fff; }
+.footer-col a:hover{color:#fff;}
+
 .footer-bottom{
   max-width:1200px;margin:28px auto 0;
   display:flex;justify-content:space-between;
   align-items:center;flex-wrap:wrap;
-  gap:12px;font-size:13px;color:rgba(255,255,255,0.4);
+  gap:12px;font-size:13px;color:rgba(255,255,255,0.35);
 }
 
-/* ─── ANIMATIONS ─── */
+/* ═══════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════ */
 @keyframes fadeInUp{
-  from{ opacity:0;transform:translateY(30px); }
-  to{ opacity:1;transform:translateY(0); }
+  from{opacity:0;transform:translateY(28px);}
+  to{opacity:1;transform:translateY(0);}
 }
 
-/* ─── RESPONSIVE ─── */
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
 @media(max-width:1024px){
-  .tool-showcase{ grid-template-columns:1fr; }
-  .steps-grid{ grid-template-columns:1fr;gap:48px; }
+  .tool-showcase{grid-template-columns:1fr;}
+  .how-grid{grid-template-columns:1fr;gap:40px;}
+  .testimonials-grid{grid-template-columns:1fr 1fr;}
+  .proof-numbers{grid-template-columns:repeat(2,1fr);}
+  .pricing-grid{grid-template-columns:1fr;}
+  .price-card.popular{transform:scale(1);}
+  .free-hero-inner{grid-template-columns:1fr;gap:28px;}
 }
+
 @media(max-width:768px){
-  .hero{ padding:80px 5% 60px; }
-  .hero h1{ font-size:36px; }
-  .hero p{ font-size:17px; }
-  .stats{ flex-direction:column;gap:32px; }
-
-  .section-title{ font-size:30px; }
-  .section{ margin:60px auto; }
-
-  .featured-tools{ margin:60px auto; }
-  .tool-card-body{ padding:24px; }
-  .tool-features-list{ grid-template-columns:1fr; }
-
-  .how-it-works{ padding:60px 5%; }
-
-  .features-grid{ grid-template-columns:1fr; }
-  .pricing-grid{ grid-template-columns:1fr; }
-  .price-card.popular{ transform:scale(1); }
-
-  .aim-content h2{ font-size:30px; }
-  .cta-content h2{ font-size:30px; }
-
-  .footer-top{ grid-template-columns:1fr 1fr;gap:32px; }
-  .footer-bottom{ flex-direction:column;text-align:center; }
+  .announcement-bar{font-size:12px;gap:8px;flex-wrap:wrap;text-align:center;}
+  .hero{padding:70px 5% 60px;}
+  .hero h1{font-size:38px;}
+  .hero h1 .line2{font-size:34px;}
+  .hero-ctas{flex-direction:column;}
+  .cta-free,.cta-secondary{width:100%;justify-content:center;}
+  .hero-stats{flex-direction:column;gap:0;border-radius:16px;}
+  .hero-stat{border-right:none;border-bottom:1px solid rgba(255,255,255,0.1);}
+  .hero-stat:last-child{border-bottom:none;}
+  .free-hero-inner{padding:32px 24px;border-radius:0 0 20px 20px;}
+  .free-hero-text h2{font-size:26px;}
+  .free-hero-text h2 .free-word{font-size:34px;}
+  .section-title{font-size:30px;}
+  .section{margin:64px auto;}
+  .how-section{padding:64px 5%;}
+  .features-grid{grid-template-columns:1fr;}
+  .testimonials-grid{grid-template-columns:1fr;}
+  .proof-numbers{grid-template-columns:1fr 1fr;}
+  .cta-band h2{font-size:32px;}
+  .cta-band-btns{flex-direction:column;align-items:center;}
+  .cta-band-btns .btn-w,.cta-band-btns .btn-teal{width:100%;justify-content:center;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:28px;}
+  .footer-bottom{flex-direction:column;text-align:center;}
+  .trust-row{gap:16px;}
 }
+
 @media(max-width:480px){
-  .hero h1{ font-size:28px; }
-  .hero p{ font-size:16px; }
-  .hero-actions .btn{ width:100%;text-align:center; }
-  .tool-card-img h3{ font-size:22px; }
-  .tool-card-img{ padding:36px 24px 36px; }
-  .tool-card-body{ padding:20px; }
-  .btn-tool{ width:100%;justify-content:center; }
-  .tool-card-actions{ flex-direction:column; }
-  .footer-top{ grid-template-columns:1fr; }
+  .hero h1{font-size:30px;}
+  .hero h1 .line2{font-size:26px;}
+  .tool-feat-grid{grid-template-columns:1fr;}
+  .tool-card-ctas{flex-direction:column;}
+  .btn-card-primary,.btn-card-ghost{width:100%;justify-content:center;}
+  .footer-top{grid-template-columns:1fr;}
+  .proof-numbers{grid-template-columns:1fr 1fr;}
 }
+
 </style>
 </head>
 <body>
 
-<!-- ═══ NAVBAR (separate partial) ═══ -->
+<!-- ═══ ANNOUNCEMENT BAR ═══ -->
+<div class="announcement-bar">
+  <span class="pill">🎉 Free</span>
+  <span>Shipping Label Export is <strong>100% FREE</strong> — No login, no credit card needed!</span>
+  <a href="/label-cropper/">Try it now →</a>
+</div>
+
 {% include 'partials/navbar.html' %}
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
+  <div class="hero-orb2"></div>
   <div class="hero-content">
-    <h1>Smart Tools for <span>Meesho Sellers</span></h1>
-    <p>Reduce shipping costs, generate product images, export shipping labels, and make data-driven decisions. Built specifically for Indian e-commerce sellers who want to scale without guessing.</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="{% url 'generator:meesho_image_generator' %}">🖼️ Try Image Generator</a>
-      <a class="btn btn-secondary" href="#tools" style="color:white;border:2px solid rgba(255,255,255,0.4);">Explore Tools</a>
-      <a class="btn btn-primary" href="/label-cropper/" style="background:linear-gradient(135deg,#0f766e,#0369a1);box-shadow:0 4px 14px rgba(15,118,110,0.4);">🏷️ Export Labels</a>
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Trusted by 5,000+ Meesho Sellers across India
     </div>
-    <div class="stats">
-      <div class="stat-item">
-        <span class="stat-number">5000+</span>
-        <span class="stat-label">Active Sellers</span>
+
+    <h1>
+      The #1 Free Tool
+      <span class="line2">for <span class="highlight">Meesho Sellers</span></span>
+    </h1>
+
+    <p class="hero-sub">
+      Export shipping labels <strong style="color:#fff;">for FREE</strong>, generate AI-optimized product images, reduce shipping costs, and grow your business — all from one place.
+    </p>
+
+    <div class="hero-ctas">
+      <a href="/label-cropper/" class="cta-free">
+        🏷️ Export Labels
+        <span class="free-badge">FREE</span>
+      </a>
+      <a href="{% url 'generator:meesho_image_generator' %}" class="cta-secondary">
+        🖼️ Image Generator
+      </a>
+    </div>
+
+    <div class="trust-row">
+      <div class="trust-item">
+        <div class="icon">🔓</div>
+        No login for labels
       </div>
-      <div class="stat-item">
-        <span class="stat-number">₹2Cr+</span>
-        <span class="stat-label">Saved in Shipping</span>
+      <div class="trust-item">
+        <div class="icon">⚡</div>
+        Works in seconds
       </div>
-      <div class="stat-item">
-        <span class="stat-number">50K+</span>
-        <span class="stat-label">Images Generated</span>
+      <div class="trust-item">
+        <div class="icon">📱</div>
+        Mobile friendly
+      </div>
+      <div class="trust-item">
+        <div class="icon">🇮🇳</div>
+        Built for India
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="stat-num">5,000+</span>
+        <span class="stat-lbl">Active Sellers</span>
+      </div>
+      <div class="hero-stat">
+        <span class="stat-num teal">₹2Cr+</span>
+        <span class="stat-lbl">Saved in Shipping</span>
+      </div>
+      <div class="hero-stat">
+        <span class="stat-num gold">50K+</span>
+        <span class="stat-lbl">Images Generated</span>
+      </div>
+      <div class="hero-stat">
+        <span class="stat-num">100%</span>
+        <span class="stat-lbl">Free Label Export</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ FEATURED TOOLS ═══ -->
-<section id="tools" class="featured-tools">
+<!-- ═══ FREE LABEL PROMO STRIP ═══ -->
+<div class="free-hero">
+  <div class="free-hero-inner">
+    <div class="free-hero-text">
+      <div class="free-label"><span class="star">★</span> Completely Free Tool — No Account Needed</div>
+      <h2>
+        Export Shipping Labels
+        <span class="free-word">FREE</span>
+      </h2>
+      <p>Upload your Meesho invoice PDFs and get courier-wise, product-wise, and quantity-wise sorted labels in seconds. Thermal printer ready. Zero cost. Forever free.</p>
+
+      <div class="free-features">
+        <span class="free-feat">Upload Meesho invoice PDFs</span>
+        <span class="free-feat">Automatic courier-wise sorting</span>
+        <span class="free-feat">Product & quantity grouping</span>
+        <span class="free-feat">Smart packing summary</span>
+        <span class="free-feat">Thermal 4×6 ready</span>
+        <span class="free-feat">Instant PDF download</span>
+      </div>
+
+      <a href="/label-cropper/" class="cta-free-big">
+        🏷️ Export Labels — It's FREE
+      </a>
+      <div class="free-cta-note">✓ No account &nbsp;·&nbsp; ✓ No credit card &nbsp;·&nbsp; ✓ Works instantly</div>
+    </div>
+
+    <div class="free-hero-cards">
+      <div class="free-card-item">
+        <div class="free-card-icon">📄</div>
+        <div class="free-card-text">
+          <h4>Upload PDFs</h4>
+          <p>Select your Meesho invoices</p>
+        </div>
+      </div>
+      <div class="free-card-item">
+        <div class="free-card-icon">⚡</div>
+        <div class="free-card-text">
+          <h4>Auto Sort</h4>
+          <p>Courier-wise in seconds</p>
+        </div>
+      </div>
+      <div class="free-card-item">
+        <div class="free-card-icon">🖨️</div>
+        <div class="free-card-text">
+          <h4>Print Labels</h4>
+          <p>Thermal 4×6 ready</p>
+        </div>
+      </div>
+      <div class="free-card-item">
+        <div class="free-card-icon">📦</div>
+        <div class="free-card-text">
+          <h4>Pack & Ship</h4>
+          <p>Zero errors, faster dispatch</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOOL CARDS ═══ -->
+<section id="tools" class="section">
   <div class="section-header">
-    <h2 class="section-title">Our Most Powerful Tools</h2>
-    <p class="section-subtitle">Two game-changing tools that every Meesho seller needs to save time, cut costs, and ship faster.</p>
+    <div class="section-eyebrow">Our Tools</div>
+    <h2 class="section-title">Two Tools. <span>Massive Savings.</span></h2>
+    <p class="section-subtitle">One is completely free forever. Both are built specifically for Meesho sellers to save time and money every single day.</p>
   </div>
 
   <div class="tool-showcase">
 
-    <!-- IMAGE GENERATOR -->
-    <div class="tool-card">
-      <div class="tool-card-img">
-        <div class="tool-card-img-content">
-          <span class="tool-badge">AI-Powered</span>
-          <h3>Meesho Product<br>Image Generator</h3>
-          <p>Optimize product images for lower Meesho shipping slabs and reduce costs without affecting listing quality.</p>
-        </div>
-        <div class="tool-emoji-big">🖼️</div>
+    <!-- LABEL EXPORT — promoted first -->
+    <div class="tool-card" id="label-tool">
+      <div class="tool-card-header teal-grad">
+        <div class="tool-card-emoji">🏷️</div>
+        <div class="tool-type-badge free-badge">★ 100% Free — No Login</div>
+        <h3>Shipping Label<br>Export Tool</h3>
+        <p>Upload Meesho invoice PDFs and get perfectly sorted shipping labels ready for dispatch — instantly and always free.</p>
       </div>
       <div class="tool-card-body">
-        <ul class="tool-features-list">
-          <li>AI-powered image optimization</li>
-          <li>Shipping slab reduction</li>
-          <li>Bulk image processing</li>
-          <li>No quality loss on listings</li>
-          <li>Meesho-ready file size</li>
-          <li>Instant download</li>
-          <li>Works on mobile &amp; desktop</li>
-          <li>Save on every order shipped</li>
-        </ul>
-        <div class="tool-card-actions">
-          <a href="{% url 'generator:meesho_image_generator' %}" class="btn-tool btn-tool-primary">🖼️ Generate Images</a>
-          <a href="#features" class="btn-tool btn-tool-outline">Learn more</a>
+        <div class="tool-feat-grid">
+          <div class="tool-feat"><span class="tool-feat-check check-teal">✓</span>Upload Meesho PDFs</div>
+          <div class="tool-feat"><span class="tool-feat-check check-teal">✓</span>Bulk label extraction</div>
+          <div class="tool-feat"><span class="tool-feat-check check-teal">✓</span>Courier-wise sorting</div>
+          <div class="tool-feat"><span class="tool-feat-check check-teal">✓</span>Product-wise grouping</div>
+          <div class="tool-feat"><span class="tool-feat-check check-teal">✓</span>Quantity-wise sort</div>
+          <div class="tool-feat"><span class="tool-feat-check check-teal">✓</span>Smart packing summary</div>
+          <div class="tool-feat"><span class="tool-feat-check check-teal">✓</span>Thermal 4×6 labels</div>
+          <div class="tool-feat"><span class="tool-feat-check check-teal">✓</span>Auto PDF download</div>
+        </div>
+        <div class="tool-card-ctas">
+          <a href="/label-cropper/" class="btn-card-primary teal">🏷️ Export Labels Free</a>
+          <a href="#how-it-works" class="btn-card-ghost">See how →</a>
         </div>
       </div>
     </div>
 
-    <!-- LABEL EXPORT -->
-    <div class="tool-card label-card">
-      <div class="tool-card-img label-bg">
-        <div class="tool-card-img-content">
-          <span class="tool-badge">Free &amp; No Login Required</span>
-          <h3>Shipping Label<br>Export Tool</h3>
-          <p>Upload Meesho invoice PDFs and instantly export sorted, organized shipping labels ready for dispatch.</p>
-        </div>
-        <div class="tool-emoji-big">🏷️</div>
+    <!-- IMAGE GENERATOR -->
+    <div class="tool-card">
+      <div class="tool-card-header blue-grad">
+        <div class="tool-card-emoji">🖼️</div>
+        <div class="tool-type-badge">AI-Powered</div>
+        <h3>Meesho Product<br>Image Generator</h3>
+        <p>Remove backgrounds, optimize for lower shipping slabs, and generate marketplace-ready product images automatically.</p>
       </div>
       <div class="tool-card-body">
-        <ul class="tool-features-list">
-          <li>Upload Meesho invoice PDFs</li>
-          <li>Bulk label extraction in seconds</li>
-          <li>Automatic courier-wise sorting</li>
-          <li>Product-wise organization</li>
-          <li>Quantity-wise grouping</li>
-          <li>Smart packing summary</li>
-          <li>Thermal printer ready 4x6</li>
-          <li>Instant PDF auto download</li>
-        </ul>
-        <div class="tool-card-actions">
-          <a href="/label-cropper/" class="btn-tool btn-tool-teal">🏷️ Export Labels</a>
-          <a href="#features" class="btn-tool btn-tool-outline">Learn more</a>
+        <div class="tool-feat-grid">
+          <div class="tool-feat"><span class="tool-feat-check check-blue">✓</span>AI background removal</div>
+          <div class="tool-feat"><span class="tool-feat-check check-blue">✓</span>Slab cost reduction</div>
+          <div class="tool-feat"><span class="tool-feat-check check-blue">✓</span>2000×2000 white canvas</div>
+          <div class="tool-feat"><span class="tool-feat-check check-blue">✓</span>150-300 KB target</div>
+          <div class="tool-feat"><span class="tool-feat-check check-blue">✓</span>Meesho-compliant</div>
+          <div class="tool-feat"><span class="tool-feat-check check-blue">✓</span>Bulk processing</div>
+          <div class="tool-feat"><span class="tool-feat-check check-blue">✓</span>Local/Zonal/National</div>
+          <div class="tool-feat"><span class="tool-feat-check check-blue">✓</span>Instant download</div>
+        </div>
+        <div class="tool-card-ctas">
+          <a href="{% url 'generator:meesho_image_generator' %}" class="btn-card-primary blue">🖼️ Generate Images</a>
+          <a href="#how-it-works" class="btn-card-ghost">See how →</a>
         </div>
       </div>
     </div>
@@ -701,77 +1529,87 @@ body{
 </section>
 
 <!-- ═══ HOW IT WORKS ═══ -->
-<section class="how-it-works" id="how-it-works">
+<section class="how-section" id="how-it-works">
   <div class="how-inner">
     <div class="section-header">
-      <h2 class="section-title">How It Works</h2>
-      <p class="section-subtitle">Simple steps to start saving time and money on every Meesho order you dispatch.</p>
+      <div class="section-eyebrow">How It Works</div>
+      <h2 class="section-title">Simple Steps, <span>Big Savings</span></h2>
+      <p class="section-subtitle">From upload to done in under 60 seconds. No technical knowledge needed.</p>
     </div>
-    <div class="steps-grid">
-      <div class="steps-col">
-        <h3><div class="col-icon col-icon-blue">🖼️</div>Image Generator</h3>
-        <div class="step-item">
-          <div class="step-num step-num-blue">1</div>
-          <div class="step-text">
-            <h4>Upload your product images</h4>
-            <p>Drag and drop one or multiple product photos — JPG, PNG, or WebP formats supported.</p>
+
+    <div class="how-grid">
+      <!-- Label steps -->
+      <div>
+        <div class="how-col-label">
+          <div class="how-col-icon teal">🏷️</div>
+          <h3>Label Export — Free</h3>
+        </div>
+        <div class="how-step">
+          <div class="step-bubble bubble-teal">1</div>
+          <div class="step-body">
+            <h4>Upload your Meesho PDFs</h4>
+            <p>Select one or multiple Meesho invoice PDF files — no account or login needed at all.</p>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num step-num-blue">2</div>
-          <div class="step-text">
-            <h4>AI optimizes for lower slab</h4>
-            <p>Our algorithm compresses and resizes to reduce the Meesho shipping weight slab without visible quality loss.</p>
+        <div class="how-step">
+          <div class="step-bubble bubble-teal">2</div>
+          <div class="step-body">
+            <h4>Auto sort in seconds</h4>
+            <p>Labels are extracted and sorted courier-wise, product-wise, and quantity-wise automatically.</p>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num step-num-blue">3</div>
-          <div class="step-text">
-            <h4>Download and upload to Meesho</h4>
-            <p>Get your optimized images instantly and upload them directly to your Meesho listings.</p>
+        <div class="how-step">
+          <div class="step-bubble bubble-teal">3</div>
+          <div class="step-body">
+            <h4>Review packing summary</h4>
+            <p>Get a clean summary so your team packs every order correctly the first time.</p>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num step-num-blue">4</div>
-          <div class="step-text">
-            <h4>Save on every shipment</h4>
-            <p>Each order ships at a lower slab — savings that add up to lakhs across thousands of orders.</p>
+        <div class="how-step">
+          <div class="step-bubble bubble-teal">4</div>
+          <div class="step-body">
+            <h4>Print & ship</h4>
+            <p>Download thermal-ready 4×6 labels — no manual adjustments, no wasted time.</p>
           </div>
         </div>
-        <a href="{% url 'generator:meesho_image_generator' %}" class="btn btn-primary" style="margin-top:8px;display:inline-block;">Start Generating →</a>
+        <a href="/label-cropper/" class="how-cta teal">🏷️ Try It Free — No Login →</a>
       </div>
 
-      <div class="steps-col">
-        <h3><div class="col-icon col-icon-teal">🏷️</div>Shipping Label Export</h3>
-        <div class="step-item">
-          <div class="step-num step-num-teal">1</div>
-          <div class="step-text">
-            <h4>Upload your Meesho invoice PDFs</h4>
-            <p>Select one or multiple Meesho invoice PDF files — no login or account needed.</p>
+      <!-- Image generator steps -->
+      <div>
+        <div class="how-col-label">
+          <div class="how-col-icon blue">🖼️</div>
+          <h3>Image Generator</h3>
+        </div>
+        <div class="how-step">
+          <div class="step-bubble bubble-blue">1</div>
+          <div class="step-body">
+            <h4>Upload your product photo</h4>
+            <p>Any format — JPG, PNG, WebP. Our AI detects the product automatically.</p>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num step-num-teal">2</div>
-          <div class="step-text">
-            <h4>Auto extraction and sorting</h4>
-            <p>Labels are extracted in seconds and automatically sorted courier-wise, product-wise, and quantity-wise.</p>
+        <div class="how-step">
+          <div class="step-bubble bubble-blue">2</div>
+          <div class="step-body">
+            <h4>AI removes background</h4>
+            <p>Product is cleanly cut out and placed on a professional white 2000×2000 canvas.</p>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num step-num-teal">3</div>
-          <div class="step-text">
-            <h4>Review packing summary</h4>
-            <p>Get a smart packing summary so your team can pack faster with zero errors.</p>
+        <div class="how-step">
+          <div class="step-bubble bubble-blue">3</div>
+          <div class="step-body">
+            <h4>Optimized for lower slab</h4>
+            <p>File is compressed to 150-300 KB — pushing your product into a lower Meesho shipping slab.</p>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num step-num-teal">4</div>
-          <div class="step-text">
-            <h4>Print thermal-ready labels</h4>
-            <p>PDF auto-downloads in perfect 4x6 thermal printer format — no adjustments needed.</p>
+        <div class="how-step">
+          <div class="step-bubble bubble-blue">4</div>
+          <div class="step-body">
+            <h4>Save ₹25+ per order</h4>
+            <p>Upload to Meesho and immediately start paying less on every single shipment you send.</p>
           </div>
         </div>
-        <a href="/label-cropper/" class="btn btn-primary" style="margin-top:8px;display:inline-block;background:linear-gradient(135deg,#0f766e,#0369a1);box-shadow:0 4px 14px rgba(15,118,110,0.35);">Export Labels Free →</a>
+        <a href="{% url 'generator:meesho_image_generator' %}" class="how-cta blue">🖼️ Start Generating →</a>
       </div>
     </div>
   </div>
@@ -780,103 +1618,197 @@ body{
 <!-- ═══ FEATURES ═══ -->
 <section id="features" class="section">
   <div class="section-header">
-    <h2 class="section-title">Everything You Need to Succeed</h2>
-    <p class="section-subtitle">Smart tools built specifically for Meesho sellers to reduce shipping costs, automate dispatch work, and improve profitability.</p>
+    <div class="section-eyebrow">Features</div>
+    <h2 class="section-title">Everything You Need <span>to Succeed</span></h2>
+    <p class="section-subtitle">Purpose-built for Meesho and Indian marketplace sellers. No fluff, no complexity.</p>
   </div>
+
   <div class="features-grid">
     <div class="feature-card">
       <div class="feature-icon">📦</div>
       <h3>Shipping Slab Optimizer</h3>
-      <p>Optimize product images for lower Meesho shipping slabs and reduce shipping costs without affecting listing quality.</p>
+      <p>Reduce image file size to push products into lower Meesho shipping slabs — saving ₹25–₹50 on every order without any visible quality loss.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🏷️</div>
-      <h3>Smart Label Cropper</h3>
-      <p>Automatically crop, sort, and organize shipping labels courier-wise, product-wise, and quantity-wise for faster packing.</p>
+      <h3>Free Label Export</h3>
+      <p>Upload Meesho invoices and get courier-sorted, product-sorted, thermal-ready labels in seconds. Zero cost. No login. Works right now.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">💰</div>
       <h3>Real Profit Calculator</h3>
-      <p>Calculate your real profit after shipping charges, returns, GST, marketplace fees, and hidden costs.</p>
+      <p>See exactly what you earn after shipping charges, returns, GST, and Meesho fees — so you price confidently and never lose money.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">⚡</div>
       <h3>Bulk Processing</h3>
-      <p>Process hundreds of product images and shipping labels in seconds with high-speed bulk automation tools.</p>
+      <p>Process hundreds of images or labels in one go. What takes hours manually takes seconds with AVTools batch automation.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🖨️</div>
       <h3>Thermal Printer Ready</h3>
-      <p>Generate perfectly optimized 4x6 thermal labels ready for instant printing without manual adjustments.</p>
+      <p>All labels export in perfect 4×6 thermal format — no manual resizing, no cutting, no wasted label rolls.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">🔒</div>
       <h3>Built for Indian Sellers</h3>
-      <p>Designed specifically for Meesho and Indian marketplace sellers with seller-focused automation and workflow tools.</p>
+      <p>Designed around real Meesho workflows, Indian shipping rates, and the way actual sellers pack and dispatch orders every day.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SOCIAL PROOF ═══ -->
+<section class="proof-section">
+  <div class="proof-inner">
+    <div class="section-header">
+      <div class="section-eyebrow" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.9);">Seller Reviews</div>
+      <h2 class="section-title" style="color:#fff;">Sellers <span style="background:linear-gradient(135deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Love AVTools</span></h2>
+      <p class="section-subtitle" style="color:rgba(255,255,255,0.65);">Real feedback from Meesho sellers who use AVTools every day.</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testi-card">
+        <div class="testi-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testi-text">"The free label export saves me 1-2 hours every day. I upload all my PDFs and get sorted labels in 30 seconds. Best tool for Meesho sellers, no doubt."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">P</div>
+          <div class="testi-author-info">
+            <h4>Priya Sharma</h4>
+            <p>Meesho Seller, Jaipur</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testi-text">"After using the image generator, my shipping cost dropped from ₹60 to ₹35 per order. At 200 orders a month that's ₹5,000 saved. Unbelievable."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#0f766e,#0369a1);">R</div>
+          <div class="testi-author-info">
+            <h4>Rahul Verma</h4>
+            <p>Saree Seller, Surat</p>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testi-text">"I was skeptical about free tools but the label cropper works perfectly. My packaging team packs 3x faster now. No login, no hassle — just works."</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">A</div>
+          <div class="testi-author-info">
+            <h4>Anita Patel</h4>
+            <p>Kurti Seller, Ahmedabad</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proof-numbers">
+      <div class="proof-num">
+        <span class="proof-num-val g">5,000+</span>
+        <span class="proof-num-label">Active Sellers</span>
+      </div>
+      <div class="proof-num">
+        <span class="proof-num-val t">₹2Cr+</span>
+        <span class="proof-num-label">Shipping Saved</span>
+      </div>
+      <div class="proof-num">
+        <span class="proof-num-val y">50K+</span>
+        <span class="proof-num-label">Images Generated</span>
+      </div>
+      <div class="proof-num">
+        <span class="proof-num-val" style="color:#c4b5fd;">100%</span>
+        <span class="proof-num-label">Label Export Free</span>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ═══ MISSION ═══ -->
-<section id="aim" class="aim-section">
-  <div class="aim-content">
-    <h2>Our Mission</h2>
-    <p>We're on a mission to empower Indian sellers to stop guessing and start growing. AVTools brings clarity to shipping costs, profit margins, and listing strategies—so you can scale your Meesho business confidently, make smarter decisions, and maximize every rupee you earn.</p>
+<section id="aim" class="mission-section">
+  <div class="mission-inner">
+    <h2>Our <span>Mission</span></h2>
+    <p>We're on a mission to empower every Indian seller to stop guessing and start growing. AVTools brings clarity to shipping costs, profit margins, and listing strategies — so you can scale your Meesho business confidently, make smarter decisions, and maximize every rupee you earn.</p>
   </div>
 </section>
 
 <!-- ═══ PRICING ═══ -->
 <section id="pricing" class="section">
   <div class="section-header">
-    <h2 class="section-title">Simple, Transparent Pricing</h2>
-    <p class="section-subtitle">Pay only for what you use. No hidden fees, no commitments. All prices in INR.</p>
+    <div class="section-eyebrow">Pricing</div>
+    <h2 class="section-title">Simple, <span>Transparent Pricing</span></h2>
+    <p class="section-subtitle">Label export is always free. Image generator uses credits. Pay only for what you use.</p>
   </div>
+
+  <!-- FREE callout -->
+  <div style="background:linear-gradient(135deg,#f0fdfa,#e0f2fe);border:2px solid #5eead4;border-radius:20px;padding:28px 36px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+    <div>
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#0f766e;margin-bottom:8px;">🏷️ Shipping Label Export</div>
+      <div style="font-size:28px;font-weight:900;color:#0f172a;">Always <span style="color:#0f766e;">FREE</span></div>
+      <div style="font-size:14px;color:#64748b;margin-top:4px;">No account required · No credit card · No limits</div>
+    </div>
+    <a href="/label-cropper/" style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#0f766e,#0369a1);color:#fff;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 6px 20px rgba(15,118,110,0.35);transition:all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+      Try Label Export →
+    </a>
+  </div>
+
   <div class="pricing-grid">
     <div class="price-card">
       <h3>Starter</h3>
       <div class="price">₹99</div>
-      <ul>
-        <li>25 Credits</li>
+      <ul class="price-features">
+        <li>25 Image Credits</li>
         <li>30 Days Validity</li>
         <li>All Basic Features</li>
         <li>Email Support</li>
+        <li>Free label export included</li>
       </ul>
-      <a href="/signup" class="btn btn-secondary" style="color:var(--primary);border:2px solid var(--primary);width:100%;text-align:center;">Get Started</a>
+      <a href="/signup" class="btn-price outline">Get Started</a>
     </div>
     <div class="price-card popular">
       <span class="popular-badge">Most Popular</span>
       <h3>Growth</h3>
       <div class="price">₹299</div>
-      <ul>
-        <li>100 Credits</li>
+      <ul class="price-features">
+        <li>100 Image Credits</li>
         <li>60 Days Validity</li>
         <li>All Premium Features</li>
         <li>Priority Support</li>
         <li>Bulk Processing</li>
+        <li>Free label export included</li>
       </ul>
-      <a href="/signup" class="btn btn-primary" style="width:100%;text-align:center;">Get Started</a>
+      <a href="/signup" class="btn-price filled">Get Started</a>
     </div>
     <div class="price-card">
       <h3>Pro</h3>
       <div class="price">₹699</div>
-      <ul>
-        <li>400 Credits</li>
+      <ul class="price-features">
+        <li>400 Image Credits</li>
         <li>90 Days Validity</li>
         <li>All Features Unlocked</li>
         <li>Dedicated Support</li>
         <li>Advanced Analytics</li>
+        <li>Free label export included</li>
       </ul>
-      <a href="/signup" class="btn btn-secondary" style="color:var(--primary);border:2px solid var(--primary);width:100%;text-align:center;">Get Started</a>
+      <a href="/signup" class="btn-price outline">Get Started</a>
     </div>
   </div>
 </section>
 
-<!-- ═══ CTA ═══ -->
-<section class="cta-section">
-  <div class="cta-content">
-    <h2>Ready to Scale Your Business?</h2>
-    <p>Join thousands of Meesho sellers who are growing faster with AVTools. Get 10 free credits on signup—no credit card required.</p>
-    <a href="/signup" class="btn">Start Free Today</a>
+<!-- ═══ CTA BAND ═══ -->
+<section class="cta-band">
+  <div class="cta-band-content">
+    <h2>Start Saving <span>Today</span></h2>
+    <p>Join 5,000+ Meesho sellers. Export labels for free right now — no signup needed. Or create a free account and get 10 image credits instantly.</p>
+    <div class="cta-band-btns">
+      <a href="/label-cropper/" class="btn-teal">🏷️ Export Labels — Free</a>
+      <a href="/signup" class="btn-w">🚀 Sign Up Free</a>
+    </div>
   </div>
 </section>
 
@@ -885,39 +1817,33 @@ body{
   <div class="footer-top">
     <div class="footer-brand">
       <img src="/static/images/avtools.png" alt="AVTools" style="height:32px;filter:brightness(10);">
-      <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
-      <div class="address">
-        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
-        Near Green Land Chokdi, Behind HP Petrol Pump,<br>
-        Rajkot, Gujarat – 360003, India<br><br>
-        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br>
-        📧 avtools.in@gmail.com
-      </div>
+      <p>Smart AI-powered tools for Meesho sellers. Free shipping label export, product image optimization, and profit calculators — built for India.</p>
+      <div class="contact-row">📧 avtools.in@gmail.com</div>
     </div>
     <div class="footer-col">
-      <h4>Product</h4>
+      <h4>Tools</h4>
+      <a href="/label-cropper/">🏷️ Label Export (Free)</a>
+      <a href="{% url 'generator:meesho_image_generator' %}">🖼️ Image Generator</a>
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
-      <a href="{% url 'generator:meesho_image_generator' %}">Image Generator</a>
-      <a href="/label-cropper/">Label Export</a>
     </div>
     <div class="footer-col">
       <h4>Company</h4>
       <a href="/about">About Us</a>
       <a href="/contact">Contact</a>
       <a href="/signin">Sign In</a>
-      <a href="/signup">Sign Up</a>
+      <a href="/signup">Sign Up Free</a>
     </div>
     <div class="footer-col">
       <h4>Legal</h4>
       <a href="/privacy">Privacy Policy</a>
       <a href="/terms">Terms of Service</a>
-      <a href="/refund-policy">Refund &amp; Cancellation Policy</a>
+      <a href="/refund-policy">Refund Policy</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
-    <div>Rajkot, Gujarat, India</div>
+    <div>© 2026 AVTools. All rights reserved.</div>
+    {% comment %} <div>Rajkot, Gujarat, India</div> {% endcomment %}
   </div>
 </footer>
 

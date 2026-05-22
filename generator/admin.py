@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, GenerationHistory, ActiveSession
+from .models import MonthlyLabelSummary, UserProfile, GenerationHistory, ActiveSession
 from django.utils.html import format_html
 
 # ===============================
@@ -103,3 +103,75 @@ class ActiveSessionAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "ip_address")
     readonly_fields = ("session_key", "last_activity")
     ordering = ("-last_activity",)
+
+
+from .models import (
+    MonthlyLabelSummary,
+    DailyLabelSummary,
+)
+
+# ============================================
+# MONTHLY SUMMARY ADMIN
+# ============================================
+
+@admin.register(MonthlyLabelSummary)
+class MonthlyLabelSummaryAdmin(
+    admin.ModelAdmin
+):
+
+    list_display = (
+        'month',
+        'total_pdfs',
+        'total_labels',
+        'last_used',
+    )
+
+    search_fields = (
+        'month',
+    )
+
+    list_filter = (
+        'month',
+        'last_used',
+    )
+
+    ordering = (
+        '-month',
+    )
+
+    readonly_fields = (
+        'last_used',
+    )
+
+
+# ============================================
+# DAILY SUMMARY ADMIN
+# ============================================
+
+@admin.register(DailyLabelSummary)
+class DailyLabelSummaryAdmin(
+    admin.ModelAdmin
+):
+
+    list_display = (
+        'date',
+        'total_pdfs',
+        'total_labels',
+        'last_used',
+    )
+
+    search_fields = (
+        'date',
+    )
+
+    list_filter = (
+        'date',
+        'last_used',
+    )
+
+    ordering = (
+        '-date',
+    )
+    readonly_fields = (
+        'last_used',
+    )

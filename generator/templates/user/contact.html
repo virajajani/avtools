@@ -260,7 +260,7 @@ textarea{
       </p>
     </div>
 
-    <div class="info-card">
+    {% comment %} <div class="info-card">
       <h3>📍 Our Address</h3>
       <p>
         <strong>AVTools</strong><br>
@@ -270,13 +270,14 @@ textarea{
         Rajkot, Gujarat – 360003<br>
         India
       </p>
-    </div>
+    </div> {% endcomment %}
 
     <div class="info-card">
       <h3>👤 Operated By</h3>
       <p>
-        <strong>Ajani Virajbhai Jentibhai</strong><br>
-        Rajkot, Gujarat, India
+        {% comment %} <strong>Ajani Virajbhai Jentibhai</strong><br> {% endcomment %}
+        <strong>AVTools</strong><br>
+        {% comment %} Rajkot, Gujarat, India {% endcomment %}
       </p>
     </div>
 
@@ -300,10 +301,10 @@ textarea{
       <img src="{% static 'images/avtools.png' %}" alt="AVTools" style="height:32px;filter:brightness(10);">
       <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
       <div class="address">
-        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
+        {% comment %} 📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
         Near Green Land Chokdi, Behind HP Petrol Pump,<br>
         Rajkot, Gujarat – 360003, India<br><br>
-        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br>
+        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br> {% endcomment %}
         📧 avtools.in@gmail.com
       </div>
     </div>
@@ -329,8 +330,9 @@ textarea{
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
-    <div>Rajkot, Gujarat, India</div>
+    {% comment %} <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div> {% endcomment %}
+    <div>© 2026 AVTools. All rights reserved.</div>
+    {% comment %} <div>Rajkot, Gujarat, India</div> {% endcomment %}
   </div>
 </footer>
 

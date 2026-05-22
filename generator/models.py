@@ -93,3 +93,67 @@ class ActiveSession(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.ip_address}"
+
+
+
+class DailyLabelSummary(models.Model):
+
+    date = models.DateField(
+        unique=True,
+        db_index=True
+    )
+
+    total_pdfs = models.IntegerField(
+        default=0
+    )
+
+    total_labels = models.IntegerField(
+        default=0
+    )
+
+    last_used = models.DateTimeField(
+        auto_now=True,
+        db_index=True
+    )
+
+    class Meta:
+
+        ordering = ['-date']
+
+        indexes = [
+
+            models.Index(
+                fields=['date']
+            ),
+
+            models.Index(
+                fields=['-last_used']
+            ),
+
+        ]
+
+    def __str__(self):
+
+        return self.date.strftime(
+            '%d-%m-%Y'
+        )
+    
+class MonthlyLabelSummary(models.Model):
+
+    month = models.DateField(
+        unique=True,
+        db_index=True
+    )
+
+    total_pdfs = models.IntegerField(
+        default=0
+    )
+
+    total_labels = models.IntegerField(
+        default=0
+    )
+
+    last_used = models.DateTimeField(
+        auto_now=True,
+        db_index=True
+    )

@@ -129,8 +129,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # --------------------------------------------------
 # INTERNATIONALIZATION
 # --------------------------------------------------
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'en-in'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 

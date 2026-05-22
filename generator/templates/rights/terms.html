@@ -89,9 +89,15 @@ ul{margin-left:20px;margin-top:10px;}
   <h1>Terms of Service</h1>
   <div class="updated">Last Updated: May 2026</div>
 
-  <div class="operator-box">
+  {% comment %} <div class="operator-box">
     <p>This website is operated by <strong>Ajani Virajbhai Jentibhai</strong>, trading as <strong>AVTools</strong>.<br>
     Registered Address: Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India.<br>
+    Contact: <strong>avtools.in@gmail.com</strong></p>
+  </div> {% endcomment %}
+
+  <div class="operator-box">
+    <p>This website is operated by <strong>AVTools</strong>.<br>
+    {% comment %} Registered Address: Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India.<br> {% endcomment %}
     Contact: <strong>avtools.in@gmail.com</strong></p>
   </div>
 
@@ -115,28 +121,29 @@ ul{margin-left:20px;margin-top:10px;}
     <tr>
       <td><strong>Meesho Label Cropper</strong></td>
       <td>Automatically crop and format Meesho shipping labels for printing. Supports bulk label processing. Output delivered instantly as downloadable files.</td>
-      <td class="price">1 Credit per label set</td>
+      <td class="price">Free</td>
     </tr>
-    <tr>
+    {% comment %} <tr>
       <td><strong>Bulk Image Processing</strong></td>
       <td>Process multiple product images at once for batch optimization, resizing, and watermarking. Ideal for high-volume sellers.</td>
       <td class="price">1 Credit per image</td>
-    </tr>
+    </tr> {% endcomment %}
     <tr>
       <td><strong>Profit Calculator</strong></td>
       <td>Calculate actual profit after Meesho platform fees, shipping charges, returns, and GST. Free tool available to all registered users.</td>
-      <td class="price">Free</td>
+      <td class="price">Coming Soon...</td>
     </tr>
     <tr>
       <td><strong>Shipping Slab Optimizer</strong></td>
       <td>Analyze product weight and dimensions to recommend the most cost-effective shipping slab. Helps reduce shipping expenses by up to 40%.</td>
-      <td class="price">Free</td>
+      <td class="price">Coming Soon...</td>
     </tr>
   </table>
 
   <!-- ===================== SECTION 2 ===================== -->
   <h2>2. Pricing & Payment</h2>
-  <p>All prices are displayed in <strong>Indian Rupees (INR)</strong> inclusive of applicable taxes. Services are available via prepaid credit packs purchased through <strong>PayU</strong>, a PCI-DSS compliant payment gateway. Accepted payment methods include UPI, Debit Card, Credit Card, Net Banking, and Wallets.</p>
+  {% comment %} <p>All prices are displayed in <strong>Indian Rupees (INR)</strong> inclusive of applicable taxes. Services are available via prepaid credit packs purchased through <strong>PayU</strong>, a PCI-DSS compliant payment gateway. Accepted payment methods include UPI, Debit Card, Credit Card, Net Banking, and Wallets.</p> {% endcomment %}
+  <p>All prices are displayed in <strong>Indian Rupees (INR)</strong> inclusive of applicable taxes. a PCI-DSS compliant payment gateway. Accepted payment methods include UPI, Debit Card, Credit Card, Net Banking, and Wallets.</p>
 
   <table class="services-table">
     <tr>
@@ -175,7 +182,7 @@ ul{margin-left:20px;margin-top:10px;}
   <h2>3. Cancellation Policy</h2>
 
   <div class="highlight-box">
-    <p>⏱ <strong>Cancellation Window:</strong> You may request cancellation within <strong>24 hours</strong> of purchase, provided <strong>zero credits have been used</strong>. After 24 hours or after any credit is consumed, cancellation is not permitted.</p>
+    <p>⏱ <strong>Cancellation Window:</strong> You may request cancellation within <strong>1 hour</strong> of purchase, provided <strong>zero credits have been used</strong>. After 1 hour or after any credit is consumed, cancellation is not permitted.</p>
   </div>
 
   <table class="cancel-table">
@@ -188,7 +195,7 @@ ul{margin-left:20px;margin-top:10px;}
     <tr>
       <td>Credit pack purchased, zero credits used</td>
       <td>✅ Yes</td>
-      <td>Within 24 hours of purchase</td>
+      <td>Within 1 hour of purchase</td>
       <td>Email avtools.in@gmail.com with Order ID</td>
     </tr>
     <tr>
@@ -198,7 +205,7 @@ ul{margin-left:20px;margin-top:10px;}
       <td>Not eligible for cancellation</td>
     </tr>
     <tr>
-      <td>Request after 24 hours of purchase</td>
+      <td>Request after 1 hour of purchase</td>
       <td>❌ No</td>
       <td>Expired</td>
       <td>Not eligible regardless of unused credits</td>
@@ -231,7 +238,7 @@ ul{margin-left:20px;margin-top:10px;}
   <ul style="margin-top:12px;">
     <li>AI-generated images are available for download immediately after generation.</li>
     <li>Cropped and processed label files are ready for download within seconds of upload.</li>
-    <li>Credit packs are activated and reflected in your account balance immediately upon successful PayU payment confirmation.</li>
+    <li>Credit packs are activated and reflected in your account balance immediately upon successful payment confirmation.</li>
     <li>In the rare event of a technical delay, credits or outputs will be made available within 24 hours. If not, you are eligible for a full refund under our Refund Policy.</li>
     <li>No physical address is required or used for service delivery.</li>
   </ul>
@@ -261,37 +268,38 @@ ul{margin-left:20px;margin-top:10px;}
   </ul>
 
   <!-- ===================== SECTION 8 ===================== -->
-  <h2>8. Payment Security (PayU)</h2>
-  <p>All payments are processed by <strong>PayU India</strong>, a Reserve Bank of India (RBI) authorised payment aggregator and PCI-DSS Level 1 certified gateway. AVTools does not store, access, or process any card numbers, CVV, UPI PINs, or net banking credentials. All payment data is handled exclusively by PayU under their privacy policy and security standards.</p>
+  {% comment %} <h2>8. Payment Security (PayU)</h2>
+  <p>All payments are processed by <strong>PayU India</strong>, a Reserve Bank of India (RBI) authorised payment aggregator and PCI-DSS Level 1 certified gateway. AVTools does not store, access, or process any card numbers, CVV, UPI PINs, or net banking credentials. All payment data is handled exclusively by PayU under their privacy policy and security standards.</p> {% endcomment %}
 
   <!-- ===================== SECTION 9 ===================== -->
-  <h2>9. Limitation of Liability</h2>
+  <h2>8. Limitation of Liability</h2>
   <p>AVTools shall not be liable for any direct, indirect, incidental, or consequential damages, including business loss, data loss, or financial loss arising from the use or inability to use our services.</p>
 
   <!-- ===================== SECTION 10 ===================== -->
-  <h2>10. Suspension & Termination</h2>
+  <h2>9. Suspension & Termination</h2>
   <p>We reserve the right to suspend or terminate access to our services at any time, without prior notice, if we believe these Terms have been violated.</p>
 
   <!-- ===================== SECTION 11 ===================== -->
-  <h2>11. Intellectual Property</h2>
-  <p>All website content, branding, design, and code belong to AVTools (operated by Ajani Virajbhai Jentibhai). Users may not copy, redistribute, or resell any part of the platform without written permission.</p>
+  <h2>10. Intellectual Property</h2>
+  {% comment %} <p>All website content, branding, design, and code belong to AVTools (operated by Ajani Virajbhai Jentibhai). Users may not copy, redistribute, or resell any part of the platform without written permission.</p> {% endcomment %}
+  <p>All website content, branding, design, and code belong to AVTools. Users may not copy, redistribute, or resell any part of the platform without written permission.</p>
 
   <!-- ===================== SECTION 12 ===================== -->
-  <h2>12. Governing Law</h2>
-  <p>These Terms shall be governed by and interpreted in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in <strong>Rajkot, Gujarat, India</strong>.</p>
+  <h2>11. Governing Law</h2>
+  <p>These Terms shall be governed by and interpreted in accordance with the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in <strong>India</strong>.</p>
 
   <!-- ===================== SECTION 13 ===================== -->
-  <h2>13. Changes to Terms</h2>
+  <h2>12. Changes to Terms</h2>
   <p>We may update these Terms at any time without prior notice. Continued use of AVTools after any update constitutes acceptance of the revised Terms. The latest version is always available at <strong>avtools.in/terms</strong>.</p>
 
   <!-- ===================== SECTION 14 ===================== -->
-  <h2>14. Contact Information</h2>
+  <h2>13. Contact Information</h2>
   <p>
     For questions regarding these Terms:<br>
-    <strong>Operator:</strong> Ajani Virajbhai Jentibhai<br>
-    <strong>Business Name:</strong> AVTools<br>
+    {% comment %} <strong>Operator:</strong> Ajani Virajbhai Jentibhai<br> {% endcomment %}
+    <strong>Operator:</strong> AVTools<br>
     <strong>Email:</strong> avtools.in@gmail.com<br>
-    <strong>Address:</strong> Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India
+    {% comment %} <strong>Address:</strong> Gel Krupa, Shivdhara Residency, Street No-4, Near Green Land Chokdi, Behind HP Petrol Pump, Rajkot, Gujarat – 360003, India {% endcomment %}
   </p>
 </div>
 
@@ -301,10 +309,10 @@ ul{margin-left:20px;margin-top:10px;}
       <img src="/static/images/avtools.png" alt="AVTools" style="height:32px;filter:brightness(10);">
       <p>Smart AI-powered tools for Meesho sellers and Indian online marketplace sellers. Reduce shipping costs, optimize product images, and grow faster.</p>
       <div class="address">
-        📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
+        {% comment %} 📍 Gel Krupa, Shivdhara Residency, Street No-4,<br>
         Near Green Land Chokdi, Behind HP Petrol Pump,<br>
         Rajkot, Gujarat – 360003, India<br><br>
-        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br>
+        Operated by: <strong style="color:rgba(255,255,255,0.75);">Ajani Virajbhai Jentibhai</strong><br> {% endcomment %}
         📧 avtools.in@gmail.com
       </div>
     </div>
@@ -330,8 +338,9 @@ ul{margin-left:20px;margin-top:10px;}
     </div>
   </div>
   <div class="footer-bottom">
-    <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div>
-    <div>Rajkot, Gujarat, India</div>
+    {% comment %} <div>© 2026 AVTools. All rights reserved. Operated by Ajani Virajbhai Jentibhai.</div> {% endcomment %}
+    <div>© 2026 AVTools. All rights reserved.</div>
+    {% comment %} <div>Rajkot, Gujarat, India</div> {% endcomment %}
   </div>
 </footer>
 

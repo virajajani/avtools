@@ -12,13 +12,13 @@ from .label_utils import crop_meesho_labels_to_pdf
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import UserProfile, GenerationHistory, ActiveSession
+from .models import UserProfile, GenerationHistory, ActiveSession, MonthlyLabelSummary
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.views.decorators.http import require_POST
 from django.contrib.auth import update_session_auth_hash
 from django.http import JsonResponse, HttpResponse
-
+from django.utils.timezone import now
 from products.models import SubSubCategory
 
 
@@ -318,77 +318,379 @@ def download_image(request):
     response = HttpResponse(image_bytes, content_type='image/jpeg')
     response['Content-Disposition'] = 'attachment; filename="meesho_image.jpg"'
     return response
+# ============================================
+# views.py
+# ============================================
+
+import base64
+import traceback
+
+from datetime import datetime
+
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.utils.timezone import now
+
+from .models import (
+    MonthlyLabelSummary,
+    DailyLabelSummary,
+)
+
+from .label_utils import (
+    crop_meesho_labels_to_pdf
+)
 
 
 # ===============================
-# LABEL CROPPER
+# LABEL CROPPER PAGE
 # ===============================
 
 def label_cropper(request):
-    return render(request, 'crop/label_cropper.html')
 
+    return render(
+        request,
+        'crop/label_cropper.html'
+    )
+
+
+# ===============================
+# PROCESS LABELS
+# ===============================
 
 def process_labels(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid method'}, status=400)
 
-    pdf_file = request.FILES.get('label_pdf')
+    # -----------------------------------
+    # VALIDATION
+    # -----------------------------------
+
+    if request.method != 'POST':
+
+        return JsonResponse({
+            'error': 'Invalid method'
+        }, status=400)
+
+    pdf_file = request.FILES.get(
+        'label_pdf'
+    )
 
     if not pdf_file:
-        return JsonResponse({'error': 'No PDF file uploaded'}, status=400)
+
+        return JsonResponse({
+            'error': 'No PDF file uploaded'
+        }, status=400)
 
     if not pdf_file.name.lower().endswith('.pdf'):
-        return JsonResponse({'error': 'Please upload a PDF file'}, status=400)
+
+        return JsonResponse({
+            'error': 'Please upload a PDF file'
+        }, status=400)
 
     if pdf_file.size > 50 * 1024 * 1024:
-        return JsonResponse({'error': 'File too large. Max size is 50MB'}, status=400)
+
+        return JsonResponse({
+            'error': 'File too large. Max size is 50MB'
+        }, status=400)
 
     try:
+
         print("\n" + "=" * 70)
         print("📄 STARTING PDF PROCESS")
         print("=" * 70)
-        print(f"Processing PDF: {pdf_file.name}")
-        print(f"PDF Size: {pdf_file.size} bytes")
 
-        result           = crop_meesho_labels_to_pdf(pdf_file)
-        output_pdf_bytes = result["pdf_bytes"]
-        product_summary  = result["product_summary"]
-        total_labels     = result["total_labels"]
+        print(
+            f"Processing PDF: "
+            f"{pdf_file.name}"
+        )
+
+        print(
+            f"PDF Size: "
+            f"{pdf_file.size} bytes"
+        )
+
+        # =========================================
+        # PROCESS PDF
+        # =========================================
+
+        result = crop_meesho_labels_to_pdf(
+            pdf_file
+        )
+
+        output_pdf_bytes = result[
+            "pdf_bytes"
+        ]
+
+        product_summary = result[
+            "product_summary"
+        ]
+
+        total_labels = result[
+            "total_labels"
+        ]
 
         if not output_pdf_bytes:
-            return JsonResponse({'error': 'Failed to generate PDF'}, status=400)
 
-        print(f"\n✅ Generated PDF Size: {len(output_pdf_bytes)} bytes")
+            return JsonResponse({
+                'error': 'Failed to generate PDF'
+            }, status=400)
+
+        print(
+            f"\n✅ Generated PDF Size: "
+            f"{len(output_pdf_bytes)} bytes"
+        )
+
         print("\n📦 PRODUCT SUMMARY")
-        for product, qty in product_summary.items():
-            print(f"   {product} = {qty} Labels")
-        print(f"\n✅ TOTAL LABELS: {total_labels}")
 
-        timestamp       = datetime.now().strftime('%H%M%S')
-        output_filename = f"avtools_crop_label_{timestamp}.pdf"
-        pdf_base64      = base64.b64encode(output_pdf_bytes).decode('utf-8')
+        for courier, products in (
+            product_summary.items()
+        ):
 
-        print(f"\n📥 Sending PDF: {output_filename}")
+            print(f"\n🚚 {courier}")
+
+            for product, qty in (
+                products.items()
+            ):
+
+                print(
+                    f"   {product} = "
+                    f"{qty} Labels"
+                )
+
+        print(
+            f"\n✅ TOTAL LABELS: "
+            f"{total_labels}"
+        )
+
+        # =========================================
+        # CURRENT TIME (INDIAN TIMEZONE)
+        # =========================================
+
+        current_time = now()
+
+        current_date = current_time.date()
+
+        current_month = current_date.replace(
+            day=1
+        )
+
+        # =========================================
+        # DAILY SUMMARY UPDATE
+        # =========================================
+
+        daily_summary, created = (
+
+            DailyLabelSummary.objects
+            .get_or_create(
+
+                date=current_date
+
+            )
+        )
+
+        daily_summary.total_pdfs += 1
+
+        daily_summary.total_labels += (
+            total_labels
+        )
+
+        daily_summary.save()
+
+        print("\n📅 DAILY SUMMARY UPDATED")
+
+        print(
+            f"Date: "
+            f"{daily_summary.date}"
+        )
+
+        print(
+            f"Daily PDFs: "
+            f"{daily_summary.total_pdfs}"
+        )
+
+        print(
+            f"Daily Labels: "
+            f"{daily_summary.total_labels}"
+        )
+
+        # =========================================
+        # MONTHLY SUMMARY UPDATE
+        # =========================================
+
+        monthly_summary, created = (
+
+            MonthlyLabelSummary.objects
+            .get_or_create(
+
+                month=current_month
+
+            )
+        )
+
+        monthly_summary.total_pdfs += 1
+
+        monthly_summary.total_labels += (
+            total_labels
+        )
+
+        monthly_summary.save()
+
+        print("\n📊 MONTHLY SUMMARY UPDATED")
+
+        print(
+            f"Month: "
+            f"{monthly_summary.month}"
+        )
+
+        print(
+            f"Monthly PDFs: "
+            f"{monthly_summary.total_pdfs}"
+        )
+
+        print(
+            f"Monthly Labels: "
+            f"{monthly_summary.total_labels}"
+        )
+
+        # =========================================
+        # GENERATE OUTPUT PDF
+        # =========================================
+
+        timestamp = datetime.now().strftime(
+            '%H%M%S'
+        )
+
+        output_filename = (
+
+            f"avtools_crop_label_"
+            f"{timestamp}.pdf"
+
+        )
+
+        pdf_base64 = base64.b64encode(
+
+            output_pdf_bytes
+
+        ).decode('utf-8')
+
+        print(
+            f"\n📥 Sending PDF: "
+            f"{output_filename}"
+        )
+
         print("=" * 70)
 
+        # =========================================
+        # SUCCESS RESPONSE
+        # =========================================
+
         return JsonResponse({
-            'success':         True,
-            'filename':        output_filename,
-            'pdf_base64':      pdf_base64,
-            'total_labels':    total_labels,
+
+            'success': True,
+
+            'filename': output_filename,
+
+            'pdf_base64': pdf_base64,
+
+            'total_labels': total_labels,
+
             'product_summary': product_summary,
+
+            # -----------------------------------
+            # DAILY ANALYTICS
+            # -----------------------------------
+
+            'daily_summary': {
+
+                'date': str(
+                    daily_summary.date
+                ),
+
+                'total_pdfs': (
+                    daily_summary.total_pdfs
+                ),
+
+                'total_labels': (
+                    daily_summary.total_labels
+                ),
+
+                'last_used': (
+
+                    daily_summary.last_used
+                    .strftime(
+                        '%d-%m-%Y %I:%M %p'
+                    )
+
+                )
+
+            },
+
+            # -----------------------------------
+            # MONTHLY ANALYTICS
+            # -----------------------------------
+
+            'monthly_summary': {
+
+                'month': str(
+                    monthly_summary.month
+                ),
+
+                'total_pdfs': (
+                    monthly_summary.total_pdfs
+                ),
+
+                'total_labels': (
+                    monthly_summary.total_labels
+                ),
+
+                'last_used': (
+
+                    monthly_summary.last_used
+                    .strftime(
+                        '%d-%m-%Y %I:%M %p'
+                    )
+
+                )
+
+            }
+
         })
 
+    # =========================================
+    # VALUE ERROR
+    # =========================================
+
     except ValueError as e:
-        print(f"\n❌ ValueError: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=400)
+
+        print(
+            f"\n❌ ValueError: "
+            f"{str(e)}"
+        )
+
+        return JsonResponse({
+            'error': str(e)
+        }, status=400)
+
+    # =========================================
+    # GENERAL ERROR
+    # =========================================
 
     except Exception as e:
-        print(f"\n❌ Error processing PDF: {str(e)}")
+
+        print(
+            f"\n❌ Error processing PDF: "
+            f"{str(e)}"
+        )
+
         print(traceback.format_exc())
-        return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
 
+        return JsonResponse({
 
+            'error': (
+                f'Error processing PDF: '
+                f'{str(e)}'
+            )
+
+        }, status=500)
+    
 # ===============================
 # PROFILE / SECURITY ACTIONS
 # ===============================
