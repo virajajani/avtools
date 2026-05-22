@@ -1,5 +1,6 @@
 # generator/views.py
-# Full corrected file — all logic preserved, generate_images hardened
+# Credits now read/written exclusively from accounts.UserCredit
+# CreditHistory is recorded for every deduction
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
@@ -21,6 +22,10 @@ from django.http import JsonResponse, HttpResponse
 from django.utils.timezone import now
 from products.models import SubSubCategory
 
+# ── NEW: single source of truth for credits ───────────────────────────────
+from accounts.models import UserCredit, CreditHistory
+
+from accounts.utils import expire_user_credits   # add to imports at top
 
 # ==============================
 # Landing Page
@@ -31,22 +36,31 @@ def landing(request):
 
 
 # ===============================
+# HELPERS
+# ===============================
+
+def get_user_credit(user):
+    """
+    Return (UserCredit, balance).
+    Creates the row with 0 balance if it doesn't exist yet.
+    """
+    credit, _ = UserCredit.objects.get_or_create(user=user)
+    return credit
+
+
+# ===============================
 # HOME / DASHBOARD (AFTER LOGIN)
 # ===============================
 
 @login_required(login_url='generator:signin')
 def home(request):
-    profile, created = UserProfile.objects.get_or_create(
-        user=request.user,
-        defaults={"credits": 10}
-    )
-
+    credit = get_user_credit(request.user)
     username = request.user.username or "U"
     initials = username[0].upper()
     device_ctx = load_active_devices(request)
 
     return render(request, "home.html", {
-        "credits": profile.credits,
+        "credits": credit.balance,
         "initials": initials,
         **device_ctx,
     })
@@ -58,11 +72,7 @@ def home(request):
 
 @login_required(login_url='generator:signin')
 def meesho_image_generator(request):
-    profile, created = UserProfile.objects.get_or_create(
-        user=request.user,
-        defaults={"credits": 10}
-    )
-
+    credit = get_user_credit(request.user)
     username = request.user.username or "U"
     initials = username[0].upper()
     device_ctx = load_active_devices(request)
@@ -73,7 +83,7 @@ def meesho_image_generator(request):
 
     return render(request, "meesho_image_generator.html", {
         "categories": CATEGORIES,
-        "credits": profile.credits,
+        "credits": credit.balance,
         "initials": initials,
         "recent_generations": recent_generations,
         **device_ctx,
@@ -103,10 +113,8 @@ def signin(request):
 
         login(request, user)
 
-        profile, created = UserProfile.objects.get_or_create(user=user)
-        if created:
-            profile.credits = 10
-            profile.save()
+        # Ensure UserCredit row exists
+        get_user_credit(user)
 
         if request.session.session_key:
             ActiveSession.objects.update_or_create(
@@ -139,7 +147,24 @@ def signup(request):
             password=password,
             first_name=name
         )
-        UserProfile.objects.create(user=user, credits=10)
+
+        # Give 10 free credits via UserCredit (single source of truth)
+        from django.utils import timezone
+        from datetime import timedelta
+        credit = UserCredit.objects.create(
+            user=user,
+            balance=10,
+            expires_at=timezone.now() + timedelta(days=365),
+        )
+        CreditHistory.objects.create(
+            user=user,
+            credits=10,
+            transaction_type="ADD",
+            previous_balance=0,
+            current_balance=10,
+            description="Welcome bonus — 10 free credits",
+        )
+
         messages.success(request, "Account created successfully! You got 10 free credits.")
         return redirect("generator:signin")
 
@@ -160,7 +185,7 @@ def logout_user(request):
 
 
 # ===============================
-# IMAGE GENERATION  ← FIXED
+# IMAGE GENERATION
 # ===============================
 
 @login_required(login_url='generator:signin')
@@ -169,24 +194,17 @@ def generate_images(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=400)
 
-    # ── Profile ──────────────────────────────────────────────────────────────
-    profile, created = UserProfile.objects.get_or_create(
-        user=request.user,
-        defaults={"credits": 10}
-    )
-    if profile.credits is None:
-        profile.credits = 10
-        profile.save()
+    # ── Credit check via UserCredit ───────────────────────────────────────────
+    credit = get_user_credit(request.user)
 
-    # ── Credit check ─────────────────────────────────────────────────────────
-    if profile.credits < 1:
+    if credit.balance < 1:
         messages.error(request, "You have 0 credits left. Please recharge.")
         return redirect("generator:meesho_image_generator")
 
     # ── Form data ─────────────────────────────────────────────────────────────
-    image              = request.FILES.get("product_image")
-    meesho_price       = request.POST.get("meesho_price", "").strip()
-    selected_raw       = request.POST.get("selected_categories", "").strip()
+    image        = request.FILES.get("product_image")
+    meesho_price = request.POST.get("meesho_price", "").strip()
+    selected_raw = request.POST.get("selected_categories", "").strip()
 
     # ── Validation ────────────────────────────────────────────────────────────
     if not image:
@@ -201,42 +219,37 @@ def generate_images(request):
         messages.error(request, "Please select at least one category.")
         return redirect("generator:meesho_image_generator")
 
-    # ── Parse category IDs (robust) ───────────────────────────────────────────
-    # Handle both comma-separated "1,2,3" and accidental spaces / empty parts
+    # ── Parse category IDs ────────────────────────────────────────────────────
     raw_ids = [x.strip() for x in selected_raw.split(",") if x.strip()]
-
     category_ids = []
     for x in raw_ids:
         try:
             category_ids.append(int(x))
         except ValueError:
-            pass  # skip any non-integer fragments
+            pass
 
     if not category_ids:
         messages.error(request, "Invalid categories selected. Please try again.")
         return redirect("generator:meesho_image_generator")
 
-    # ── Fetch all matching categories (don't silently drop any) ───────────────
     categories = SubSubCategory.objects.filter(id__in=category_ids)
 
     found_ids = set(categories.values_list("id", flat=True))
     missing   = [i for i in category_ids if i not in found_ids]
     if missing:
-        # Log missing IDs so you can debug, but don't block the user
         print(f"[generate_images] WARNING: category IDs not found in DB: {missing}")
 
     if not categories.exists():
         messages.error(request, "No valid categories found. Please reselect.")
         return redirect("generator:meesho_image_generator")
 
-    # ── Save image ─────────────────────────────────────────────────────────────
+    # ── Save generation history ────────────────────────────────────────────────
     try:
         history = GenerationHistory.objects.create(
             user=request.user,
             meesho_price=meesho_price,
             uploaded_image=image,
         )
-        # .set() replaces ALL m2m entries — always stores exactly what was sent
         history.categories.set(categories)
         history.save()
     except Exception as e:
@@ -244,13 +257,23 @@ def generate_images(request):
         messages.error(request, "Could not save generation. Please try again.")
         return redirect("generator:meesho_image_generator")
 
-    # ── Deduct credit AFTER successful save ────────────────────────────────────
-    profile.credits -= 1
-    profile.save()
+    # ── Deduct 1 credit + record history ──────────────────────────────────────
+    previous_balance = credit.balance
+    credit.balance  -= 1
+    credit.save()
+
+    CreditHistory.objects.create(
+        user=request.user,
+        credits=1,
+        transaction_type="DEDUCT",
+        previous_balance=previous_balance,
+        current_balance=credit.balance,
+        description=f"Image generation — history #{history.id}",
+    )
 
     # ── Store session reference ────────────────────────────────────────────────
     request.session["last_history_id"] = history.id
-    request.session.modified = True   # force session write
+    request.session.modified = True
 
     return redirect("generator:results")
 
@@ -292,13 +315,13 @@ def results(request):
             shipping_rate=variation["shipping_rate"]
         )
 
-    profile = UserProfile.objects.get(user=request.user)
+    credit = get_user_credit(request.user)
 
     return render(request, "generator/results.html", {
         "variations":   variations,
         "categories":   history.categories.all(),
         "total_images": len(variations),
-        "credits_left": profile.credits,
+        "credits_left": credit.balance,
         "history":      history,
     })
 
@@ -318,27 +341,6 @@ def download_image(request):
     response = HttpResponse(image_bytes, content_type='image/jpeg')
     response['Content-Disposition'] = 'attachment; filename="meesho_image.jpg"'
     return response
-# ============================================
-# views.py
-# ============================================
-
-import base64
-import traceback
-
-from datetime import datetime
-
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.utils.timezone import now
-
-from .models import (
-    MonthlyLabelSummary,
-    DailyLabelSummary,
-)
-
-from .label_utils import (
-    crop_meesho_labels_to_pdf
-)
 
 
 # ===============================
@@ -346,11 +348,7 @@ from .label_utils import (
 # ===============================
 
 def label_cropper(request):
-
-    return render(
-        request,
-        'crop/label_cropper.html'
-    )
+    return render(request, 'crop/label_cropper.html')
 
 
 # ===============================
@@ -359,338 +357,106 @@ def label_cropper(request):
 
 def process_labels(request):
 
-    # -----------------------------------
-    # VALIDATION
-    # -----------------------------------
-
     if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid method'}, status=400)
 
-        return JsonResponse({
-            'error': 'Invalid method'
-        }, status=400)
-
-    pdf_file = request.FILES.get(
-        'label_pdf'
-    )
+    pdf_file = request.FILES.get('label_pdf')
 
     if not pdf_file:
-
-        return JsonResponse({
-            'error': 'No PDF file uploaded'
-        }, status=400)
+        return JsonResponse({'error': 'No PDF file uploaded'}, status=400)
 
     if not pdf_file.name.lower().endswith('.pdf'):
-
-        return JsonResponse({
-            'error': 'Please upload a PDF file'
-        }, status=400)
+        return JsonResponse({'error': 'Please upload a PDF file'}, status=400)
 
     if pdf_file.size > 50 * 1024 * 1024:
-
-        return JsonResponse({
-            'error': 'File too large. Max size is 50MB'
-        }, status=400)
+        return JsonResponse({'error': 'File too large. Max size is 50MB'}, status=400)
 
     try:
-
         print("\n" + "=" * 70)
         print("📄 STARTING PDF PROCESS")
         print("=" * 70)
+        print(f"Processing PDF: {pdf_file.name}")
+        print(f"PDF Size: {pdf_file.size} bytes")
 
-        print(
-            f"Processing PDF: "
-            f"{pdf_file.name}"
-        )
-
-        print(
-            f"PDF Size: "
-            f"{pdf_file.size} bytes"
-        )
-
-        # =========================================
-        # PROCESS PDF
-        # =========================================
-
-        result = crop_meesho_labels_to_pdf(
-            pdf_file
-        )
-
-        output_pdf_bytes = result[
-            "pdf_bytes"
-        ]
-
-        product_summary = result[
-            "product_summary"
-        ]
-
-        total_labels = result[
-            "total_labels"
-        ]
+        result           = crop_meesho_labels_to_pdf(pdf_file)
+        output_pdf_bytes = result["pdf_bytes"]
+        product_summary  = result["product_summary"]
+        total_labels     = result["total_labels"]
 
         if not output_pdf_bytes:
+            return JsonResponse({'error': 'Failed to generate PDF'}, status=400)
 
-            return JsonResponse({
-                'error': 'Failed to generate PDF'
-            }, status=400)
-
-        print(
-            f"\n✅ Generated PDF Size: "
-            f"{len(output_pdf_bytes)} bytes"
-        )
-
+        print(f"\n✅ Generated PDF Size: {len(output_pdf_bytes)} bytes")
         print("\n📦 PRODUCT SUMMARY")
-
-        for courier, products in (
-            product_summary.items()
-        ):
-
+        for courier, products in product_summary.items():
             print(f"\n🚚 {courier}")
+            for product, qty in products.items():
+                print(f"   {product} = {qty} Labels")
+        print(f"\n✅ TOTAL LABELS: {total_labels}")
 
-            for product, qty in (
-                products.items()
-            ):
+        current_time  = now()
+        current_date  = current_time.date()
+        current_month = current_date.replace(day=1)
 
-                print(
-                    f"   {product} = "
-                    f"{qty} Labels"
-                )
+        from .models import DailyLabelSummary
 
-        print(
-            f"\n✅ TOTAL LABELS: "
-            f"{total_labels}"
-        )
-
-        # =========================================
-        # CURRENT TIME (INDIAN TIMEZONE)
-        # =========================================
-
-        current_time = now()
-
-        current_date = current_time.date()
-
-        current_month = current_date.replace(
-            day=1
-        )
-
-        # =========================================
-        # DAILY SUMMARY UPDATE
-        # =========================================
-
-        daily_summary, created = (
-
-            DailyLabelSummary.objects
-            .get_or_create(
-
-                date=current_date
-
-            )
-        )
-
-        daily_summary.total_pdfs += 1
-
-        daily_summary.total_labels += (
-            total_labels
-        )
-
+        daily_summary, _ = DailyLabelSummary.objects.get_or_create(date=current_date)
+        daily_summary.total_pdfs   += 1
+        daily_summary.total_labels += total_labels
         daily_summary.save()
 
-        print("\n📅 DAILY SUMMARY UPDATED")
+        print(f"\n📅 DAILY SUMMARY UPDATED")
+        print(f"Date: {daily_summary.date}")
+        print(f"Daily PDFs: {daily_summary.total_pdfs}")
+        print(f"Daily Labels: {daily_summary.total_labels}")
 
-        print(
-            f"Date: "
-            f"{daily_summary.date}"
-        )
-
-        print(
-            f"Daily PDFs: "
-            f"{daily_summary.total_pdfs}"
-        )
-
-        print(
-            f"Daily Labels: "
-            f"{daily_summary.total_labels}"
-        )
-
-        # =========================================
-        # MONTHLY SUMMARY UPDATE
-        # =========================================
-
-        monthly_summary, created = (
-
-            MonthlyLabelSummary.objects
-            .get_or_create(
-
-                month=current_month
-
-            )
-        )
-
-        monthly_summary.total_pdfs += 1
-
-        monthly_summary.total_labels += (
-            total_labels
-        )
-
+        monthly_summary, _ = MonthlyLabelSummary.objects.get_or_create(month=current_month)
+        monthly_summary.total_pdfs   += 1
+        monthly_summary.total_labels += total_labels
         monthly_summary.save()
 
-        print("\n📊 MONTHLY SUMMARY UPDATED")
+        print(f"\n📊 MONTHLY SUMMARY UPDATED")
+        print(f"Month: {monthly_summary.month}")
+        print(f"Monthly PDFs: {monthly_summary.total_pdfs}")
+        print(f"Monthly Labels: {monthly_summary.total_labels}")
 
-        print(
-            f"Month: "
-            f"{monthly_summary.month}"
-        )
+        timestamp       = datetime.now().strftime('%H%M%S')
+        output_filename = f"avtools_crop_label_{timestamp}.pdf"
+        pdf_base64      = base64.b64encode(output_pdf_bytes).decode('utf-8')
 
-        print(
-            f"Monthly PDFs: "
-            f"{monthly_summary.total_pdfs}"
-        )
-
-        print(
-            f"Monthly Labels: "
-            f"{monthly_summary.total_labels}"
-        )
-
-        # =========================================
-        # GENERATE OUTPUT PDF
-        # =========================================
-
-        timestamp = datetime.now().strftime(
-            '%H%M%S'
-        )
-
-        output_filename = (
-
-            f"avtools_crop_label_"
-            f"{timestamp}.pdf"
-
-        )
-
-        pdf_base64 = base64.b64encode(
-
-            output_pdf_bytes
-
-        ).decode('utf-8')
-
-        print(
-            f"\n📥 Sending PDF: "
-            f"{output_filename}"
-        )
-
+        print(f"\n📥 Sending PDF: {output_filename}")
         print("=" * 70)
 
-        # =========================================
-        # SUCCESS RESPONSE
-        # =========================================
-
         return JsonResponse({
-
-            'success': True,
-
-            'filename': output_filename,
-
-            'pdf_base64': pdf_base64,
-
-            'total_labels': total_labels,
-
+            'success':         True,
+            'filename':        output_filename,
+            'pdf_base64':      pdf_base64,
+            'total_labels':    total_labels,
             'product_summary': product_summary,
-
-            # -----------------------------------
-            # DAILY ANALYTICS
-            # -----------------------------------
-
             'daily_summary': {
-
-                'date': str(
-                    daily_summary.date
-                ),
-
-                'total_pdfs': (
-                    daily_summary.total_pdfs
-                ),
-
-                'total_labels': (
-                    daily_summary.total_labels
-                ),
-
-                'last_used': (
-
-                    daily_summary.last_used
-                    .strftime(
-                        '%d-%m-%Y %I:%M %p'
-                    )
-
-                )
-
+                'date':         str(daily_summary.date),
+                'total_pdfs':   daily_summary.total_pdfs,
+                'total_labels': daily_summary.total_labels,
+                'last_used':    daily_summary.last_used.strftime('%d-%m-%Y %I:%M %p'),
             },
-
-            # -----------------------------------
-            # MONTHLY ANALYTICS
-            # -----------------------------------
-
             'monthly_summary': {
-
-                'month': str(
-                    monthly_summary.month
-                ),
-
-                'total_pdfs': (
-                    monthly_summary.total_pdfs
-                ),
-
-                'total_labels': (
-                    monthly_summary.total_labels
-                ),
-
-                'last_used': (
-
-                    monthly_summary.last_used
-                    .strftime(
-                        '%d-%m-%Y %I:%M %p'
-                    )
-
-                )
-
-            }
-
+                'month':        str(monthly_summary.month),
+                'total_pdfs':   monthly_summary.total_pdfs,
+                'total_labels': monthly_summary.total_labels,
+                'last_used':    monthly_summary.last_used.strftime('%d-%m-%Y %I:%M %p'),
+            },
         })
 
-    # =========================================
-    # VALUE ERROR
-    # =========================================
-
     except ValueError as e:
-
-        print(
-            f"\n❌ ValueError: "
-            f"{str(e)}"
-        )
-
-        return JsonResponse({
-            'error': str(e)
-        }, status=400)
-
-    # =========================================
-    # GENERAL ERROR
-    # =========================================
+        print(f"\n❌ ValueError: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=400)
 
     except Exception as e:
-
-        print(
-            f"\n❌ Error processing PDF: "
-            f"{str(e)}"
-        )
-
+        print(f"\n❌ Error processing PDF: {str(e)}")
         print(traceback.format_exc())
+        return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
 
-        return JsonResponse({
 
-            'error': (
-                f'Error processing PDF: '
-                f'{str(e)}'
-            )
-
-        }, status=500)
-    
 # ===============================
 # PROFILE / SECURITY ACTIONS
 # ===============================
@@ -803,3 +569,12 @@ def contact(request):
 
 def about_us(request):
     return render(request, 'rights/about-us.html', {'user': request.user})
+
+ 
+def get_user_credit(user):
+    """
+    Returns the UserCredit for this user.
+    Automatically zeros the balance and logs history if credits have expired.
+    """
+    return expire_user_credits(user)
+ 

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import (
+    CreditHistory,
     User,
     UserDevice,
     UserCredit,
@@ -110,3 +111,31 @@ class ContactSupportAdmin(admin.ModelAdmin):
     list_filter = ("created_at",)
     ordering = ("-created_at",)
     readonly_fields = ("created_at",)
+
+
+@admin.register(CreditHistory)
+class CreditHistoryAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+        "transaction_type",
+        "credits",
+        "previous_balance",
+        "current_balance",
+        "payment_id",
+        "created_at",
+    )
+
+    list_filter = (
+        "transaction_type",
+        "created_at",
+    )
+
+    search_fields = (
+        "user__email",
+        "payment_id",
+    )
+
+    readonly_fields = (
+        "created_at",
+    )

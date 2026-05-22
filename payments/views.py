@@ -9,7 +9,7 @@ from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import generics, filters
 
@@ -22,8 +22,8 @@ from .serializers import (
     PaymentTransactionSerializer,
 )
 
-from accounts.models import UserCredit
-from rest_framework.permissions import AllowAny
+from accounts.models import UserCredit, CreditHistory
+
 
 # ---------------------------------------------------------------------------
 # Razorpay Client
@@ -37,22 +37,19 @@ razorpay_client = razorpay.Client(
 
 
 # ===========================================================================
-# CREDIT PLANS  —  GET /api/payments/credit-plans/
+# CREDIT PLANS
 # ===========================================================================
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_credit_plans(request):
-    plans = CreditPlan.objects.filter(
-        is_active=True
-    ).order_by("display_order")
-
+    plans = CreditPlan.objects.filter(is_active=True).order_by("display_order")
     serializer = CreditPlanSerializer(plans, many=True)
     return Response(serializer.data)
 
 
 # ===========================================================================
-# CREATE ORDER  —  POST /api/payments/create-order/
+# CREATE ORDER
 # ===========================================================================
 
 @api_view(["POST"])
@@ -69,23 +66,19 @@ def create_order(request):
         if not plan:
             return JsonResponse({"error": "Invalid or inactive plan"}, status=400)
 
-        # Apply discount if any
         if plan.offer_percent > 0:
-            discount = (plan.price * plan.offer_percent) / 100
+            discount    = (plan.price * plan.offer_percent) / 100
             final_price = plan.price - discount
         else:
             final_price = plan.price
 
-        # Razorpay expects paisa (integer)
         amount_in_paisa = int(final_price * 100)
 
-        razorpay_order = razorpay_client.order.create(
-            {
-                "amount": amount_in_paisa,
-                "currency": "INR",
-                "payment_capture": 1,   # auto-capture
-            }
-        )
+        razorpay_order = razorpay_client.order.create({
+            "amount":          amount_in_paisa,
+            "currency":        "INR",
+            "payment_capture": 1,
+        })
 
         PaymentTransaction.objects.create(
             user=request.user,
@@ -98,15 +91,13 @@ def create_order(request):
             status="PENDING",
         )
 
-        return JsonResponse(
-            {
-                "success": True,
-                "order_id": razorpay_order["id"],
-                "amount": amount_in_paisa,
-                "currency": "INR",
-                "key": settings.RAZORPAY_API_KEY,
-            }
-        )
+        return JsonResponse({
+            "success":  True,
+            "order_id": razorpay_order["id"],
+            "amount":   amount_in_paisa,
+            "currency": "INR",
+            "key":      settings.RAZORPAY_API_KEY,
+        })
 
     except razorpay.errors.BadRequestError as e:
         return JsonResponse({"success": False, "error": f"Razorpay error: {e}"}, status=502)
@@ -116,10 +107,7 @@ def create_order(request):
 
 
 # ===========================================================================
-# VERIFY PAYMENT  —  POST /api/payments/verify-payment/
-#
-# FIX: Returns JSON only — never redirects. The frontend JS handles the
-# success/failure UI entirely within the modal.
+# VERIFY PAYMENT
 # ===========================================================================
 
 @api_view(["POST"])
@@ -139,29 +127,25 @@ def verify_payment(request):
             user=request.user,
         )
 
-        # Guard against duplicate verification
         if payment_tx.status == "SUCCESS":
             return JsonResponse({"success": True, "message": "Payment already verified"})
 
-        # Signature verification (raises SignatureVerificationError on failure)
-        razorpay_client.utility.verify_payment_signature(
-            {
-                "razorpay_order_id": razorpay_order_id,
-                "razorpay_payment_id": razorpay_payment_id,
-                "razorpay_signature": razorpay_signature,
-            }
-        )
+        # ── Verify signature ──────────────────────────────────────────────────
+        razorpay_client.utility.verify_payment_signature({
+            "razorpay_order_id":   razorpay_order_id,
+            "razorpay_payment_id": razorpay_payment_id,
+            "razorpay_signature":  razorpay_signature,
+        })
 
         with transaction.atomic():
-            # Fetch full payment details from Razorpay
             payment_details = razorpay_client.payment.fetch(razorpay_payment_id)
 
-            payment_tx.status               = "SUCCESS"
-            payment_tx.razorpay_payment_id  = razorpay_payment_id
-            payment_tx.razorpay_signature   = razorpay_signature
-            payment_tx.paid_at              = timezone.now()
-            payment_tx.payment_mode         = payment_details.get("method")
-            payment_tx.gateway_response     = payment_details
+            payment_tx.status              = "SUCCESS"
+            payment_tx.razorpay_payment_id = razorpay_payment_id
+            payment_tx.razorpay_signature  = razorpay_signature
+            payment_tx.paid_at             = timezone.now()
+            payment_tx.payment_mode        = payment_details.get("method")
+            payment_tx.gateway_response    = payment_details
 
             card = payment_details.get("card")
             if card:
@@ -170,31 +154,43 @@ def verify_payment(request):
 
             payment_tx.save()
 
-            # Credit update
-            now = timezone.now()
+            # ── Credit user ───────────────────────────────────────────────────
+            _now     = timezone.now()
             validity = timedelta(days=payment_tx.plan.validity_days)
 
             user_credit, created = UserCredit.objects.get_or_create(
                 user=request.user,
                 defaults={
                     "balance":    payment_tx.credits,
-                    "expires_at": now + validity,
+                    "expires_at": _now + validity,
                 },
             )
 
-            if not created:
-                user_credit.balance += payment_tx.credits
-                # Extend expiry: if already expired → start fresh from now
-                base = max(user_credit.expires_at, now)
+            if created:
+                previous_balance = 0
+                # balance already set via defaults above
+            else:
+                previous_balance       = user_credit.balance
+                user_credit.balance   += payment_tx.credits
+                base                   = max(user_credit.expires_at, _now)
                 user_credit.expires_at = base + validity
                 user_credit.save()
 
-        # FIX: Return the new credit balance so the frontend can update
-        # the live counter without a page reload.
+            # ── Record credit history ─────────────────────────────────────────
+            CreditHistory.objects.create(
+                user=request.user,
+                credits=payment_tx.credits,
+                transaction_type="ADD",
+                previous_balance=previous_balance,
+                current_balance=user_credit.balance,
+                description=f"Purchased {payment_tx.plan.name}",
+                payment_id=razorpay_payment_id,
+            )
+
         return JsonResponse({
-            "success": True,
-            "message": "Payment verified and credits added",
-            "new_balance": user_credit.balance,
+            "success":       True,
+            "message":       "Payment verified and credits added",
+            "new_balance":   user_credit.balance,
             "credits_added": payment_tx.credits,
         })
 
@@ -214,7 +210,7 @@ def verify_payment(request):
 
 
 # ===========================================================================
-# REFUND PAYMENT  —  POST /api/payments/refund-payment/
+# REFUND PAYMENT
 # ===========================================================================
 
 @api_view(["POST"])
@@ -237,8 +233,7 @@ def refund_captured_payment_rest(request):
 
         if payment_tx.status != "SUCCESS":
             return JsonResponse(
-                {"error": "Only successful payments can be refunded"},
-                status=400,
+                {"error": "Only successful payments can be refunded"}, status=400
             )
 
         refund = razorpay_client.payment.refund(payment_id)
@@ -249,13 +244,28 @@ def refund_captured_payment_rest(request):
             payment_tx.save()
 
             try:
-                user_credit = UserCredit.objects.get(user=request.user)
+                user_credit      = UserCredit.objects.get(user=request.user)
+                old_balance      = user_credit.balance
                 user_credit.balance = max(0, user_credit.balance - payment_tx.credits)
                 user_credit.save()
+
+                CreditHistory.objects.create(
+                    user=request.user,
+                    credits=payment_tx.credits,
+                    transaction_type="REFUND",
+                    previous_balance=old_balance,
+                    current_balance=user_credit.balance,
+                    description="Refund processed",
+                    payment_id=payment_id,
+                )
             except UserCredit.DoesNotExist:
                 pass
 
-        return JsonResponse({"success": True, "message": "Refund processed", "refund": refund})
+        return JsonResponse({
+            "success": True,
+            "message": "Refund processed",
+            "refund":  refund,
+        })
 
     except razorpay.errors.BadRequestError as e:
         return JsonResponse({"success": False, "error": f"Razorpay error: {e}"}, status=502)
@@ -264,80 +274,56 @@ def refund_captured_payment_rest(request):
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
-
 # ===========================================================================
-# PAYMENT CALLBACK  —  GET /api/payments/payment-callback/
-#
-# Razorpay redirects here for redirect-based payment methods (Netbanking,
-# some UPI apps, certain wallets) that cannot complete inside the JS popup.
-#
-# Razorpay sends these GET params:
-#   razorpay_payment_id, razorpay_payment_link_id,
-#   razorpay_payment_link_reference_id,
-#   razorpay_payment_link_status,
-#   razorpay_signature
-#
-# For standard orders (not payment links) it sends:
-#   razorpay_order_id, razorpay_payment_id, razorpay_signature
-#
-# We verify, credit the user, and render a result page —
-# NEVER return JSON here because the browser landed on this URL directly.
+# PAYMENT CALLBACK
 # ===========================================================================
 
-@csrf_exempt   # Razorpay's redirect POST/GET does not include Django's CSRF token
+@csrf_exempt
 def payment_callback(request):
     """
-    Handles the redirect-back from Razorpay for redirect-based payment
-    methods (Netbanking, some UPI apps). Verifies the signature, credits
-    the user, and renders payment_result.html.
-
-    This view is intentionally NOT wrapped in @login_required because
-    Razorpay's redirect may not preserve the session cookie on some
-    browsers/payment flows. We authenticate via the order ID instead.
+    Handles redirect-back from Razorpay for redirect-based payment methods
+    (Netbanking, some UPI apps). Verifies signature, credits the user,
+    and renders payment_result.html.
     """
-    # Razorpay sends params as GET for older flows, POST for newer ones — handle both
     params = request.POST if request.method == "POST" else request.GET
 
     razorpay_order_id   = params.get("razorpay_order_id")
     razorpay_payment_id = params.get("razorpay_payment_id")
     razorpay_signature  = params.get("razorpay_signature")
 
-    # ── Missing params → generic error page ──
     if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
         return render(request, "payments/payment_result.html", {
-            "success": False,
-            "message": "Invalid callback — missing payment parameters.",
+            "success":      False,
+            "message":      "Invalid callback — missing payment parameters.",
             "redirect_url": "/",
         })
 
-    # ── Look up the transaction (no user filter — session may be gone) ──
     try:
         payment_tx = PaymentTransaction.objects.select_related(
             "user", "plan"
         ).get(razorpay_order_id=razorpay_order_id)
     except PaymentTransaction.DoesNotExist:
         return render(request, "payments/payment_result.html", {
-            "success": False,
-            "message": "Payment record not found. Please contact support.",
+            "success":      False,
+            "message":      "Payment record not found. Please contact support.",
             "redirect_url": "/",
         })
 
-    # ── Already verified (user refreshed the callback URL) ──
     if payment_tx.status == "SUCCESS":
         return render(request, "payments/payment_result.html", {
-            "success": True,
-            "message": "Payment already verified.",
+            "success":       True,
+            "message":       "Payment already verified.",
             "credits_added": payment_tx.credits,
-            "plan_name": payment_tx.plan.name if payment_tx.plan else "",
-            "redirect_url": "/",
+            "plan_name":     payment_tx.plan.name if payment_tx.plan else "",
+            "redirect_url":  "/",
         })
 
-    # ── Signature verification ──
+    # ── Verify signature ──────────────────────────────────────────────────────
     try:
         razorpay_client.utility.verify_payment_signature({
-            "razorpay_order_id":  razorpay_order_id,
+            "razorpay_order_id":   razorpay_order_id,
             "razorpay_payment_id": razorpay_payment_id,
-            "razorpay_signature": razorpay_signature,
+            "razorpay_signature":  razorpay_signature,
         })
     except razorpay.errors.SignatureVerificationError:
         PaymentTransaction.objects.filter(
@@ -345,12 +331,12 @@ def payment_callback(request):
         ).update(status="FAILED", failure_reason="Signature verification failed (callback)")
 
         return render(request, "payments/payment_result.html", {
-            "success": False,
-            "message": "Payment signature verification failed. If money was debited, please contact support.",
+            "success":      False,
+            "message":      "Payment signature verification failed. If money was debited, please contact support.",
             "redirect_url": "/",
         })
 
-    # ── Credit user ──
+    # ── Credit user ───────────────────────────────────────────────────────────
     try:
         with transaction.atomic():
             payment_details = razorpay_client.payment.fetch(razorpay_payment_id)
@@ -369,71 +355,74 @@ def payment_callback(request):
 
             payment_tx.save()
 
-            now      = timezone.now()
+            _now     = timezone.now()
             validity = timedelta(days=payment_tx.plan.validity_days)
 
             user_credit, created = UserCredit.objects.get_or_create(
                 user=payment_tx.user,
                 defaults={
                     "balance":    payment_tx.credits,
-                    "expires_at": now + validity,
+                    "expires_at": _now + validity,
                 },
             )
 
-            if not created:
+            if created:
+                previous_balance = 0
+            else:
+                previous_balance       = user_credit.balance
                 user_credit.balance   += payment_tx.credits
-                base = max(user_credit.expires_at, now)
+                base                   = max(user_credit.expires_at, _now)
                 user_credit.expires_at = base + validity
                 user_credit.save()
 
+            CreditHistory.objects.create(
+                user=payment_tx.user,
+                credits=payment_tx.credits,
+                transaction_type="ADD",
+                previous_balance=previous_balance,
+                current_balance=user_credit.balance,
+                description=f"Purchased {payment_tx.plan.name} (callback)",
+                payment_id=razorpay_payment_id,
+            )
+
     except Exception as e:
         return render(request, "payments/payment_result.html", {
-            "success": False,
-            "message": f"Payment was received but crediting failed: {e}. Please contact support with order ID: {razorpay_order_id}",
+            "success":      False,
+            "message":      f"Payment was received but crediting failed: {e}. Please contact support with order ID: {razorpay_order_id}",
             "redirect_url": "/",
         })
 
     return render(request, "payments/payment_result.html", {
-        "success": True,
-        "message": "Payment successful! Credits have been added to your account.",
+        "success":       True,
+        "message":       "Payment successful! Credits have been added to your account.",
         "credits_added": payment_tx.credits,
-        "plan_name": payment_tx.plan.name if payment_tx.plan else "",
-        "new_balance": user_credit.balance,
-        "redirect_url": "/",
+        "plan_name":     payment_tx.plan.name if payment_tx.plan else "",
+        "new_balance":   user_credit.balance,
+        "redirect_url":  "/",
     })
 
 
+# ===========================================================================
+# PAYMENT PAGE
+# ===========================================================================
 
 def payment_page(request):
     plans = CreditPlan.objects.filter(is_active=True).order_by("display_order")
-    return render(
-        request,
-        "payments/payment_page.html",
-        {
-            "credit_plans": plans,
-            "razorpay_key": settings.RAZORPAY_API_KEY,
-        },
-    )
+    return render(request, "payments/payment_page.html", {
+        "credit_plans":  plans,
+        "razorpay_key":  settings.RAZORPAY_API_KEY,
+    })
 
 
 # ===========================================================================
-# PAYMENT HISTORY  —  GET /api/payments/payment-history/
+# PAYMENT HISTORY
 # ===========================================================================
 
 class PaymentTransactionFilter(django_filters.FilterSet):
-
-    created_from = django_filters.DateTimeFilter(
-        field_name="created_at", lookup_expr="gte"
-    )
-    created_to = django_filters.DateTimeFilter(
-        field_name="created_at", lookup_expr="lte"
-    )
-    amount_min = django_filters.NumberFilter(
-        field_name="amount", lookup_expr="gte"
-    )
-    amount_max = django_filters.NumberFilter(
-        field_name="amount", lookup_expr="lte"
-    )
+    created_from = django_filters.DateTimeFilter(field_name="created_at", lookup_expr="gte")
+    created_to   = django_filters.DateTimeFilter(field_name="created_at", lookup_expr="lte")
+    amount_min   = django_filters.NumberFilter(field_name="amount", lookup_expr="gte")
+    amount_max   = django_filters.NumberFilter(field_name="amount", lookup_expr="lte")
 
     class Meta:
         model  = PaymentTransaction
@@ -444,13 +433,12 @@ class PaymentTransactionFilter(django_filters.FilterSet):
 
 
 class PaymentHistory(generics.ListAPIView):
-
-    serializer_class    = PaymentTransactionSerializer
-    permission_classes  = [IsAuthenticated]
-    filter_backends     = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_class     = PaymentTransactionFilter
-    ordering_fields     = ["created_at", "amount"]
-    ordering            = ["-created_at"]
+    serializer_class   = PaymentTransactionSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends    = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_class    = PaymentTransactionFilter
+    ordering_fields    = ["created_at", "amount"]
+    ordering           = ["-created_at"]
 
     def get_queryset(self):
         return PaymentTransaction.objects.filter(user=self.request.user)

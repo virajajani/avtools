@@ -6,8 +6,8 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-    email    = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, unique=True)
+    email             = models.EmailField(unique=True)
+    username          = models.CharField(max_length=150, unique=True)
     is_email_verified = models.BooleanField(default=False)
 
     USERNAME_FIELD  = "email"
@@ -33,7 +33,6 @@ class UserDevice(models.Model):
 class UserCredit(models.Model):
     user       = models.OneToOneField(User, on_delete=models.CASCADE, related_name="credit")
     balance    = models.IntegerField(default=0)
-    # FIX: default to now so get_or_create never fails with a NOT NULL error
     expires_at = models.DateTimeField(default=timezone.now)
 
     def is_expired(self):
@@ -65,3 +64,45 @@ class ContactSupport(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name or ''} — {self.email}"
+
+
+class CreditHistory(models.Model):
+
+    TRANSACTION_TYPES = (
+        ("ADD",    "Add Credit"),
+        ("DEDUCT", "Deduct Credit"),
+        ("REFUND", "Refund Credit"),
+        ("EXPIRE", "Expire Credit"),   # ← new
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="credit_history"
+    )
+
+    credits = models.IntegerField()
+
+    transaction_type = models.CharField(
+        max_length=10,
+        choices=TRANSACTION_TYPES
+    )
+
+    previous_balance = models.IntegerField(default=0)
+    current_balance  = models.IntegerField(default=0)
+
+    description = models.TextField(null=True, blank=True)
+
+    payment_id = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.email} - {self.transaction_type} - {self.credits}"
