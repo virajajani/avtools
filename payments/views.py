@@ -428,7 +428,7 @@ def purchase_history(request):
  
     qs = PaymentTransaction.objects.filter(
         user=request.user
-    ).select_related("plan").order_by("-created_at")
+    ).exclude(status="PENDING").select_related("plan").order_by("-created_at")
  
     if status_filter:
         qs = qs.filter(status=status_filter)
