@@ -10,6 +10,8 @@ from .views import (
 )
 from .admin_refund_views import refund_admin_view, process_refund_ajax
 
+app_name = 'payments'   # ← add this line
+
 urlpatterns = [
     path("credit-plans/", get_credit_plans, name="credit-plans"),
     path("create-order/", create_order, name="create-order"),
