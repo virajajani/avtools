@@ -1,0 +1,371 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase History | AVTools</title>
+<link rel="stylesheet" href="{% static 'css/header.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#2563eb;--primary-light:#3b82f6;--primary-glow:rgba(37,99,235,0.15);
+  --accent:#7c3aed;--success:#15803d;--success-bg:#dcfce7;--success-border:#86efac;
+  --warning:#d97706;--warning-bg:#fef3c7;--warning-border:#fde68a;
+  --danger:#dc2626;--danger-bg:#fee2e2;--danger-border:#fecaca;
+  --text:#0f172a;--text-mid:#334155;--text-light:#64748b;--text-muted:#94a3b8;
+  --bg:#f1f5f9;--bg-card:#ffffff;--border:#e2e8f0;
+  --radius:14px;--radius-lg:20px;--radius-xl:28px;
+  --shadow-sm:0 2px 8px rgba(15,23,42,0.06);--shadow:0 8px 32px rgba(15,23,42,0.09);
+  --shadow-lg:0 20px 60px rgba(15,23,42,0.13);
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);
+  color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+/* ── PAGE ── */
+.page{max-width:960px;margin:0 auto;padding:40px 5%;}
+
+.page-header{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;margin-bottom:36px;}
+.page-title{font-family:'Sora',sans-serif;font-size:26px;font-weight:900;
+  color:var(--text);letter-spacing:-0.03em;display:flex;align-items:center;gap:12px;}
+
+.btn-back{display:inline-flex;align-items:center;gap:8px;
+  background:var(--bg-card);color:var(--text-mid);
+  border:1.5px solid var(--border);padding:10px 18px;border-radius:var(--radius);
+  font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--primary);color:var(--primary);}
+
+/* ── CREDIT STATUS CARD ── */
+.credit-status{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  border-radius:var(--radius-xl);padding:32px 36px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;
+  margin-bottom:32px;color:#fff;
+  box-shadow:0 12px 40px rgba(37,99,235,0.3);
+}
+.credit-stat{text-align:center;}
+.credit-stat-value{font-family:'Sora',sans-serif;font-size:36px;font-weight:900;
+  letter-spacing:-0.04em;line-height:1;}
+.credit-stat-label{font-size:12px;font-weight:600;opacity:0.75;
+  margin-top:6px;text-transform:uppercase;letter-spacing:0.05em;}
+.credit-stat-sub{font-size:13px;font-weight:600;opacity:0.85;margin-top:4px;}
+
+/* expiry pill */
+.expiry-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:999px;font-size:11px;font-weight:800;
+  text-transform:uppercase;letter-spacing:0.05em;margin-top:8px;
+}
+.expiry-pill.ok{background:rgba(255,255,255,0.2);}
+.expiry-pill.warn{background:rgba(253,224,71,0.3);}
+.expiry-pill.expired{background:rgba(248,113,113,0.3);}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center;}
+.filter-select{
+  padding:9px 14px;border-radius:var(--radius);border:1.5px solid var(--border);
+  font-size:13px;font-family:inherit;color:var(--text);background:#fff;
+  outline:none;cursor:pointer;transition:border-color 0.2s;}
+.filter-select:focus{border-color:var(--primary);}
+.filter-label{font-size:12px;font-weight:700;color:var(--text-light);
+  text-transform:uppercase;letter-spacing:0.05em;}
+
+/* ── TABLE CARD ── */
+.table-card{background:var(--bg-card);border-radius:var(--radius-xl);
+  border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;}
+
+.table-header{
+  padding:20px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+.table-header-title{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+.table-count{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;
+  background:var(--bg);color:var(--text-light);}
+
+table{width:100%;border-collapse:collapse;}
+th{padding:12px 20px;text-align:left;font-size:11px;font-weight:800;
+  color:var(--text-light);text-transform:uppercase;letter-spacing:0.06em;
+  background:#fafbfc;border-bottom:1px solid var(--border);}
+td{padding:16px 20px;font-size:14px;color:var(--text);border-bottom:1px solid #f8fafc;
+  vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafbfc;}
+
+/* status badges */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;
+  border-radius:999px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;}
+.badge-success{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);}
+.badge-pending{background:var(--warning-bg);color:var(--warning);border:1px solid var(--warning-border);}
+.badge-failed{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);}
+.badge-refunded{background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;}
+
+/* plan chip */
+.plan-chip{display:inline-flex;align-items:center;gap:6px;
+  font-weight:700;font-size:13px;color:var(--text);}
+.plan-dot{width:8px;height:8px;border-radius:50%;}
+.dot-starter{background:#10b981;}
+.dot-growth{background:#3b82f6;}
+.dot-pro{background:#8b5cf6;}
+
+/* amount */
+.amount{font-family:'Sora',sans-serif;font-weight:800;color:var(--primary);}
+
+/* date */
+.date-main{font-weight:600;color:var(--text);}
+.date-sub{font-size:12px;color:var(--text-muted);margin-top:2px;}
+
+/* credits cell */
+.credits-cell{font-family:'Sora',sans-serif;font-weight:800;color:var(--accent);}
+
+/* ── EMPTY STATE ── */
+.empty{padding:80px 32px;text-align:center;}
+.empty-icon{font-size:56px;margin-bottom:16px;opacity:0.35;}
+.empty-text{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;
+  color:var(--text);margin-bottom:8px;}
+.empty-sub{font-size:14px;color:var(--text-light);margin-bottom:24px;}
+.btn-buy{display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;border:none;padding:13px 28px;border-radius:var(--radius);
+  font-family:'Sora',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;text-decoration:none;
+  box-shadow:0 8px 24px rgba(37,99,235,0.3);transition:all 0.25s;}
+.btn-buy:hover{transform:translateY(-2px);}
+
+/* ── PAGINATION ── */
+.pagination{display:flex;align-items:center;justify-content:center;
+  gap:8px;padding:24px;flex-wrap:wrap;}
+.page-btn{width:36px;height:36px;border-radius:var(--radius);
+  border:1.5px solid var(--border);background:#fff;
+  font-size:13px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text);text-decoration:none;transition:all 0.2s;}
+.page-btn:hover,.page-btn.active{
+  border-color:var(--primary);color:var(--primary);background:#eff6ff;}
+.page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.page-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+@media(max-width:768px){
+  .credit-status{grid-template-columns:1fr;gap:16px;}
+  table th:nth-child(3),table td:nth-child(3),
+  table th:nth-child(5),table td:nth-child(5){display:none;}
+  th,td{padding:12px 14px;}
+  .page{padding:24px 4%;}
+}
+@media(max-width:480px){
+  table th:nth-child(4),table td:nth-child(4){display:none;}
+}
+</style>
+</head>
+<body>
+
+{% include "partials/header.html" %}
+
+<div class="page">
+
+  <!-- ── PAGE HEADER ── -->
+  <div class="page-header">
+    <div class="page-title">📋 Purchase History</div>
+    <a href="{% url 'generator:home' %}" class="btn-back">← Back to Dashboard</a>
+  </div>
+
+  <!-- ── CREDIT STATUS ── -->
+  {% if user_credit %}
+  <div class="credit-status">
+
+    <div class="credit-stat">
+      <div class="credit-stat-value">{{ user_credit.balance }}</div>
+      <div class="credit-stat-label">Credits Remaining</div>
+    </div>
+
+    <div class="credit-stat">
+      <div class="credit-stat-value">{{ total_spent|floatformat:0 }}</div>
+      <div class="credit-stat-label">Total Spent (₹)</div>
+    </div>
+
+    <div class="credit-stat">
+      <div class="credit-stat-value">{{ total_purchases }}</div>
+      <div class="credit-stat-label">Total Purchases</div>
+      {% if user_credit.expires_at %}
+        {% if is_expired %}
+          <span class="expiry-pill expired">⚠ Expired {{ user_credit.expires_at|date:"d M Y" }}</span>
+        {% elif days_left <= 7 %}
+          <span class="expiry-pill warn">⏳ Expires in {{ days_left }} days</span>
+        {% else %}
+          <span class="expiry-pill ok">✓ Expires {{ user_credit.expires_at|date:"d M Y" }}</span>
+        {% endif %}
+      {% endif %}
+    </div>
+
+  </div>
+  {% else %}
+  <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);
+    padding:24px 28px;margin-bottom:32px;display:flex;align-items:center;gap:16px;">
+    <span style="font-size:32px;">💳</span>
+    <div>
+      <div style="font-weight:800;color:var(--text);">No credits yet</div>
+      <div style="font-size:13px;color:var(--text-light);margin-top:4px;">Purchase a plan to start generating images.</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── FILTER BAR ── -->
+  <form method="GET" class="filter-bar">
+    <span class="filter-label">Filter:</span>
+    <select name="status" class="filter-select" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="SUCCESS"  {% if status_filter == "SUCCESS"  %}selected{% endif %}>✅ Success</option>
+      <option value="PENDING"  {% if status_filter == "PENDING"  %}selected{% endif %}>⏳ Pending</option>
+      <option value="FAILED"   {% if status_filter == "FAILED"   %}selected{% endif %}>❌ Failed</option>
+      <option value="REFUNDED" {% if status_filter == "REFUNDED" %}selected{% endif %}>↩ Refunded</option>
+    </select>
+    <select name="plan" class="filter-select" onchange="this.form.submit()">
+      <option value="">All Plans</option>
+      <option value="STARTER" {% if plan_filter == "STARTER" %}selected{% endif %}>🌱 Starter</option>
+      <option value="GROWTH"  {% if plan_filter == "GROWTH"  %}selected{% endif %}>🚀 Growth</option>
+      <option value="PRO"     {% if plan_filter == "PRO"     %}selected{% endif %}>💎 Pro</option>
+    </select>
+    {% if status_filter or plan_filter %}
+      <a href="{% url 'payments:purchase-history' %}"
+         style="font-size:12px;color:var(--danger);font-weight:700;text-decoration:none;">✕ Clear</a>
+    {% endif %}
+  </form>
+
+  <!-- ── TABLE ── -->
+  <div class="table-card">
+    <div class="table-header">
+      <span class="table-header-title">Transactions</span>
+      <span class="table-count">{{ page_obj.paginator.count }} record{{ page_obj.paginator.count|pluralize }}</span>
+    </div>
+
+    {% if page_obj.object_list %}
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Amount</th>
+            <th>Credits</th>
+            <th>Date</th>
+            <th>Method</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tx in page_obj %}
+          <tr>
+
+            <!-- Plan -->
+            <td>
+              <div class="plan-chip">
+                <span class="plan-dot
+                  {% if tx.plan.name == 'STARTER' %}dot-starter
+                  {% elif tx.plan.name == 'GROWTH' %}dot-growth
+                  {% else %}dot-pro{% endif %}">
+                </span>
+                {% if tx.plan %}{{ tx.plan.name|title }}{% else %}—{% endif %}
+              </div>
+              {% if tx.razorpay_order_id %}
+                <div style="font-size:11px;color:var(--text-muted);margin-top:3px;
+                  font-family:monospace;">{{ tx.razorpay_order_id|slice:":20" }}…</div>
+              {% endif %}
+            </td>
+
+            <!-- Amount -->
+            <td><span class="amount">₹{{ tx.amount|floatformat:0 }}</span></td>
+
+            <!-- Credits -->
+            <td><span class="credits-cell">+{{ tx.credits }}</span></td>
+
+            <!-- Date -->
+            <td>
+              <div class="date-main">{{ tx.created_at|date:"d M Y" }}</div>
+              <div class="date-sub">{{ tx.created_at|date:"H:i" }}</div>
+            </td>
+
+            <!-- Method -->
+            <td>
+              {% if tx.payment_mode %}
+                <span style="text-transform:capitalize;font-weight:600;">
+                  {{ tx.payment_mode }}
+                </span>
+                {% if tx.card_network %}
+                  <span style="font-size:11px;color:var(--text-muted);display:block;">
+                    {{ tx.card_network }}
+                  </span>
+                {% endif %}
+              {% else %}
+                <span style="color:var(--text-muted);">—</span>
+              {% endif %}
+            </td>
+
+            <!-- Status -->
+            <td>
+              {% if tx.status == "SUCCESS" %}
+                <span class="badge badge-success">✓ Success</span>
+              {% elif tx.status == "PENDING" %}
+                <span class="badge badge-pending">⏳ Pending</span>
+              {% elif tx.status == "FAILED" %}
+                <span class="badge badge-failed">✕ Failed</span>
+              {% elif tx.status == "REFUNDED" %}
+                <span class="badge badge-refunded">↩ Refunded</span>
+              {% else %}
+                <span class="badge">{{ tx.status }}</span>
+              {% endif %}
+            </td>
+
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}&plan={{ plan_filter }}"
+           class="page-btn">‹</a>
+      {% endif %}
+      {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+          <span class="page-btn active">{{ num }}</span>
+        {% elif num|add:"-2" <= page_obj.number and num <= page_obj.number|add:"2" %}
+          <a href="?page={{ num }}&status={{ status_filter }}&plan={{ plan_filter }}"
+             class="page-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}&plan={{ plan_filter }}"
+           class="page-btn">›</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty">
+      <div class="empty-icon">🧾</div>
+      <div class="empty-text">No transactions found</div>
+      <div class="empty-sub">
+        {% if status_filter or plan_filter %}
+          No records match your filter. Try clearing the filters.
+        {% else %}
+          You haven't made any purchases yet.
+        {% endif %}
+      </div>
+      {% if not status_filter and not plan_filter %}
+        <a href="{% url 'generator:home' %}" class="btn-buy">💳 Buy Credits</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  </div><!-- /table-card -->
+
+</div><!-- /page -->
+
+{% include "partials/account_modal.html" %}
+<script src="{% static 'js/header.js' %}"></script>
+</body>
+</html>

@@ -20,4 +20,5 @@ urlpatterns = [
     path("admin/refund/", refund_admin_view, name="refund-admin"),
     path("admin/refund/process/", process_refund_ajax, name="process-refund"),
     path("payment-callback/", views.payment_callback, name="payment-callback"),
+    path("purchase-history/", views.purchase_history, name="purchase-history"),
 ]

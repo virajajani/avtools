@@ -1,4 +1,4 @@
-{% load static %}
+{% comment %} {% load static %}
 
 <nav class="navbar">
 
@@ -72,4 +72,650 @@
     </div>
   </div>
 
+</nav> {% endcomment %}
+{% load static %}
+
+<!-- ══════════════════════════════════════════════════════════════
+     partials/header.html  — APP NAVBAR (authenticated pages)
+     · Fully self-contained CSS + JS
+     · All drawer elements use highly specific IDs/classes
+       prefixed with "avh-" to prevent ANY bleed from other navbars
+     · Account modal wired on DOMContentLoaded (no polling)
+══════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ════════════════════════════════════════════════════
+   HARD RESET scoped only to our elements
+   Prevents public navbar / global CSS from touching them
+════════════════════════════════════════════════════ */
+#avhNav,
+#avhNav *,
+#avhDrawer,
+#avhDrawer * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ════════════════════════════════════════════════════
+   NAVBAR
+════════════════════════════════════════════════════ */
+#avhNav {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  height: 64px;
+  box-shadow: 0 1px 4px rgba(15,23,42,.06);
+  transition: box-shadow .3s;
+}
+#avhNav.avh-scrolled { box-shadow: 0 4px 20px rgba(15,23,42,.1); }
+
+/* logo */
+#avhNav .avh-logo { text-decoration: none; display: flex; align-items: center; }
+#avhNav .avh-logo img { height: 34px; display: block; }
+
+/* center nav links */
+#avhNav .avh-center { display: flex; align-items: center; gap: 4px; }
+
+#avhNav .avh-link {
+  text-decoration: none;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  transition: all .2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#avhNav .avh-link:hover  { background: #f1f5f9; color: #1e293b; }
+#avhNav .avh-link.active { background: #eff6ff; color: #2563eb; font-weight: 700; }
+
+#avhNav .avh-free-pill {
+  background: #dcfce7; color: #15803d;
+  font-size: 9px; font-weight: 900;
+  padding: 2px 6px; border-radius: 999px;
+  text-transform: uppercase; letter-spacing: .07em;
+}
+
+/* right cluster */
+#avhNav .avh-right { display: flex; align-items: center; gap: 12px; }
+
+/* credits badge */
+#avhNav .avh-credits {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* avatar wrapper */
+#avhNav .avh-profile-wrap { position: relative; }
+
+#avhNav .avh-avatar-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  background: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .2s;
+  padding: 0; outline: none;
+}
+#avhNav .avh-avatar-btn:hover { border-color: #3b82f6; }
+
+#avhNav .avh-avatar-circle {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff; font-weight: 800; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  user-select: none;
+}
+
+/* desktop dropdown */
+#avhDropdown {
+  position: absolute;
+  right: 0; top: 50px;
+  width: 300px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(15,23,42,.18);
+  overflow: hidden;
+  opacity: 0; visibility: hidden;
+  transform: translateY(-8px);
+  transition: all .22s cubic-bezier(.4,0,.2,1);
+  z-index: 999;
+}
+#avhDropdown.avh-show {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+
+#avhDropdown .avh-dd-user { padding: 14px 16px; background: #f8fafc; }
+#avhDropdown .avh-dd-user-inner { display: flex; gap: 10px; align-items: center; }
+
+#avhDropdown .avh-dd-av {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff; font-weight: 800; font-size: 15px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+#avhDropdown .avh-dd-name  { font-weight: 800; color: #0f172a; font-size: 14px; line-height: 1.3; }
+#avhDropdown .avh-dd-email { font-size: 12px; color: #64748b; margin-top: 2px; }
+#avhDropdown .avh-dd-div   { height: 1px; background: #e2e8f0; }
+
+#avhDropdown .avh-dd-link {
+  width: 100%; border: none; background: #fff; cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px;
+  font-weight: 700; font-size: 14px; color: #0f172a;
+  text-decoration: none; transition: background .15s;
+  font-family: inherit;
+}
+#avhDropdown .avh-dd-link:hover { background: #f8fafc; color: #2563eb; }
+
+#avhDropdown .avh-dd-icon {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: #eef2ff;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+#avhDropdown .avh-dd-link.avh-logout       { color: #dc2626; }
+#avhDropdown .avh-dd-link.avh-logout:hover { background: #fef2f2; color: #b91c1c; }
+#avhDropdown .avh-dd-link.avh-logout .avh-dd-icon { background: #fee2e2; }
+
+#avhDropdown .avh-dd-footer { padding: 10px 16px; font-size: 11px; color: #94a3b8; }
+
+/* hamburger */
+#avhHamburger {
+  display: none;
+  flex-direction: column; justify-content: center; align-items: center;
+  gap: 5px; width: 40px; height: 40px;
+  background: none; border: none; cursor: pointer;
+  border-radius: 10px; transition: background .2s; flex-shrink: 0;
+  padding: 0; outline: none;
+}
+#avhHamburger:hover { background: #f1f5f9; }
+#avhHamburger span {
+  display: block; width: 22px; height: 2px;
+  background: #1e293b; border-radius: 2px;
+  transition: all .32s cubic-bezier(.4,0,.2,1);
+  transform-origin: center;
+}
+#avhHamburger.avh-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+#avhHamburger.avh-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+#avhHamburger.avh-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* auth links */
+#avhNav .avh-auth-login {
+  text-decoration: none; color: #2563eb;
+  font-weight: 700; font-size: 14px;
+  padding: 8px 16px; border-radius: 10px;
+  border: 1.5px solid #2563eb;
+  transition: background .2s;
+}
+#avhNav .avh-auth-login:hover { background: #eff6ff; }
+
+#avhNav .avh-auth-signup {
+  text-decoration: none;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff; font-weight: 700; font-size: 14px;
+  padding: 8px 18px; border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(37,99,235,.3);
+  transition: opacity .2s;
+}
+#avhNav .avh-auth-signup:hover { opacity: .88; }
+
+/* ════════════════════════════════════════════════════
+   MOBILE DRAWER
+════════════════════════════════════════════════════ */
+#avhDrawer {
+  display: none;       /* hidden until JS adds avh-active */
+  position: fixed;
+  inset: 0;
+  z-index: 900;        /* above content, below account modal (2000) */
+}
+#avhDrawer.avh-active { display: block; }
+
+#avhBackdrop {
+  position: absolute; inset: 0;
+  background: rgba(15,23,42,.45);
+  opacity: 0;
+  transition: opacity .32s ease;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+#avhDrawer.avh-open #avhBackdrop { opacity: 1; }
+
+#avhPanel {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  background: #fff;
+  padding: 0 5% 28px;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 20px 60px rgba(15,23,42,.18);
+  transform: translateY(-110%);
+  transition: transform .36s cubic-bezier(.4,0,.2,1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+#avhDrawer.avh-open #avhPanel { transform: translateY(0); }
+
+/* drawer head row */
+#avhHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 8px;
+}
+#avhHead img { height: 30px; display: block; }
+
+/* ── THE SINGLE CLOSE BUTTON — ID-targeted only, zero inheritance ── */
+#avhCloseBtn {
+  /* reset everything */
+  all: unset;
+  /* our styles */
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #64748b;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, color .2s;
+  flex-shrink: 0;
+}
+#avhCloseBtn:hover { background: #e2e8f0; color: #0f172a; }
+
+/* user strip in drawer */
+#avhUserStrip {
+  background: #f8fafc; border-radius: 14px;
+  padding: 14px; display: flex; align-items: center; gap: 12px;
+  margin: 12px 0; border: 1px solid #e2e8f0;
+}
+#avhUserStrip .avh-strip-av {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff; font-weight: 800; font-size: 15px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+#avhUserStrip .avh-strip-name  { font-weight: 700; color: #0f172a; font-size: 14px; }
+#avhUserStrip .avh-strip-email { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+#avhCreditsChip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff; padding: 8px 16px; border-radius: 999px;
+  font-size: 13px; font-weight: 800;
+  margin: 4px 0 12px; width: fit-content;
+}
+
+/* nav links inside drawer */
+#avhLinks {
+  display: flex; flex-direction: column;
+}
+#avhLinks .avh-dlink {
+  text-decoration: none; color: #1e293b;
+  font-size: 16px; font-weight: 600;
+  padding: 13px 0; border-bottom: 1px solid #f1f5f9;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: color .2s;
+}
+#avhLinks .avh-dlink:hover  { color: #2563eb; }
+#avhLinks .avh-dlink:last-child { border-bottom: none; }
+#avhLinks .avh-dlink .avh-arr { color: #94a3b8; font-size: 16px; }
+#avhLinks .avh-dlink.active { color: #2563eb; font-weight: 700; }
+
+/* drawer action buttons */
+#avhActions {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;
+}
+
+#avhBtnAccount {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 13px 20px; border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700; font-size: 15px;
+  text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: #eff6ff; color: #2563eb;
+  cursor: pointer; transition: background .2s;
+}
+#avhBtnAccount:hover { background: #dbeafe; }
+
+#avhBtnLogout {
+  display: block; width: 100%;
+  padding: 13px 20px; border-radius: 12px;
+  font-weight: 700; font-size: 15px;
+  text-align: center; text-decoration: none;
+  background: #fee2e2; color: #dc2626;
+  transition: background .2s;
+}
+#avhBtnLogout:hover { background: #fecaca; }
+
+/* unauthenticated drawer buttons */
+.avh-drawer-auth-login {
+  display: block; text-decoration: none;
+  padding: 13px 20px; border-radius: 12px;
+  font-weight: 700; font-size: 15px; text-align: center;
+  background: #eff6ff; color: #2563eb;
+  transition: background .2s;
+}
+.avh-drawer-auth-signup {
+  display: block; text-decoration: none;
+  padding: 13px 20px; border-radius: 12px;
+  font-weight: 700; font-size: 15px; text-align: center;
+  background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+  box-shadow: 0 4px 14px rgba(37,99,235,.3);
+}
+
+/* ════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  #avhNav .avh-center    { display: none; }
+  #avhNav .avh-credits   { display: none; }
+  #avhNav .avh-profile-wrap { display: none; }
+  #avhHamburger          { display: flex; }
+}
+
+@media (max-width: 480px) {
+  #avhNav { padding: 0 5%; height: 58px; }
+  #avhNav .avh-logo img { height: 28px; }
+}
+</style>
+
+
+<!-- ══ NAVBAR ══ -->
+<nav id="avhNav">
+
+  <a href="{% url 'generator:home' %}" class="avh-logo">
+    <img src="{% static 'images/avtools.png' %}" alt="AVTools">
+  </a>
+
+  <div class="avh-center">
+    <a href="{% url 'generator:home' %}"
+       class="avh-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+      🏠 Dashboard
+    </a>
+    <a href="{% url 'generator:meesho_image_generator' %}"
+       class="avh-link {% if request.resolver_match.url_name == 'meesho_image_generator' %}active{% endif %}">
+      🖼️ Image Generator
+    </a>
+    <a href="{% url 'generator:label_cropper' %}"
+       class="avh-link {% if request.resolver_match.url_name == 'label_cropper' %}active{% endif %}">
+      🏷️ Label Export <span class="avh-free-pill">FREE</span>
+    </a>
+  </div>
+
+  <div class="avh-right">
+    {% if request.user.is_authenticated %}
+      <div class="avh-credits">⚡ {{ credits|default:"0" }} Credits</div>
+
+      <div class="avh-profile-wrap">
+        <button id="avhAvatarBtn" type="button"
+                class="avh-avatar-btn"
+                aria-expanded="false" aria-label="Account menu">
+          <span class="avh-avatar-circle">{{ initials|default:"U" }}</span>
+        </button>
+
+        <div id="avhDropdown" role="menu">
+          <div class="avh-dd-user">
+            <div class="avh-dd-user-inner">
+              <div class="avh-dd-av">{{ initials|default:"U" }}</div>
+              <div>
+                <div class="avh-dd-name">
+                  {% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}
+                </div>
+                <div class="avh-dd-email">{{ request.user.email }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="avh-dd-div"></div>
+          <button class="avh-dd-link" type="button" id="avhDesktopAccountBtn" role="menuitem">
+            <span class="avh-dd-icon">⚙️</span> Manage account
+          </button>
+          <a class="avh-dd-link avh-logout" href="{% url 'generator:logout' %}" role="menuitem">
+            <span class="avh-dd-icon">↪</span> Sign out
+          </a>
+          <div class="avh-dd-footer">Secured by <b>AVTools</b></div>
+        </div>
+      </div>
+
+    {% else %}
+      <a href="{% url 'generator:signin' %}" class="avh-auth-login">Log in</a>
+      <a href="{% url 'generator:signup' %}" class="avh-auth-signup">Get Started</a>
+    {% endif %}
+
+    <button id="avhHamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
+
+
+<!-- ══ MOBILE DRAWER ══ -->
+<div id="avhDrawer" role="dialog" aria-label="Navigation">
+  <div id="avhBackdrop"></div>
+
+  <div id="avhPanel">
+
+    <div id="avhHead">
+      <img src="{% static 'images/avtools.png' %}" alt="AVTools">
+      <!-- ID-only styled — impossible for any other CSS to accidentally target -->
+      <button id="avhCloseBtn" aria-label="Close menu" type="button">✕</button>
+    </div>
+
+    {% if request.user.is_authenticated %}
+    <div id="avhUserStrip">
+      <div class="avh-strip-av">{{ initials|default:"U" }}</div>
+      <div>
+        <div class="avh-strip-name">
+          {% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}
+        </div>
+        <div class="avh-strip-email">{{ request.user.email }}</div>
+      </div>
+    </div>
+    <div id="avhCreditsChip">⚡ {{ credits|default:"0" }} Credits</div>
+    {% endif %}
+
+    <nav id="avhLinks">
+      <a href="{% url 'generator:home' %}"
+         class="avh-dlink {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+        🏠 Dashboard <span class="avh-arr">›</span>
+      </a>
+      <a href="{% url 'generator:meesho_image_generator' %}"
+         class="avh-dlink {% if request.resolver_match.url_name == 'meesho_image_generator' %}active{% endif %}">
+        🖼️ Image Generator <span class="avh-arr">›</span>
+      </a>
+      <a href="{% url 'generator:label_cropper' %}"
+         class="avh-dlink {% if request.resolver_match.url_name == 'label_cropper' %}active{% endif %}">
+        🏷️ Label Export — FREE <span class="avh-arr">›</span>
+      </a>
+    </nav>
+
+    <div id="avhActions">
+      {% if request.user.is_authenticated %}
+        <button id="avhBtnAccount" type="button">⚙️ Manage Account</button>
+        <a id="avhBtnLogout" href="{% url 'generator:logout' %}">↪ Sign Out</a>
+      {% else %}
+        <a href="{% url 'generator:signin' %}" class="avh-drawer-auth-login">Log In</a>
+        <a href="{% url 'generator:signup' %}" class="avh-drawer-auth-signup">Get Started Free</a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+/*
+ * header.html — inline script
+ * Uses only IDs to reference elements (no class queries that could
+ * accidentally match the public navbar's elements).
+ * Account modal wired on DOMContentLoaded — guaranteed after
+ * account_modal.html's script has run.
+ */
+(function () {
+  'use strict';
+
+  /* ── scroll shadow ── */
+  var nav = document.getElementById('avhNav');
+  window.addEventListener('scroll', function () {
+    if (nav) nav.classList.toggle('avh-scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  /* ════════════════════════════════════════════
+     DESKTOP DROPDOWN
+  ════════════════════════════════════════════ */
+  var avatarBtn  = document.getElementById('avhAvatarBtn');
+  var dropdown   = document.getElementById('avhDropdown');
+
+  function closeDropdown() {
+    if (dropdown) dropdown.classList.remove('avh-show');
+    if (avatarBtn) avatarBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  if (avatarBtn && dropdown) {
+    avatarBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = dropdown.classList.toggle('avh-show');
+      avatarBtn.setAttribute('aria-expanded', String(isOpen));
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('#avhDropdown') && !e.target.closest('#avhAvatarBtn')) {
+        closeDropdown();
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeDropdown();
+    });
+  }
+
+  /* ════════════════════════════════════════════
+     MOBILE DRAWER
+  ════════════════════════════════════════════ */
+  var hamburger = document.getElementById('avhHamburger');
+  var drawer    = document.getElementById('avhDrawer');
+  var backdrop  = document.getElementById('avhBackdrop');
+  var closeBtn  = document.getElementById('avhCloseBtn');
+
+  function openDrawer() {
+    if (!drawer) return;
+    drawer.classList.add('avh-active');
+    /* force reflow so CSS transition runs on first open */
+    void drawer.offsetWidth;
+    drawer.classList.add('avh-open');
+    if (hamburger) {
+      hamburger.classList.add('avh-open');
+      hamburger.setAttribute('aria-expanded', 'true');
+    }
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    if (!drawer) return;
+    drawer.classList.remove('avh-open');
+    if (hamburger) {
+      hamburger.classList.remove('avh-open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+    document.body.style.overflow = '';
+    /* hide after slide-up transition completes */
+    setTimeout(function () {
+      if (drawer && !drawer.classList.contains('avh-open')) {
+        drawer.classList.remove('avh-active');
+      }
+    }, 380);
+  }
+
+  if (hamburger) hamburger.addEventListener('click', openDrawer);
+
+  /* close button — addEventListener only, no onclick attr */
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeDrawer();
+    });
+  }
+
+  if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+  /* close on nav link click */
+  var links = document.getElementById('avhLinks');
+  if (links) {
+    links.querySelectorAll('.avh-dlink').forEach(function (a) {
+      a.addEventListener('click', closeDrawer);
+    });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && drawer && drawer.classList.contains('avh-open')) {
+      closeDrawer();
+    }
+  });
+
+  /* expose for account_modal.html to call if needed */
+  window._avhCloseDrawer = closeDrawer;
+
+  /* ════════════════════════════════════════════
+     ACCOUNT MODAL WIRING
+     DOMContentLoaded fires after ALL partials are parsed,
+     so window.openAccountModal from account_modal.html exists.
+  ════════════════════════════════════════════ */
+  document.addEventListener('DOMContentLoaded', function () {
+
+    function callOpenAccountModal() {
+      if (typeof window.openAccountModal === 'function') {
+        window.openAccountModal();
+      } else {
+        console.error('[AVTools] openAccountModal not found. Is account_modal.html included?');
+      }
+    }
+
+    /* Desktop dropdown → "Manage account" */
+    var desktopBtn = document.getElementById('avhDesktopAccountBtn');
+    if (desktopBtn) {
+      desktopBtn.addEventListener('click', function () {
+        closeDropdown();
+        callOpenAccountModal();
+      });
+    }
+
+    /* Mobile drawer → "Manage Account" */
+    var drawerBtn = document.getElementById('avhBtnAccount');
+    if (drawerBtn) {
+      drawerBtn.addEventListener('click', function () {
+        closeDrawer();
+        /* slight delay so drawer slides away before modal appears */
+        setTimeout(callOpenAccountModal, 60);
+      });
+    }
+
+  });
+
+})();
+</script>

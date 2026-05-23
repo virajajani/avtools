@@ -832,7 +832,7 @@ body{
 
       <!-- MEESHO PRICE -->
       <div class="form-group">
-        <label class="form-label">Meesho Price (₹)</label>
+        <label class="form-label">Product Price (₹)</label>
         <input type="number" name="meesho_price" class="input" placeholder="e.g. 299" min="1" required>
       </div>
 
@@ -1558,26 +1558,38 @@ function showPaymentVerifying(){
 }
 
 function showPaymentSuccess(plan, data){
-  // Invalidate plan cache so next open re-fetches (shows updated state)
-  plansCache = null;
+  plansCache = null;  // invalidate so next open re-fetches
 
   paymentResult.className = "payment-result success show";
   document.getElementById("payResultIcon").textContent  = "🎉";
   document.getElementById("payResultTitle").textContent = "Payment Successful!";
   document.getElementById("payResultMsg").textContent   =
     `Your ${plan.name.charAt(0) + plan.name.slice(1).toLowerCase()} plan is now active.`;
-  document.getElementById("payResultCredits").innerHTML =
-    `<div class="payment-result-credits">✅ +${plan.credits} credits added to your account</div>`;
 
-  // FIX: Update the live credit counter using the authoritative balance
-  // returned by the backend (data.new_balance), not a local calculation.
+  const newBal = data.new_balance != null
+    ? data.new_balance
+    : (parseInt(document.getElementById("liveCredits").textContent, 10) || 0) + plan.credits;
+
+  document.getElementById("payResultCredits").innerHTML = `
+    <div class="payment-result-credits">✅ +${plan.credits} credits added</div>
+    <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <a href="/dashboard/"
+         style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;
+                border-radius:10px;background:linear-gradient(135deg,#2563eb,#7c3aed);
+                color:#fff;font-weight:700;font-size:13px;text-decoration:none;">
+        ⚡ Go to Dashboard
+      </a>
+      <a href="/payments/purchase-history/"
+         style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;
+                border-radius:10px;border:1.5px solid #e2e8f0;
+                color:#334155;font-weight:700;font-size:13px;text-decoration:none;background:#fff;">
+        📋 Purchase History
+      </a>
+    </div>`;
+
+  // Update live credit counter in left card using server-authoritative balance
   const liveCredits = document.getElementById("liveCredits");
-  if(liveCredits){
-    const newBalance = data.new_balance != null
-      ? data.new_balance
-      : (parseInt(liveCredits.textContent, 10) || 0) + plan.credits;
-    liveCredits.textContent = newBalance;
-  }
+  if(liveCredits) liveCredits.textContent = newBal;
 
   // Re-enable generate button if it was disabled due to 0 credits
   const genBtn = document.getElementById("submitBtn");
@@ -1585,8 +1597,6 @@ function showPaymentSuccess(plan, data){
     genBtn.disabled = false;
     genBtn.innerHTML = "<span>⚡</span><span>Generate Images</span>";
   }
-
-  // Remove the "0 credits" warning if present
   const warn = document.getElementById("noCreditWarn");
   if(warn) warn.remove();
 

@@ -591,7 +591,9 @@ body{
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="logo">
-    <img src="/static/images/avtools.png" alt="AVTools">
+    <a href="{% url 'generator:home' %}" class="avh-logo">
+    <img src="{% static 'images/avtools.png' %}" alt="AVTools">
+  </a>
   </div>
   
   <div class="nav-links">

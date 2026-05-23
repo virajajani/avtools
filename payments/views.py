@@ -21,9 +21,10 @@ from .serializers import (
     CreditPlanSerializer,
     PaymentTransactionSerializer,
 )
-
+from django.core.paginator import Paginator
 from accounts.models import UserCredit, CreditHistory
-
+from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
 
 # ---------------------------------------------------------------------------
 # Razorpay Client
@@ -413,6 +414,63 @@ def payment_page(request):
         "razorpay_key":  settings.RAZORPAY_API_KEY,
     })
 
+
+
+# ===========================================================================
+# PURCHASE HISTORY  —  GET /payments/purchase-history/
+# Full HTML page showing transaction history + credit expiry info.
+# ===========================================================================
+ 
+@login_required
+def purchase_history(request):
+    status_filter = request.GET.get("status", "")
+    plan_filter   = request.GET.get("plan", "")
+ 
+    qs = PaymentTransaction.objects.filter(
+        user=request.user
+    ).select_related("plan").order_by("-created_at")
+ 
+    if status_filter:
+        qs = qs.filter(status=status_filter)
+    if plan_filter:
+        qs = qs.filter(plan__name=plan_filter)
+ 
+    # Aggregate stats (over ALL transactions, ignoring the current filter)
+    all_tx = PaymentTransaction.objects.filter(user=request.user)
+    total_spent     = all_tx.filter(status="SUCCESS").aggregate(
+        t=Sum("amount")
+    )["t"] or 0
+    total_purchases = all_tx.filter(status="SUCCESS").count()
+ 
+    # Credit info
+    user_credit = UserCredit.objects.filter(user=request.user).first()
+    now         = timezone.now()
+    is_expired  = False
+    days_left   = None
+ 
+    if user_credit and user_credit.expires_at:
+        is_expired = user_credit.expires_at < now
+        if not is_expired:
+            delta     = user_credit.expires_at - now
+            days_left = delta.days
+ 
+    # Paginate
+    paginator = Paginator(qs, 15)
+    page_num  = request.GET.get("page", 1)
+    page_obj  = paginator.get_page(page_num)
+ 
+    return render(request, "payments/purchase_history.html", {
+        "page_obj":        page_obj,
+        "user_credit":     user_credit,
+        "total_spent":     total_spent,
+        "total_purchases": total_purchases,
+        "is_expired":      is_expired,
+        "days_left":       days_left,
+        "status_filter":   status_filter,
+        "plan_filter":     plan_filter,
+    })
+ 
+ 
 
 # ===========================================================================
 # PAYMENT HISTORY

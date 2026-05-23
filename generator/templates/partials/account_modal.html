@@ -1,84 +1,389 @@
-<div class="account-overlay" id="accountModal">
+{% load static %}
+
+<!-- ══════════════════════════════════════════════════════════════
+     partials/account_modal.html  — SELF-CONTAINED
+     All CSS scoped under .account-overlay to prevent bleed.
+     All JS runs immediately and registers window.openAccountModal.
+══════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ════════════════════════════════════════════════════════
+   ALL SELECTORS SCOPED under .account-overlay
+   so nothing leaks onto the drawer or any other element.
+════════════════════════════════════════════════════════ */
+
+/* overlay */
+.account-overlay {
+  position:fixed; inset:0;
+  background:rgba(15,23,42,.6);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  display:none;
+  align-items:center; justify-content:center;
+  z-index:2000; padding:16px;
+}
+.account-overlay.show {
+  display:flex;
+  animation:_am_fadeIn .22s ease;
+}
+@keyframes _am_fadeIn { from{opacity:0} to{opacity:1} }
+
+/* modal box */
+.account-overlay .account-box {
+  width:min(980px,96vw);
+  max-height:min(580px,92vh);
+  background:#fff;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,.28);
+  display:flex; flex-direction:column;
+  animation:_am_slideIn .28s cubic-bezier(.22,1,.36,1);
+}
+@keyframes _am_slideIn {
+  from{opacity:0;transform:translateY(24px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* header row */
+.account-overlay .account-top {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding:20px 24px 16px; border-bottom:1px solid #e2e8f0; flex-shrink:0;
+}
+.account-overlay .account-top h2 {
+  font-size:20px; font-weight:800; color:#0f172a; letter-spacing:-.02em;
+}
+.account-overlay .account-top p { margin-top:3px; font-size:13px; color:#64748b; }
+
+/* close button — scoped, won't affect drawer */
+.account-overlay .am-close-btn {
+  border:none; background:#f1f5f9;
+  width:36px; height:36px; border-radius:10px;
+  cursor:pointer; font-size:18px; color:#64748b;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s; flex-shrink:0; padding:0; outline:none;
+}
+.account-overlay .am-close-btn:hover { background:#e2e8f0; color:#0f172a; }
+
+/* body grid */
+.account-overlay .account-body {
+  display:grid; grid-template-columns:220px 1fr;
+  flex:1; min-height:0; overflow:hidden;
+}
+
+/* sidebar */
+.account-overlay .account-side {
+  background:#f8fafc; border-right:1px solid #e2e8f0;
+  padding:16px 12px; overflow-y:auto;
+}
+
+.account-overlay .side-tab {
+  width:100%; display:flex; align-items:center; gap:10px;
+  padding:11px 12px; border:none; border-radius:12px;
+  background:transparent; font-family:inherit;
+  font-size:14px; font-weight:700; cursor:pointer; color:#334155;
+  margin-bottom:6px; text-align:left; transition:all .18s;
+}
+.account-overlay .side-tab:hover  { background:#eef2ff; color:#1d4ed8; }
+.account-overlay .side-tab.active {
+  background:linear-gradient(135deg,#eff6ff,#e0f2fe);
+  color:#1e40af;
+  box-shadow:0 2px 8px rgba(37,99,235,.08);
+}
+
+.account-overlay .tab-ic {
+  width:30px; height:30px; border-radius:9px;
+  background:#fff; border:1px solid #e2e8f0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0;
+}
+
+/* content pane */
+.account-overlay .account-content {
+  padding:22px 24px; overflow-y:auto;
+}
+.account-overlay .account-content h3 {
+  font-size:17px; font-weight:800; color:#0f172a;
+  margin-bottom:16px; letter-spacing:-.01em;
+}
+
+/* profile card */
+.account-overlay .profile-card {
+  border:1px solid #e2e8f0; border-radius:14px;
+  padding:16px; display:flex; align-items:center;
+  justify-content:space-between; gap:12px; flex-wrap:wrap;
+}
+.account-overlay .profile-left { display:flex; align-items:center; gap:12px; }
+
+.account-overlay .profile-avatar {
+  width:44px; height:44px; border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:16px; flex-shrink:0; overflow:hidden;
+}
+.account-overlay .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+
+.account-overlay .profile-name  { font-weight:800; color:#0f172a; font-size:14px; }
+.account-overlay .profile-email { margin-top:2px; font-size:12px; color:#64748b; }
+
+.account-overlay .profile-update {
+  border:none; background:#eff6ff; color:#2563eb;
+  font-weight:700; font-size:13px; padding:9px 14px;
+  border-radius:10px; cursor:pointer; transition:background .18s; white-space:nowrap;
+}
+.account-overlay .profile-update:hover { background:#dbeafe; }
+
+/* divider */
+.account-overlay .profile-line { height:1px; background:#e2e8f0; margin:18px 0; }
+
+/* connected accounts */
+.account-overlay .connected-title { font-weight:800; color:#0f172a; margin-bottom:10px; font-size:14px; }
+
+.account-overlay .connected-row {
+  border:1px solid #e2e8f0; border-radius:14px;
+  padding:14px; display:flex; align-items:center;
+  justify-content:space-between; gap:12px;
+}
+.account-overlay .connected-left { display:flex; align-items:center; gap:10px; }
+
+.account-overlay .google-ic {
+  width:32px; height:32px; border-radius:10px;
+  background:#fff; border:1px solid #e2e8f0;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; color:#ea4335; font-size:15px;
+}
+.account-overlay .connected-provider { font-weight:700; color:#0f172a; font-size:14px; }
+.account-overlay .connected-mail     { font-size:12px; color:#64748b; margin-top:2px; }
+
+.account-overlay .dots-wrap { position:relative; }
+
+.account-overlay .dots-btn {
+  border:none; background:#f1f5f9;
+  width:36px; height:36px; border-radius:10px;
+  cursor:pointer; font-size:20px; color:#64748b;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .18s; padding:0; outline:none;
+}
+.account-overlay .dots-btn:hover { background:#e2e8f0; }
+
+.account-overlay .dots-menu {
+  position:absolute; right:0; top:42px;
+  background:#fff; border:1px solid #e2e8f0;
+  border-radius:12px; box-shadow:0 15px 40px rgba(0,0,0,.15);
+  display:none; z-index:10; min-width:140px; overflow:hidden;
+}
+.account-overlay .dots-menu.show { display:block; }
+
+.account-overlay .dots-menu button {
+  width:100%; padding:11px 16px; border:none;
+  background:none; text-align:left;
+  font-size:14px; font-weight:700;
+  cursor:pointer; color:#dc2626; transition:background .15s;
+}
+.account-overlay .dots-menu button:hover { background:#fef2f2; }
+
+/* security card */
+.account-overlay .security-card {
+  border:1px solid #e2e8f0; border-radius:14px;
+  padding:16px; background:#fff; margin-bottom:14px;
+}
+.account-overlay .security-row {
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.account-overlay .security-title { font-weight:800; color:#0f172a; font-size:14px; }
+.account-overlay .security-sub   { margin-top:4px; font-size:12px; color:#64748b; }
+
+.account-overlay .security-btn {
+  border:none;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff; font-weight:700; font-size:13px;
+  padding:9px 16px; border-radius:10px;
+  cursor:pointer; transition:opacity .2s; white-space:nowrap;
+}
+.account-overlay .security-btn:hover { opacity:.88; }
+
+/* device list */
+.account-overlay .device-item {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:12px 0; border-bottom:1px solid #f1f5f9;
+}
+.account-overlay .device-item:last-child { border-bottom:none; }
+
+.account-overlay .device-icon {
+  width:36px; height:36px; border-radius:10px;
+  background:#f1f5f9;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; flex-shrink:0; margin-top:2px;
+}
+.account-overlay .device-label { font-weight:700; color:#0f172a; font-size:13px; }
+.account-overlay .device-meta  { font-size:12px; color:#64748b; margin-top:2px; }
+
+.account-overlay .device-current {
+  display:inline-block;
+  background:#dcfce7; color:#15803d;
+  font-size:10px; font-weight:800;
+  padding:2px 8px; border-radius:20px;
+  margin-top:4px; letter-spacing:.04em;
+}
+
+/* delete row */
+.account-overlay .delete-account {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+}
+.account-overlay .delete-title { font-weight:800; color:#0f172a; font-size:14px; }
+.account-overlay .delete-link {
+  color:#dc2626; border:none;
+  background:#fee2e2; font-weight:700; font-size:13px;
+  padding:9px 14px; border-radius:10px;
+  cursor:pointer; transition:background .18s;
+}
+.account-overlay .delete-link:hover { background:#fecaca; }
+
+/* ════ INNER MODALS ════ */
+.am-inner-overlay {
+  position:fixed; inset:0;
+  background:rgba(15,23,42,.5);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:none;
+  align-items:center; justify-content:center;
+  z-index:3000; padding:16px;
+}
+.am-inner-overlay.show { display:flex; }
+
+.am-inner-box {
+  width:min(440px,96vw);
+  background:#fff; border-radius:18px;
+  padding:28px 28px 24px;
+  box-shadow:0 30px 80px rgba(0,0,0,.22);
+  animation:_am_slideIn .25s cubic-bezier(.22,1,.36,1);
+}
+.am-inner-box h3 {
+  font-size:18px; font-weight:800; color:#0f172a;
+  margin-bottom:18px; letter-spacing:-.01em;
+}
+.am-inner-box label {
+  display:block; font-size:12px; font-weight:700;
+  color:#475569; letter-spacing:.04em;
+  text-transform:uppercase; margin-bottom:6px;
+}
+.am-inner-box input[type="text"],
+.am-inner-box input[type="password"],
+.am-inner-box input[type="file"] {
+  width:100%; padding:11px 14px;
+  border:2px solid #e2e8f0; border-radius:10px;
+  font-size:14px; font-family:inherit; color:#0f172a;
+  background:#fff; outline:none;
+  transition:border-color .2s, box-shadow .2s;
+  margin-bottom:14px;
+}
+.am-inner-box input:focus {
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.am-modal-actions {
+  display:flex; justify-content:flex-end; gap:10px; margin-top:4px;
+}
+.am-btn-cancel {
+  background:none; border:none;
+  color:#64748b; font-weight:700; font-size:14px;
+  cursor:pointer; padding:9px 14px;
+  border-radius:10px; transition:background .18s; font-family:inherit;
+}
+.am-btn-cancel:hover { background:#f1f5f9; }
+
+.am-btn-primary {
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:#fff; border:none;
+  font-weight:700; font-size:14px;
+  padding:10px 20px; border-radius:10px;
+  cursor:pointer; transition:opacity .2s; font-family:inherit;
+}
+.am-btn-primary:hover { opacity:.88; }
+
+.am-btn-danger {
+  background:#dc2626; color:#fff; border:none;
+  font-weight:700; font-size:14px;
+  padding:10px 20px; border-radius:10px;
+  cursor:pointer; transition:opacity .2s; font-family:inherit;
+}
+.am-btn-danger:disabled { opacity:.45; cursor:not-allowed; }
+.am-btn-danger:not(:disabled):hover { opacity:.88; }
+
+/* responsive */
+@media (max-width:680px) {
+  .account-overlay .account-body { grid-template-columns:1fr; }
+  .account-overlay .account-side {
+    border-right:none; border-bottom:1px solid #e2e8f0;
+    display:flex; flex-direction:row; gap:8px;
+    padding:10px 12px; overflow-x:auto;
+  }
+  .account-overlay .side-tab { margin-bottom:0; white-space:nowrap; }
+  .account-overlay .account-content { padding:16px; }
+}
+</style>
+
+
+<!-- ══════════════════════════════════════════
+     MAIN ACCOUNT MODAL
+══════════════════════════════════════════ -->
+<div class="account-overlay" id="accountModal"
+     role="dialog" aria-modal="true" aria-labelledby="amTitle">
 
   <div class="account-box">
 
-    <!-- HEADER -->
+    <!-- header -->
     <div class="account-top">
       <div>
-        <h2>Account</h2>
+        <h2 id="amTitle">Account</h2>
         <p>Manage your account info.</p>
       </div>
-      <button class="account-close" onclick="closeAccountModal()">✕</button>
+      <button class="am-close-btn" id="amCloseBtn" aria-label="Close">✕</button>
     </div>
 
     <div class="account-body">
 
-      <!-- SIDEBAR -->
+      <!-- sidebar -->
       <div class="account-side">
-        <button class="side-tab active" id="btnProfile" onclick="showTab('profileTab')">
-          👤 Profile
+        <button class="side-tab active" id="btnProfile"
+                onclick="_amShowTab('profileTab','btnProfile')">
+          <span class="tab-ic">👤</span> Profile
         </button>
-        <button class="side-tab" id="btnSecurity" onclick="showTab('securityTab')">
-          🔒 Security
+        <button class="side-tab" id="btnSecurity"
+                onclick="_amShowTab('securityTab','btnSecurity')">
+          <span class="tab-ic">🔒</span> Security
         </button>
       </div>
 
-      <!-- CONTENT -->
+      <!-- content -->
       <div class="account-content">
 
-        <!-- ================= PROFILE TAB ================= -->
+        <!-- ── PROFILE TAB ── -->
         <div id="profileTab">
-
           <h3>Profile details</h3>
 
           <div class="profile-card">
             <div class="profile-left">
               <div class="profile-avatar">
                 {% if request.user.profile.avatar %}
-                  <img src="{{ request.user.profile.avatar.url }}">
+                  <img src="{{ request.user.profile.avatar.url }}" alt="Avatar">
                 {% else %}
-                  {{ initials }}
+                  {{ initials|default:"U" }}
                 {% endif %}
               </div>
               <div>
-                <div class="profile-name">{{ request.user.get_full_name }}</div>
+                <div class="profile-name">
+                  {% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}
+                </div>
                 <div class="profile-email">{{ request.user.email }}</div>
               </div>
             </div>
-            <button class="profile-update" onclick="openProfileEdit()">Update profile</button>
-          </div>
-
-          <!-- UPDATE PROFILE -->
-          <div class="modal-overlay" id="profileEditModal">
-            <div class="modal-box">
-              <h3>Update profile</h3>
-
-              <form method="POST" enctype="multipart/form-data" action="{% url 'generator:update_profile' %}">
-                {% csrf_token %}
-
-                <label>Profile image</label>
-                <input type="file" name="avatar">
-
-                <label>First name</label>
-                <input type="text" name="first_name" value="{{ request.user.first_name }}" required>
-
-                <label>Last name</label>
-                <input type="text" name="last_name" value="{{ request.user.last_name }}" required>
-
-                <div class="modal-actions">
-                  <button type="button" class="btn-link" onclick="closeProfileEdit()">Cancel</button>
-                  <button type="submit" class="btn-primary">Save</button>
-                </div>
-              </form>
-            </div>
+            <button class="profile-update" onclick="_amOpenProfileEdit()">Update profile</button>
           </div>
 
           <div class="profile-line"></div>
 
-          <!-- CONNECTED ACCOUNT -->
-          <div class="connected">
+          <div>
             <div class="connected-title">Connected accounts</div>
-
             <div class="connected-row">
               <div class="connected-left">
                 <div class="google-ic">G</div>
@@ -87,73 +392,44 @@
                   <div class="connected-mail">{{ request.user.email }}</div>
                 </div>
               </div>
-
               <div class="dots-wrap">
-                <button class="dots-btn" onclick="toggleDots()">⋯</button>
-                <div class="dots-menu" id="dotsMenu">
+                <button class="dots-btn" id="amDotsBtn" aria-label="Options">⋯</button>
+                <div class="dots-menu" id="amDotsMenu">
                   <form method="POST" action="{% url 'generator:disconnect_google' %}">
                     {% csrf_token %}
-                    <button class="btn-danger-text">Remove</button>
+                    <button type="submit">Remove</button>
                   </form>
                 </div>
               </div>
             </div>
           </div>
+        </div><!-- /profileTab -->
 
-        </div>
-
-        <!-- ================= SECURITY TAB ================= -->
-        <div id="securityTab" style="display:none">
-
+        <!-- ── SECURITY TAB ── -->
+        <div id="securityTab" style="display:none;">
           <h3>Security</h3>
 
-          <!-- PASSWORD -->
           <div class="security-card">
             <div class="security-row">
               <div>
                 <div class="security-title">Password</div>
-                <div class="security-sub">Set a strong password.</div>
+                <div class="security-sub">Set a strong password to protect your account.</div>
               </div>
-              <button class="security-btn" onclick="openPasswordModal()">Set password</button>
+              <button class="security-btn" onclick="_amOpenPasswordModal()">Set password</button>
             </div>
           </div>
 
-          <!-- SET PASSWORD -->
-          <div class="modal-overlay" id="passwordModal">
-            <div class="modal-box">
-              <h3>Set password</h3>
-
-              <form method="POST" action="{% url 'generator:set_password' %}">
-                {% csrf_token %}
-                <input type="password" name="password1" placeholder="New password" required>
-                <input type="password" name="password2" placeholder="Confirm password" required>
-
-                <div class="modal-actions">
-                  <button type="button" class="btn-link" onclick="closePasswordModal()">Cancel</button>
-                  <button class="btn-primary">Save</button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <div class="profile-line"></div>
-
-          <!-- 🔥 ACTIVE DEVICES (NEW, REAL) -->
           <div class="security-card">
-            <div class="security-title">Active devices</div>
-
+            <div class="security-title" style="margin-bottom:10px;">Active devices</div>
             {% for s in sessions %}
-              <div class="security-row" style="margin-top:12px">
+              <div class="device-item">
+                <div class="device-icon">💻</div>
                 <div>
-                  <div class="security-title">
-                    {{ s.user_agent|truncatechars:50 }}
-                    {% if s.session_key == current_session %}
-                      <span style="color:#16a34a;font-size:12px;"> • This device</span>
-                    {% endif %}
-                  </div>
-                  <div class="security-sub">
-                    IP: {{ s.ip_address }}
-                  </div>
+                  <div class="device-label">{{ s.user_agent|truncatechars:48 }}</div>
+                  <div class="device-meta">IP: {{ s.ip_address }}</div>
+                  {% if s.session_key == current_session %}
+                    <span class="device-current">● This device</span>
+                  {% endif %}
                 </div>
               </div>
             {% empty %}
@@ -163,31 +439,273 @@
 
           <div class="profile-line"></div>
 
-          <!-- DELETE ACCOUNT -->
           <div class="delete-account">
-            <div class="delete-title">Delete account</div>
-            <button class="delete-link" onclick="openDeleteModal()">Delete account</button>
-          </div>
-
-          <div class="modal-overlay" id="deleteModal">
-            <div class="modal-box">
-              <h3>Delete account</h3>
-              <p>This action is permanent.</p>
-
-              <form method="POST" action="{% url 'generator:delete_account' %}">
-                {% csrf_token %}
-                <input type="text" id="deleteInput" placeholder="Type Delete account">
-                <div class="modal-actions">
-                  <button type="button" class="btn-link" onclick="closeDeleteModal()">Cancel</button>
-                  <button class="btn-danger" id="deleteBtn" disabled>Delete account</button>
-                </div>
-              </form>
+            <div>
+              <div class="delete-title">Delete account</div>
+              <div class="security-sub">Permanently removes all your data.</div>
             </div>
+            <button class="delete-link" onclick="_amOpenDeleteModal()">Delete account</button>
           </div>
+        </div><!-- /securityTab -->
 
-        </div>
+      </div><!-- /account-content -->
+    </div><!-- /account-body -->
+  </div><!-- /account-box -->
+</div><!-- /account-overlay -->
 
+
+<!-- ══════════════════════════════════════════
+     INNER MODAL: UPDATE PROFILE
+══════════════════════════════════════════ -->
+<div class="am-inner-overlay" id="amProfileEditModal">
+  <div class="am-inner-box">
+    <h3>Update profile</h3>
+    <form method="POST" enctype="multipart/form-data"
+          action="{% url 'generator:update_profile' %}">
+      {% csrf_token %}
+      <label>Profile image</label>
+      <input type="file" name="avatar" accept="image/*">
+
+      <label>First name</label>
+      <input type="text" name="first_name"
+             value="{{ request.user.first_name }}" required placeholder="First name">
+
+      <label>Last name</label>
+      <input type="text" name="last_name"
+             value="{{ request.user.last_name }}" placeholder="Last name">
+
+      <div class="am-modal-actions">
+        <button type="button" class="am-btn-cancel" onclick="_amCloseProfileEdit()">Cancel</button>
+        <button type="submit" class="am-btn-primary">Save changes</button>
       </div>
-    </div>
+    </form>
   </div>
 </div>
+
+
+<!-- ══════════════════════════════════════════
+     INNER MODAL: SET PASSWORD
+══════════════════════════════════════════ -->
+<div class="am-inner-overlay" id="amPasswordModal">
+  <div class="am-inner-box">
+    <h3>Set password</h3>
+    <form method="POST" action="{% url 'generator:set_password' %}">
+      {% csrf_token %}
+      <label>New password</label>
+      <input type="password" name="password1"
+             placeholder="Enter new password" required autocomplete="new-password">
+
+      <label>Confirm password</label>
+      <input type="password" name="password2"
+             placeholder="Confirm new password" required autocomplete="new-password">
+
+      <div class="am-modal-actions">
+        <button type="button" class="am-btn-cancel" onclick="_amClosePasswordModal()">Cancel</button>
+        <button type="submit" class="am-btn-primary">Save password</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     INNER MODAL: DELETE ACCOUNT
+══════════════════════════════════════════ -->
+<div class="am-inner-overlay" id="amDeleteModal">
+  <div class="am-inner-box">
+    <h3>Delete account</h3>
+    <p style="font-size:14px;color:#64748b;margin-bottom:16px;line-height:1.6;">
+      This action is <strong>permanent</strong> and cannot be undone.
+      All your data, generations, and credits will be lost.
+    </p>
+    <form method="POST" action="{% url 'generator:delete_account' %}">
+      {% csrf_token %}
+      <label>Type <strong>Delete account</strong> to confirm</label>
+      <input type="text" id="amDeleteInput"
+             placeholder="Delete account" autocomplete="off">
+
+      <div class="am-modal-actions">
+        <button type="button" class="am-btn-cancel" onclick="_amCloseDeleteModal()">Cancel</button>
+        <button type="submit" class="am-btn-danger" id="amDeleteConfirmBtn" disabled>
+          Delete account
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     ACCOUNT MODAL SCRIPT
+     Runs immediately. Registers window.openAccountModal
+     so header.html's DOMContentLoaded listener finds it.
+══════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ── helpers ── */
+  function el(id) { return document.getElementById(id); }
+
+  /* ════════════════════════════════════════
+     MAIN MODAL
+  ════════════════════════════════════════ */
+  function openAccountModal() {
+    var overlay = el('accountModal');
+    if (!overlay) return;
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    _amShowTab('profileTab', 'btnProfile');
+  }
+
+  function closeAccountModal() {
+    var overlay = el('accountModal');
+    if (!overlay) return;
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+    _amCloseProfileEdit();
+    _amClosePasswordModal();
+    _amCloseDeleteModal();
+    _amCloseDots();
+  }
+
+  /* expose on window — header.html's DOMContentLoaded will find these */
+  window.openAccountModal  = openAccountModal;
+  window.closeAccountModal = closeAccountModal;
+
+  /* close button */
+  var closeBtn = el('amCloseBtn');
+  if (closeBtn) closeBtn.addEventListener('click', closeAccountModal);
+
+  /* click outside box */
+  var overlay = el('accountModal');
+  if (overlay) {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeAccountModal();
+    });
+  }
+
+  /* Escape key (inner modals take priority, handled per modal) */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (el('amProfileEditModal').classList.contains('show')) { _amCloseProfileEdit();   return; }
+    if (el('amPasswordModal').classList.contains('show'))    { _amClosePasswordModal(); return; }
+    if (el('amDeleteModal').classList.contains('show'))      { _amCloseDeleteModal();   return; }
+    if (el('accountModal') && el('accountModal').classList.contains('show')) {
+      closeAccountModal();
+    }
+  });
+
+  /* ════════════════════════════════════════
+     SIDEBAR TABS
+  ════════════════════════════════════════ */
+  function _amShowTab(tabId, btnId) {
+    ['profileTab', 'securityTab'].forEach(function (id) {
+      var t = el(id);
+      if (t) t.style.display = 'none';
+    });
+    document.querySelectorAll('.account-overlay .side-tab').forEach(function (b) {
+      b.classList.remove('active');
+    });
+    var tab = el(tabId);
+    var btn = el(btnId);
+    if (tab) tab.style.display = 'block';
+    if (btn) btn.classList.add('active');
+  }
+  window._amShowTab = _amShowTab;
+
+  /* ════════════════════════════════════════
+     DOTS MENU
+  ════════════════════════════════════════ */
+  function _amCloseDots() {
+    var m = el('amDotsMenu');
+    if (m) m.classList.remove('show');
+  }
+  window._amCloseDots = _amCloseDots;
+
+  var dotsBtn = el('amDotsBtn');
+  if (dotsBtn) {
+    dotsBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var m = el('amDotsMenu');
+      if (m) m.classList.toggle('show');
+    });
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.dots-wrap')) _amCloseDots();
+  });
+
+  /* ════════════════════════════════════════
+     PROFILE EDIT INNER MODAL
+  ════════════════════════════════════════ */
+  function _amOpenProfileEdit() {
+    var m = el('amProfileEditModal');
+    if (m) m.classList.add('show');
+  }
+  function _amCloseProfileEdit() {
+    var m = el('amProfileEditModal');
+    if (m) m.classList.remove('show');
+  }
+  window._amOpenProfileEdit  = _amOpenProfileEdit;
+  window._amCloseProfileEdit = _amCloseProfileEdit;
+
+  var pem = el('amProfileEditModal');
+  if (pem) pem.addEventListener('click', function (e) {
+    if (e.target === pem) _amCloseProfileEdit();
+  });
+
+  /* ════════════════════════════════════════
+     PASSWORD INNER MODAL
+  ════════════════════════════════════════ */
+  function _amOpenPasswordModal() {
+    var m = el('amPasswordModal');
+    if (m) m.classList.add('show');
+  }
+  function _amClosePasswordModal() {
+    var m = el('amPasswordModal');
+    if (m) m.classList.remove('show');
+  }
+  window._amOpenPasswordModal  = _amOpenPasswordModal;
+  window._amClosePasswordModal = _amClosePasswordModal;
+
+  var pwm = el('amPasswordModal');
+  if (pwm) pwm.addEventListener('click', function (e) {
+    if (e.target === pwm) _amClosePasswordModal();
+  });
+
+  /* ════════════════════════════════════════
+     DELETE ACCOUNT INNER MODAL
+  ════════════════════════════════════════ */
+  function _amOpenDeleteModal() {
+    var m     = el('amDeleteModal');
+    var input = el('amDeleteInput');
+    if (m) m.classList.add('show');
+    if (input) { input.value = ''; _amCheckDeleteInput(); input.focus(); }
+  }
+  function _amCloseDeleteModal() {
+    var m     = el('amDeleteModal');
+    var input = el('amDeleteInput');
+    if (m)     m.classList.remove('show');
+    if (input) input.value = '';
+    _amCheckDeleteInput();
+  }
+  function _amCheckDeleteInput() {
+    var input = el('amDeleteInput');
+    var btn   = el('amDeleteConfirmBtn');
+    if (input && btn) {
+      btn.disabled = (input.value.trim() !== 'Delete account');
+    }
+  }
+  window._amOpenDeleteModal  = _amOpenDeleteModal;
+  window._amCloseDeleteModal = _amCloseDeleteModal;
+
+  var delInput = el('amDeleteInput');
+  if (delInput) delInput.addEventListener('input', _amCheckDeleteInput);
+
+  var dm = el('amDeleteModal');
+  if (dm) dm.addEventListener('click', function (e) {
+    if (e.target === dm) _amCloseDeleteModal();
+  });
+
+})();
+</script>
