@@ -305,8 +305,8 @@ tr:hover td{background:#fafbfc;}
             <td>
               {% if tx.status == "SUCCESS" %}
                 <span class="badge badge-success">✓ Success</span>
-              {% elif tx.status == "PENDING" %}
-                <span class="badge badge-pending">⏳ Pending</span>
+              {% comment %} {% elif tx.status == "PENDING" %}
+                <span class="badge badge-pending">⏳ Pending</span> {% endcomment %}
               {% elif tx.status == "FAILED" %}
                 <span class="badge badge-failed">✕ Failed</span>
               {% elif tx.status == "REFUNDED" %}
