@@ -1,0 +1,104 @@
+{% load static %}
+
+<!-- ═══════════════════════════════════════════════
+     partials/base_meta.html
+     {% include 'partials/base_meta.html' %} inside <head>
+     Override block variables per page before including:
+       {% with page_title="..." page_desc="..." page_url="..." %}
+         {% include 'partials/base_meta.html' %}
+       {% endwith %}
+═══════════════════════════════════════════════ -->
+
+<!-- ── Favicon ───────────────────────────────── -->
+<link rel="icon"           type="image/png" href="{% static 'images/avtools_fev.png' %}">
+<link rel="shortcut icon"                   href="{% static 'images/avtools_fev.png' %}">
+<link rel="apple-touch-icon"                href="{% static 'images/avtools_fev.png' %}">
+
+<!-- ── Primary SEO ───────────────────────────── -->
+<meta name="robots"    content="index, follow">
+<meta name="author"    content="AVTools">
+<meta name="copyright" content="AVTools">
+<link rel="canonical"  href="{{ page_url|default:'https://avtools.in/' }}">
+
+<title>{{ page_title|default:"AVTools – Free Shipping Label Export & Image Generator for Meesho Sellers" }}</title>
+<meta name="description" content="{{ page_desc|default:'AVTools helps Meesho sellers export shipping labels FREE, generate optimized product images, reduce shipping costs, and grow faster. No login required for label export.' }}">
+<meta name="keywords"    content="{{ page_keywords|default:'Meesho shipping label export free, Meesho seller tools, shipping label cropper, Meesho image generator, shipping slab optimizer, India e-commerce tools' }}">
+
+<!-- ── Open Graph (WhatsApp / Facebook) ──────── -->
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="AVTools">
+<meta property="og:title"       content="{{ page_title|default:'AVTools – Free Shipping Label Export for Meesho Sellers' }}">
+<meta property="og:description" content="{{ page_desc|default:'Export courier-sorted Meesho shipping labels in seconds. Upload multiple PDFs, auto merge, print in 3×5, 4×6 or A4. 100% free, no login.' }}">
+<meta property="og:url"         content="{{ page_url|default:'https://avtools.in/' }}">
+<meta property="og:image"       content="{% static 'images/avtools.png' %}">
+<meta property="og:locale"      content="en_IN">
+
+<!-- ── Twitter / X Card ─────────────────────── -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="{{ page_title|default:'AVTools – Free Shipping Label Export for Meesho Sellers' }}">
+<meta name="twitter:description" content="{{ page_desc|default:'Export courier-sorted Meesho shipping labels in seconds. 100% free, no login required.' }}">
+<meta name="twitter:image"       content="{% static 'images/avtools.png' %}">
+
+<!-- ── Google Structured Data ────────────────── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "AVTools – Shipping Label Export",
+      "url": "https://avtools.in/label-cropper/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "description": "Upload multiple Meesho invoice PDFs, auto merge and extract courier-sorted shipping labels in 3×5, 4×6 or A4 size. Free, no login required.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "128",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "featureList": [
+        "Upload multiple PDFs and auto merge",
+        "Bulk shipping label extraction",
+        "Courier-wise automatic sorting",
+        "Product-wise and quantity-wise grouping",
+        "Smart packing summary",
+        "3×5 thermal, 4×6 and A4 label sizes",
+        "Instant PDF download",
+        "No login required"
+      ],
+      "screenshot": "{% static 'images/avtools.png' %}",
+      "provider": {
+        "@type": "Organization",
+        "name": "AVTools",
+        "url": "https://avtools.in"
+      }
+    },
+    {
+      "@type": "Organization",
+      "name": "AVTools",
+      "url": "https://avtools.in",
+      "logo": "{% static 'images/avtools.png' %}",
+      "description": "AVTools provides free tools for Meesho sellers — shipping label export, image optimization, profit calculator and more.",
+      "foundingLocation": {
+        "@type": "Place",
+        "addressCountry": "IN"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://avtools.in/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>

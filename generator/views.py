@@ -343,119 +343,251 @@ def download_image(request):
     return response
 
 
-# ===============================
-# LABEL CROPPER PAGE
-# ===============================
+# # ===============================
+# # LABEL CROPPER PAGE
+# # ===============================
+
+# def label_cropper(request):
+#     return render(request, 'crop/label_cropper.html')
+
+
+# # ===============================
+# # PROCESS LABELS
+# # ===============================
+
+# def process_labels(request):
+
+#     if request.method != 'POST':
+#         return JsonResponse({'error': 'Invalid method'}, status=400)
+
+#     pdf_file = request.FILES.get('label_pdf')
+
+#     if not pdf_file:
+#         return JsonResponse({'error': 'No PDF file uploaded'}, status=400)
+
+#     if not pdf_file.name.lower().endswith('.pdf'):
+#         return JsonResponse({'error': 'Please upload a PDF file'}, status=400)
+
+#     if pdf_file.size > 50 * 1024 * 1024:
+#         return JsonResponse({'error': 'File too large. Max size is 50MB'}, status=400)
+
+#     try:
+#         print("\n" + "=" * 70)
+#         print("📄 STARTING PDF PROCESS")
+#         print("=" * 70)
+#         print(f"Processing PDF: {pdf_file.name}")
+#         print(f"PDF Size: {pdf_file.size} bytes")
+
+#         result           = crop_meesho_labels_to_pdf(pdf_file)
+#         output_pdf_bytes = result["pdf_bytes"]
+#         product_summary  = result["product_summary"]
+#         total_labels     = result["total_labels"]
+
+#         if not output_pdf_bytes:
+#             return JsonResponse({'error': 'Failed to generate PDF'}, status=400)
+
+#         print(f"\n✅ Generated PDF Size: {len(output_pdf_bytes)} bytes")
+#         print("\n📦 PRODUCT SUMMARY")
+#         for courier, products in product_summary.items():
+#             print(f"\n🚚 {courier}")
+#             for product, qty in products.items():
+#                 print(f"   {product} = {qty} Labels")
+#         print(f"\n✅ TOTAL LABELS: {total_labels}")
+
+#         current_time  = now()
+#         current_date  = current_time.date()
+#         current_month = current_date.replace(day=1)
+
+#         from .models import DailyLabelSummary
+
+#         daily_summary, _ = DailyLabelSummary.objects.get_or_create(date=current_date)
+#         daily_summary.total_pdfs   += 1
+#         daily_summary.total_labels += total_labels
+#         daily_summary.save()
+
+#         print(f"\n📅 DAILY SUMMARY UPDATED")
+#         print(f"Date: {daily_summary.date}")
+#         print(f"Daily PDFs: {daily_summary.total_pdfs}")
+#         print(f"Daily Labels: {daily_summary.total_labels}")
+
+#         monthly_summary, _ = MonthlyLabelSummary.objects.get_or_create(month=current_month)
+#         monthly_summary.total_pdfs   += 1
+#         monthly_summary.total_labels += total_labels
+#         monthly_summary.save()
+
+#         print(f"\n📊 MONTHLY SUMMARY UPDATED")
+#         print(f"Month: {monthly_summary.month}")
+#         print(f"Monthly PDFs: {monthly_summary.total_pdfs}")
+#         print(f"Monthly Labels: {monthly_summary.total_labels}")
+
+#         timestamp       = datetime.now().strftime('%H%M%S')
+#         output_filename = f"avtools_crop_label_{timestamp}.pdf"
+#         pdf_base64      = base64.b64encode(output_pdf_bytes).decode('utf-8')
+
+#         print(f"\n📥 Sending PDF: {output_filename}")
+#         print("=" * 70)
+
+#         return JsonResponse({
+#             'success':         True,
+#             'filename':        output_filename,
+#             'pdf_base64':      pdf_base64,
+#             'total_labels':    total_labels,
+#             'product_summary': product_summary,
+#             'daily_summary': {
+#                 'date':         str(daily_summary.date),
+#                 'total_pdfs':   daily_summary.total_pdfs,
+#                 'total_labels': daily_summary.total_labels,
+#                 'last_used':    daily_summary.last_used.strftime('%d-%m-%Y %I:%M %p'),
+#             },
+#             'monthly_summary': {
+#                 'month':        str(monthly_summary.month),
+#                 'total_pdfs':   monthly_summary.total_pdfs,
+#                 'total_labels': monthly_summary.total_labels,
+#                 'last_used':    monthly_summary.last_used.strftime('%d-%m-%Y %I:%M %p'),
+#             },
+#         })
+
+#     except ValueError as e:
+#         print(f"\n❌ ValueError: {str(e)}")
+#         return JsonResponse({'error': str(e)}, status=400)
+
+#     except Exception as e:
+#         print(f"\n❌ Error processing PDF: {str(e)}")
+#         print(traceback.format_exc())
+#         return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
+
+
+import base64
+import traceback
+from datetime import datetime
+
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.utils.timezone import now
+from django.views.decorators.http import require_POST
+
+from .label_utils import crop_meesho_labels_to_pdf, LABEL_SIZES, DEFAULT_SIZE
+from .models import DailyLabelSummary, MonthlyLabelSummary
+
+ALLOWED_SIZES = set(LABEL_SIZES.keys())   # {"3x5", "4x4", "4x6", "A4"}
+MAX_FILE_SIZE = 50 * 1024 * 1024          # 50 MB per file
+MAX_FILES_LOGGEDIN = 20
+MAX_FILES_GUEST    = 1                    # guests: single PDF only
+
+
+# =============================================================================
+# LABEL CROPPER PAGE  —  GET /label-cropper/
+# =============================================================================
 
 def label_cropper(request):
-    return render(request, 'crop/label_cropper.html')
+    return render(request, "crop/label_cropper.html")
 
 
-# ===============================
-# PROCESS LABELS
-# ===============================
+# =============================================================================
+# PROCESS LABELS  —  POST /process-labels/
+#
+# Guest users  : max 1 PDF, all sizes
+# Logged-in    : max 20 PDFs (merged), all sizes
+# =============================================================================
 
+@require_POST
 def process_labels(request):
+    is_auth  = request.user.is_authenticated
+    max_files = MAX_FILES_LOGGEDIN if is_auth else MAX_FILES_GUEST
 
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid method'}, status=400)
+    # ── 1. Collect files ─────────────────────────────────────────────────────
+    pdf_files = request.FILES.getlist("label_pdf")
 
-    pdf_file = request.FILES.get('label_pdf')
+    if not pdf_files:
+        return JsonResponse({"error": "No PDF file(s) uploaded."}, status=400)
 
-    if not pdf_file:
-        return JsonResponse({'error': 'No PDF file uploaded'}, status=400)
+    if len(pdf_files) > max_files:
+        if not is_auth:
+            return JsonResponse(
+                {"error": "Please log in to upload multiple PDFs at once."}, status=403
+            )
+        return JsonResponse(
+            {"error": f"Maximum {max_files} files per request."}, status=400
+        )
 
-    if not pdf_file.name.lower().endswith('.pdf'):
-        return JsonResponse({'error': 'Please upload a PDF file'}, status=400)
+    # ── 2. Validate each file ─────────────────────────────────────────────────
+    for f in pdf_files:
+        if not f.name.lower().endswith(".pdf"):
+            return JsonResponse({"error": f'"{f.name}" is not a PDF.'}, status=400)
+        if f.size > MAX_FILE_SIZE:
+            return JsonResponse({"error": f'"{f.name}" exceeds the 50 MB limit.'}, status=400)
 
-    if pdf_file.size > 50 * 1024 * 1024:
-        return JsonResponse({'error': 'File too large. Max size is 50MB'}, status=400)
+    # ── 3. Validate size param ────────────────────────────────────────────────
+    label_size = request.POST.get("label_size", DEFAULT_SIZE).strip()
+    if label_size not in ALLOWED_SIZES:
+        label_size = DEFAULT_SIZE
 
+    # ── 4. Process ───────────────────────────────────────────────────────────
     try:
-        print("\n" + "=" * 70)
-        print("📄 STARTING PDF PROCESS")
-        print("=" * 70)
-        print(f"Processing PDF: {pdf_file.name}")
-        print(f"PDF Size: {pdf_file.size} bytes")
+        print(f"\n{'='*70}")
+        print(f"📄 LABEL CROP  user={'guest' if not is_auth else request.user.email}")
+        print(f"   Files : {[f.name for f in pdf_files]}")
+        print(f"   Size  : {label_size}")
+        print(f"{'='*70}")
 
-        result           = crop_meesho_labels_to_pdf(pdf_file)
+        result           = crop_meesho_labels_to_pdf(pdf_files, label_size=label_size)
         output_pdf_bytes = result["pdf_bytes"]
         product_summary  = result["product_summary"]
         total_labels     = result["total_labels"]
 
         if not output_pdf_bytes:
-            return JsonResponse({'error': 'Failed to generate PDF'}, status=400)
-
-        print(f"\n✅ Generated PDF Size: {len(output_pdf_bytes)} bytes")
-        print("\n📦 PRODUCT SUMMARY")
-        for courier, products in product_summary.items():
-            print(f"\n🚚 {courier}")
-            for product, qty in products.items():
-                print(f"   {product} = {qty} Labels")
-        print(f"\n✅ TOTAL LABELS: {total_labels}")
-
-        current_time  = now()
-        current_date  = current_time.date()
-        current_month = current_date.replace(day=1)
-
-        from .models import DailyLabelSummary
-
-        daily_summary, _ = DailyLabelSummary.objects.get_or_create(date=current_date)
-        daily_summary.total_pdfs   += 1
-        daily_summary.total_labels += total_labels
-        daily_summary.save()
-
-        print(f"\n📅 DAILY SUMMARY UPDATED")
-        print(f"Date: {daily_summary.date}")
-        print(f"Daily PDFs: {daily_summary.total_pdfs}")
-        print(f"Daily Labels: {daily_summary.total_labels}")
-
-        monthly_summary, _ = MonthlyLabelSummary.objects.get_or_create(month=current_month)
-        monthly_summary.total_pdfs   += 1
-        monthly_summary.total_labels += total_labels
-        monthly_summary.save()
-
-        print(f"\n📊 MONTHLY SUMMARY UPDATED")
-        print(f"Month: {monthly_summary.month}")
-        print(f"Monthly PDFs: {monthly_summary.total_pdfs}")
-        print(f"Monthly Labels: {monthly_summary.total_labels}")
-
-        timestamp       = datetime.now().strftime('%H%M%S')
-        output_filename = f"avtools_crop_label_{timestamp}.pdf"
-        pdf_base64      = base64.b64encode(output_pdf_bytes).decode('utf-8')
-
-        print(f"\n📥 Sending PDF: {output_filename}")
-        print("=" * 70)
-
-        return JsonResponse({
-            'success':         True,
-            'filename':        output_filename,
-            'pdf_base64':      pdf_base64,
-            'total_labels':    total_labels,
-            'product_summary': product_summary,
-            'daily_summary': {
-                'date':         str(daily_summary.date),
-                'total_pdfs':   daily_summary.total_pdfs,
-                'total_labels': daily_summary.total_labels,
-                'last_used':    daily_summary.last_used.strftime('%d-%m-%Y %I:%M %p'),
-            },
-            'monthly_summary': {
-                'month':        str(monthly_summary.month),
-                'total_pdfs':   monthly_summary.total_pdfs,
-                'total_labels': monthly_summary.total_labels,
-                'last_used':    monthly_summary.last_used.strftime('%d-%m-%Y %I:%M %p'),
-            },
-        })
+            return JsonResponse({"error": "Failed to generate output PDF."}, status=500)
 
     except ValueError as e:
-        print(f"\n❌ ValueError: {str(e)}")
-        return JsonResponse({'error': str(e)}, status=400)
-
+        print(f"\n❌ ValueError: {e}")
+        return JsonResponse({"error": str(e)}, status=400)
     except Exception as e:
-        print(f"\n❌ Error processing PDF: {str(e)}")
-        print(traceback.format_exc())
-        return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
+        print(f"\n❌ Error: {e}\n{traceback.format_exc()}")
+        return JsonResponse({"error": f"Error processing PDF: {e}"}, status=500)
 
+    # ── 5. Update summaries (only for logged-in users) ───────────────────────
+    daily_dict   = {}
+    monthly_dict = {}
+
+    if is_auth:
+        try:
+            _now          = now()
+            current_date  = _now.date()
+            current_month = current_date.replace(day=1)
+
+            daily, _   = DailyLabelSummary.objects.get_or_create(date=current_date)
+            daily.total_pdfs   += len(pdf_files)
+            daily.total_labels += total_labels
+            daily.save()
+
+            monthly, _ = MonthlyLabelSummary.objects.get_or_create(month=current_month)
+            monthly.total_pdfs   += len(pdf_files)
+            monthly.total_labels += total_labels
+            monthly.save()
+
+            daily_dict   = {"date": str(daily.date),  "total_pdfs": daily.total_pdfs,   "total_labels": daily.total_labels}
+            monthly_dict = {"month": str(monthly.month), "total_pdfs": monthly.total_pdfs, "total_labels": monthly.total_labels}
+        except Exception as e:
+            print(f"⚠ Summary update failed: {e}")
+
+    # ── 6. Encode & respond ──────────────────────────────────────────────────
+    timestamp       = datetime.now().strftime("%H%M%S")
+    output_filename = f"avtools_labels_{label_size}_{timestamp}.pdf"
+    pdf_base64      = base64.b64encode(output_pdf_bytes).decode("utf-8")
+
+    print(f"\n📥 {output_filename}  ({len(output_pdf_bytes):,} bytes)")
+
+    return JsonResponse({
+        "success":         True,
+        "filename":        output_filename,
+        "pdf_base64":      pdf_base64,
+        "total_labels":    total_labels,
+        "product_summary": product_summary,
+        "label_size":      label_size,
+        "daily_summary":   daily_dict,
+        "monthly_summary": monthly_dict,
+    })
 
 # ===============================
 # PROFILE / SECURITY ACTIONS

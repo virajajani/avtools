@@ -75,6 +75,10 @@
 </nav> {% endcomment %}
 {% load static %}
 
+<!-- Favicon — rendered once here since app pages may not share base.html <head> -->
+<link rel="icon"           type="image/png" href="{% static 'images/avtools_fev.png' %}">
+<link rel="shortcut icon"                   href="{% static 'images/avtools_fev.png' %}">
+<link rel="apple-touch-icon"                href="{% static 'images/avtools_fev.png' %}">
 <!-- ══════════════════════════════════════════════════════════════
      partials/header.html  — APP NAVBAR (authenticated pages)
      · Fully self-contained CSS + JS

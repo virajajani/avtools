@@ -1,7 +1,7 @@
 {% load static %}
 
 <!-- =========================================
-     AVTOOLS NAVBAR
+     AVTOOLS PUBLIC NAVBAR
 ========================================= -->
 
 <style>
@@ -12,86 +12,57 @@
 .navbar{
   background:rgba(255,255,255,0.97);
   backdrop-filter:blur(12px);
-
   border-bottom:1px solid #e2e8f0;
-
   padding:14px 6%;
-
   display:flex;
   justify-content:space-between;
   align-items:center;
-
   position:sticky;
   top:0;
-
   z-index:1000;
-
   transition:box-shadow 0.3s ease;
 }
-
-.navbar.scrolled{
-  box-shadow:0 4px 20px rgba(0,0,0,0.07);
-}
+.navbar.scrolled{ box-shadow:0 4px 20px rgba(0,0,0,0.07); }
 
 /* =========================================
    LOGO
 ========================================= */
-.nav-logo{
-  display:flex;
-  align-items:center;
-  text-decoration:none;
-}
-
-.nav-logo img{
-  height:36px;
-}
+.nav-logo{ display:flex; align-items:center; text-decoration:none; }
+.nav-logo img{ height:36px; }
 
 /* =========================================
    DESKTOP LINKS
 ========================================= */
-.nav-links{
-  display:flex;
-  gap:26px;
-  align-items:center;
-}
+.nav-links{ display:flex; gap:26px; align-items:center; }
 
 .nav-links a{
   text-decoration:none;
-
   color:#1e293b;
-
   font-weight:500;
   font-size:15px;
-
   position:relative;
-
   transition:color 0.25s;
-
   white-space:nowrap;
 }
-
-.nav-links a:hover{
-  color:#3b82f6;
-}
+.nav-links a:hover{ color:#3b82f6; }
 
 .nav-links a::after{
   content:'';
-
   position:absolute;
-
-  left:0;
-  bottom:-4px;
-
-  width:0;
-  height:2px;
-
+  left:0; bottom:-4px;
+  width:0; height:2px;
   background:#3b82f6;
-
   transition:width 0.3s;
 }
+.nav-links a:hover::after{ width:100%; }
 
-.nav-links a:hover::after{
-  width:100%;
+/* free pill badge on Label Export link */
+.nav-free-pill{
+  background:#dcfce7; color:#15803d;
+  font-size:9px; font-weight:900;
+  padding:2px 6px; border-radius:999px;
+  text-transform:uppercase; letter-spacing:.07em;
+  vertical-align:middle; margin-left:4px;
 }
 
 /* =========================================
@@ -99,331 +70,135 @@
 ========================================= */
 .nav-cta{
   padding:10px 22px;
-
   border-radius:10px;
-
-  font-weight:700;
-  font-size:14px;
-
+  font-weight:700; font-size:14px;
   text-decoration:none;
-
   background:linear-gradient(135deg,#3b82f6,#2563eb);
-
   color:#fff !important;
-
   box-shadow:0 4px 14px rgba(59,130,246,0.3);
-
   transition:all 0.3s;
-
   white-space:nowrap;
 }
-
-.nav-cta:hover{
-  transform:translateY(-2px);
-
-  box-shadow:0 6px 20px rgba(59,130,246,0.4);
-}
-
-.nav-cta::after{
-  display:none !important;
-}
+.nav-cta:hover{ transform:translateY(-2px); box-shadow:0 6px 20px rgba(59,130,246,0.4); }
+.nav-cta::after{ display:none !important; }
 
 /* =========================================
    HAMBURGER
 ========================================= */
 .nav-hamburger{
   display:none;
-
-  width:44px;
-  height:44px;
-
-  border:none;
-
-  border-radius:12px;
-
+  width:44px; height:44px;
+  border:none; border-radius:12px;
   background:#f1f5f9;
-
-  cursor:pointer;
-
-  padding:0;
-
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-
+  cursor:pointer; padding:0;
+  align-items:center; justify-content:center; flex-direction:column;
   gap:5px;
-
   transition:background 0.25s ease;
-
   flex-shrink:0;
 }
-
-.nav-hamburger:hover{
-  background:#e2e8f0;
-}
-
+.nav-hamburger:hover{ background:#e2e8f0; }
 .nav-hamburger span{
-  display:block;
-
-  width:24px;
-  height:2px;
-
-  background:#1e293b;
-
-  border-radius:2px;
+  display:block; width:24px; height:2px;
+  background:#1e293b; border-radius:2px;
 }
 
 /* =========================================
    MOBILE DRAWER
 ========================================= */
 .nav-drawer{
-  position:fixed;
-
-  inset:0;
-
-  z-index:2000;
-
-  visibility:hidden;
-  opacity:0;
-
+  position:fixed; inset:0; z-index:2000;
+  visibility:hidden; opacity:0;
   pointer-events:none;
-
   transition:opacity 0.3s ease;
 }
+.nav-drawer.open{ visibility:visible; opacity:1; pointer-events:auto; }
 
-/* OPEN */
-.nav-drawer.open{
-  visibility:visible;
-  opacity:1;
-
-  pointer-events:auto;
-}
-
-/* =========================================
-   BACKDROP
-========================================= */
 .nav-drawer-backdrop{
-  position:absolute;
-
-  inset:0;
-
-  background:rgba(15,23,42,0.45);
-
-  opacity:0;
-
+  position:absolute; inset:0;
+  background:rgba(15,23,42,0.45); opacity:0;
   transition:opacity 0.35s ease;
-
   backdrop-filter:blur(2px);
 }
+.nav-drawer.open .nav-drawer-backdrop{ opacity:1; }
 
-.nav-drawer.open .nav-drawer-backdrop{
-  opacity:1;
-}
-
-/* =========================================
-   DRAWER PANEL
-========================================= */
 .nav-drawer-panel{
   position:absolute;
-
-  top:0;
-  left:0;
-  right:0;
-
-  margin-top:0;
-
+  top:0; left:0; right:0;
   background:#fff;
-
   padding:0 6% 28px;
-
   border-radius:0 0 28px 28px;
-
   box-shadow:0 20px 60px rgba(0,0,0,0.15);
-
   transform:translateY(-110%);
-
   transition:transform 0.38s cubic-bezier(0.4,0,0.2,1);
+  max-height:92vh; overflow-y:auto;
 }
+.nav-drawer.open .nav-drawer-panel{ transform:translateY(0); }
 
-.nav-drawer.open .nav-drawer-panel{
-  transform:translateY(0);
-}
-
-/* =========================================
-   DRAWER HEADER
-========================================= */
 .nav-drawer-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
+  display:flex; justify-content:space-between; align-items:center;
   padding:14px 0 20px;
-
-  border-bottom:1px solid #e2e8f0;
-
-  margin-bottom:8px;
+  border-bottom:1px solid #e2e8f0; margin-bottom:8px;
 }
+.nav-drawer-header img{ height:34px; }
 
-.nav-drawer-header img{
-  height:34px;
-}
-
-/* =========================================
-   CLOSE BUTTON
-========================================= */
 .nav-drawer-close{
-  width:44px;
-  height:44px;
-
-  border:none;
-
-  border-radius:12px;
-
-  background:#f1f5f9;
-
-  color:#1e293b;
-
-  font-size:24px;
-
-  cursor:pointer;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
+  width:44px; height:44px;
+  border:none; border-radius:12px;
+  background:#f1f5f9; color:#1e293b;
+  font-size:24px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
   transition:background 0.25s ease;
 }
+.nav-drawer-close:hover{ background:#e2e8f0; }
 
-.nav-drawer-close:hover{
-  background:#e2e8f0;
-}
-
-/* =========================================
-   MOBILE LINKS
-========================================= */
-.nav-drawer-links{
-  display:flex;
-  flex-direction:column;
-
-  margin-top:6px;
-}
+.nav-drawer-links{ display:flex; flex-direction:column; margin-top:6px; }
 
 .nav-drawer-links a{
-  text-decoration:none;
-
-  color:#1e293b;
-
-  font-size:17px;
-  font-weight:500;
-
+  text-decoration:none; color:#1e293b;
+  font-size:17px; font-weight:500;
   padding:16px 0;
-
   border-bottom:1px solid #edf2f7;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-
+  display:flex; justify-content:space-between; align-items:center;
   transition:color 0.2s;
 }
+.nav-drawer-links a:hover{ color:#3b82f6; }
+.nav-drawer-links a:last-child{ border-bottom:none; }
+.arrow{ color:#94a3b8; font-size:18px; }
 
-.nav-drawer-links a:hover{
-  color:#3b82f6;
-}
-
-.nav-drawer-links a:last-child{
-  border-bottom:none;
-}
-
-.arrow{
-  color:#94a3b8;
-  font-size:18px;
-}
-
-/* =========================================
-   CTA SECTION
-========================================= */
 .nav-drawer-cta{
-  display:flex;
-  flex-direction:column;
-
-  gap:14px;
-
-  margin-top:24px;
-
-  padding-top:24px;
-
+  display:flex; flex-direction:column;
+  gap:14px; margin-top:24px; padding-top:24px;
   border-top:1px solid #e2e8f0;
 }
-
 .nav-drawer-cta a{
   text-decoration:none;
-
-  padding:16px 22px;
-
-  border-radius:16px;
-
-  font-size:17px;
-  font-weight:700;
-
-  text-align:center;
-
-  transition:all 0.3s ease;
+  padding:16px 22px; border-radius:16px;
+  font-size:17px; font-weight:700;
+  text-align:center; transition:all 0.3s ease;
 }
-
 .btn-drawer-primary{
   background:linear-gradient(135deg,#3b82f6,#2563eb);
-
-  color:#fff;
-
-  box-shadow:0 4px 14px rgba(59,130,246,0.3);
+  color:#fff; box-shadow:0 4px 14px rgba(59,130,246,0.3);
 }
-
-.btn-drawer-primary:hover{
-  transform:translateY(-2px);
-}
-
+.btn-drawer-primary:hover{ transform:translateY(-2px); }
 .btn-drawer-secondary{
   background:linear-gradient(135deg,#0f766e,#0369a1);
-
-  color:#fff;
-
-  box-shadow:0 4px 14px rgba(15,118,110,0.3);
+  color:#fff; box-shadow:0 4px 14px rgba(15,118,110,0.3);
 }
-
 .btn-drawer-outline{
-  background:#fff;
-
-  color:#3b82f6;
-
-  border:2px solid #3b82f6;
+  background:#fff; color:#3b82f6; border:2px solid #3b82f6;
 }
 
 /* =========================================
    RESPONSIVE
 ========================================= */
 @media(max-width:900px){
-
-  .nav-links{
-    display:none;
-  }
-
-  .nav-hamburger{
-    display:flex;
-  }
-
+  .nav-links{ display:none; }
+  .nav-hamburger{ display:flex; }
 }
-
 @media(max-width:480px){
-
-  .navbar{
-    padding:12px 5%;
-  }
-
-  .nav-logo img{
-    height:30px;
-  }
-
+  .navbar{ padding:12px 5%; }
+  .nav-logo img{ height:30px; }
 }
 
 </style>
@@ -435,47 +210,30 @@
 
   <!-- LOGO -->
   <a href="/" class="nav-logo">
-    <img
-      src="{% static 'images/avtools.png' %}"
-      alt="AVTools – Smart Tools for Meesho Sellers"
-    >
+    <img src="{% static 'images/avtools.png' %}" alt="AVTools – Smart Tools for Meesho Sellers">
   </a>
 
   <!-- DESKTOP LINKS -->
   <div class="nav-links">
-
     <a href="/#tools">Tools</a>
-
     <a href="/#features">Features</a>
-
     <a href="/#aim">Mission</a>
-
     <a href="/#pricing">Pricing</a>
-
     <a href="/about">About</a>
-
     <a href="/contact">Contact</a>
 
+    <!-- ── Tool shortcuts ── -->
+    <a href="{% url 'generator:meesho_image_generator' %}">🖼️ Image Generator</a>
+    <a href="/label-cropper/">🏷️ Label Export <span class="nav-free-pill">FREE</span></a>
+
     <a href="/signin">Log in</a>
-
-    <a href="/signup" class="nav-cta">
-      Get Started
-    </a>
-
+    <a href="/signup" class="nav-cta">Get Started</a>
   </div>
 
   <!-- MOBILE HAMBURGER -->
-  <button
-    class="nav-hamburger"
-    id="navHamburger"
-    aria-label="Open menu"
-    aria-expanded="false"
-  >
-
-    <span></span>
-    <span></span>
-    <span></span>
-
+  <button class="nav-hamburger" id="navHamburger"
+          aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
   </button>
 
 </nav>
@@ -483,242 +241,143 @@
 <!-- =========================================
      MOBILE DRAWER
 ========================================= -->
-<div
-  class="nav-drawer"
-  id="navDrawer"
-  role="dialog"
-  aria-label="Navigation menu"
->
+<div class="nav-drawer" id="navDrawer" role="dialog" aria-label="Navigation menu">
 
-  <!-- BACKDROP -->
-  <div
-    class="nav-drawer-backdrop"
-    id="navBackdrop"
-  ></div>
+  <div class="nav-drawer-backdrop" id="navBackdrop"></div>
 
-  <!-- PANEL -->
   <div class="nav-drawer-panel">
 
-    <!-- HEADER -->
     <div class="nav-drawer-header">
-
-      <img
-        src="{% static 'images/avtools.png' %}"
-        alt="AVTools"
-      >
-
-      <!-- SINGLE CLOSE BUTTON -->
-      <button
-        class="nav-drawer-close"
-        id="navDrawerClose"
-        aria-label="Close menu"
-      >
-        ✕
-      </button>
-
+      <img src="{% static 'images/avtools.png' %}" alt="AVTools">
+      <button class="nav-drawer-close" id="navDrawerClose" aria-label="Close menu">✕</button>
     </div>
 
-    <!-- MOBILE LINKS -->
     <nav class="nav-drawer-links">
-
-      <a href="/#tools">
-        Tools
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="/#features">
-        Features
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="/#aim">
-        Mission
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="/#pricing">
-        Pricing
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="/about">
-        About
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="/contact">
-        Contact
-        <span class="arrow">›</span>
-      </a>
-
-      <a href="/signin">
-        Log in
-        <span class="arrow">›</span>
-      </a>
-
+      <a href="/#tools">Tools <span class="arrow">›</span></a>
+      <a href="/#features">Features <span class="arrow">›</span></a>
+      <a href="/#aim">Mission <span class="arrow">›</span></a>
+      <a href="/#pricing">Pricing <span class="arrow">›</span></a>
+      <a href="/about">About <span class="arrow">›</span></a>
+      <a href="/contact">Contact <span class="arrow">›</span></a>
+      <a href="/signin">Log in <span class="arrow">›</span></a>
     </nav>
 
-    <!-- CTA -->
     <div class="nav-drawer-cta">
-
-      <a
-        href="{% url 'generator:meesho_image_generator' %}"
-        class="btn-drawer-primary"
-      >
+      <a href="{% url 'generator:meesho_image_generator' %}" class="btn-drawer-primary">
         🖼️ Try Image Generator
       </a>
-
-      <a
-        href="/label-cropper/"
-        class="btn-drawer-secondary"
-      >
-        🏷️ Export Labels Free
+      <a href="/label-cropper/" class="btn-drawer-secondary">
+        🏷️ Export Labels — Free
       </a>
-
-      <a
-        href="/signup"
-        class="btn-drawer-outline"
-      >
+      <a href="/signup" class="btn-drawer-outline">
         Get Started — Free
       </a>
-
     </div>
 
   </div>
-
 </div>
 
-<script>
+<!-- =========================================
+     STRUCTURED DATA  (public pages only)
+========================================= -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "AVTools",
+      "url": "https://avtools.in",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://avtools.in/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "name": "AVTools",
+      "url": "https://avtools.in",
+      "logo": "{% static 'images/avtools.png' %}",
+      "description": "AVTools provides free tools for Meesho sellers — shipping label export, image optimization, profit calculator and more.",
+      "foundingLocation": { "@type": "Place", "addressCountry": "IN" },
+      "sameAs": []
+    },
+    {
+      "@type": "WebApplication",
+      "name": "AVTools – Shipping Label Export",
+      "url": "https://avtools.in/label-cropper/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "description": "Upload multiple Meesho invoice PDFs, auto merge and extract courier-sorted shipping labels in 3×5, 4×6 or A4 size. Free, no login required.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "128",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "provider": { "@type": "Organization", "name": "AVTools", "url": "https://avtools.in" }
+    }
+  ]
+}
+</script>
 
+<script>
 (function(){
 
   const hamburger = document.getElementById('navHamburger');
+  const drawer    = document.getElementById('navDrawer');
+  const backdrop  = document.getElementById('navBackdrop');
+  const closeBtn  = document.getElementById('navDrawerClose');
+  const navbar    = document.getElementById('navbar');
 
-  const drawer = document.getElementById('navDrawer');
-
-  const backdrop = document.getElementById('navBackdrop');
-
-  const closeBtn = document.getElementById('navDrawerClose');
-
-  const navbar = document.getElementById('navbar');
-
-  /* OPEN DRAWER */
   function openDrawer(){
-
     drawer.classList.add('open');
-
-    hamburger.setAttribute(
-      'aria-expanded',
-      'true'
-    );
-
+    hamburger.setAttribute('aria-expanded','true');
     document.body.style.overflow='hidden';
-
   }
 
-  /* CLOSE DRAWER */
   function closeDrawer(){
-
     drawer.classList.remove('open');
-
-    hamburger.setAttribute(
-      'aria-expanded',
-      'false'
-    );
-
+    hamburger.setAttribute('aria-expanded','false');
     document.body.style.overflow='';
-
   }
 
-  /* TOGGLE */
   hamburger.addEventListener('click', function(){
-
-    if(drawer.classList.contains('open')){
-
-      closeDrawer();
-
-    }else{
-
-      openDrawer();
-
-    }
-
+    drawer.classList.contains('open') ? closeDrawer() : openDrawer();
   });
 
-  /* CLOSE BUTTON */
-  closeBtn.addEventListener(
-    'click',
-    closeDrawer
-  );
+  closeBtn.addEventListener('click', closeDrawer);
+  backdrop.addEventListener('click', closeDrawer);
 
-  /* BACKDROP CLOSE */
-  backdrop.addEventListener(
-    'click',
-    closeDrawer
-  );
-
-  /* CLOSE ON LINK CLICK */
   drawer.querySelectorAll('a').forEach(function(link){
-
     link.addEventListener('click', closeDrawer);
-
   });
 
-  /* ESC CLOSE */
   document.addEventListener('keydown', function(e){
-
-    if(e.key === 'Escape'){
-
-      closeDrawer();
-
-    }
-
+    if(e.key === 'Escape') closeDrawer();
   });
 
-  /* NAVBAR SHADOW */
   window.addEventListener('scroll', function(){
-
-    navbar.classList.toggle(
-      'scrolled',
-      window.scrollY > 50
-    );
-
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
   }, {passive:true});
 
-  /* SMOOTH SCROLL */
-  document.querySelectorAll(
-    'a[href^="#"], a[href*="/#"]'
-  ).forEach(function(anchor){
-
+  /* smooth scroll for anchor links */
+  document.querySelectorAll('a[href^="#"], a[href*="/#"]').forEach(function(anchor){
     anchor.addEventListener('click', function(e){
-
       const href = this.getAttribute('href');
-
-      const hash = href.includes('#')
-        ? '#'+href.split('#')[1]
-        : null;
-
+      const hash = href.includes('#') ? '#'+href.split('#')[1] : null;
       if(hash){
-
         const target = document.querySelector(hash);
-
-        if(target){
-
-          e.preventDefault();
-
-          target.scrollIntoView({
-            behavior:'smooth',
-            block:'start'
-          });
-
-        }
-
+        if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth',block:'start'}); }
       }
-
     });
-
   });
 
 })();
-
 </script>
