@@ -1,0 +1,471 @@
+{% load static %}
+
+<!-- ══════════════════════════════════════════════════════════════
+     partials/review_modal.html
+     · Self-contained review popup modal
+     · Star rating + comment form
+     · Calls /api/auth/api/review/submit/
+     · Open via: openReviewModal()
+     · All IDs prefixed "rvw-" to prevent any CSS bleed
+══════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── Reset scoped to modal only ── */
+#rvwOverlay,
+#rvwOverlay * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Overlay ── */
+#rvwOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#rvwOverlay.rvw-show {
+  display: flex;
+}
+
+/* ── Modal card ── */
+#rvwCard {
+  background: #fff;
+  border-radius: 24px;
+  padding: 36px 32px 28px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.22);
+  position: relative;
+  animation: rvwSlideUp 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes rvwSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* ── Close button ── */
+#rvwCloseBtn {
+  all: unset;
+  box-sizing: border-box;
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 34px; height: 34px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, color .2s;
+}
+#rvwCloseBtn:hover { background: #e2e8f0; color: #0f172a; }
+
+/* ── Header ── */
+#rvwCard .rvw-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+#rvwCard .rvw-emoji {
+  font-size: 42px;
+  display: block;
+  margin-bottom: 10px;
+}
+#rvwCard .rvw-title {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 5px;
+}
+#rvwCard .rvw-sub {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* ── Stars ── */
+#rvwStarRow {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.rvw-star {
+  all: unset;
+  box-sizing: border-box;
+  font-size: 36px;
+  cursor: pointer;
+  color: #e2e8f0;
+  transition: color .15s, transform .12s;
+  line-height: 1;
+}
+.rvw-star:hover,
+.rvw-star.rvw-hovered,
+.rvw-star.rvw-active {
+  color: #f59e0b;
+  transform: scale(1.15);
+}
+
+#rvwStarLabel {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f59e0b;
+  min-height: 20px;
+  margin-bottom: 18px;
+}
+
+/* ── Textarea ── */
+#rvwComment {
+  width: 100%;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0f172a;
+  resize: vertical;
+  min-height: 110px;
+  transition: border-color .2s, box-shadow .2s;
+  outline: none;
+  background: #fafbfc;
+}
+#rvwComment:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: #fff;
+}
+#rvwComment::placeholder { color: #94a3b8; }
+
+#rvwCharCount {
+  text-align: right;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+/* ── Field error ── */
+#rvwFieldError {
+  display: none;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dc2626;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+/* ── Submit button ── */
+#rvwSubmitBtn {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  border-radius: 12px;
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.28);
+  transition: opacity .2s, transform .2s;
+  display: block;
+}
+#rvwSubmitBtn:hover:not(:disabled) {
+  opacity: .9;
+  transform: translateY(-1px);
+}
+#rvwSubmitBtn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Success state ── */
+#rvwSuccess {
+  display: none;
+  text-align: center;
+  padding: 10px 0 6px;
+}
+#rvwSuccess .rvw-success-icon {
+  font-size: 52px;
+  display: block;
+  margin-bottom: 12px;
+}
+#rvwSuccess .rvw-success-title {
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #15803d;
+  margin-bottom: 6px;
+}
+#rvwSuccess .rvw-success-sub {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* ── Footer note ── */
+#rvwCard .rvw-footer-note {
+  text-align: center;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 14px;
+}
+
+@media (max-width: 480px) {
+  #rvwCard {
+    padding: 28px 20px 22px;
+    border-radius: 18px;
+  }
+  .rvw-star { font-size: 30px; }
+}
+</style>
+
+
+<!-- ══ MODAL ══ -->
+<div id="rvwOverlay" role="dialog" aria-modal="true" aria-label="Write a review">
+  <div id="rvwCard">
+
+    <!-- Close -->
+    <button id="rvwCloseBtn" type="button" aria-label="Close">✕</button>
+
+    <!-- Header -->
+    <div class="rvw-header">
+      <span class="rvw-emoji">⭐</span>
+      <div class="rvw-title">Rate Your Experience</div>
+      <div class="rvw-sub">Your feedback helps us improve AVTools for every seller.</div>
+    </div>
+
+    <!-- Form -->
+    <div id="rvwForm">
+
+      <!-- Stars -->
+      <div id="rvwStarRow" role="group" aria-label="Star rating">
+        <button class="rvw-star" type="button" data-val="1" aria-label="1 star">★</button>
+        <button class="rvw-star" type="button" data-val="2" aria-label="2 stars">★</button>
+        <button class="rvw-star" type="button" data-val="3" aria-label="3 stars">★</button>
+        <button class="rvw-star" type="button" data-val="4" aria-label="4 stars">★</button>
+        <button class="rvw-star" type="button" data-val="5" aria-label="5 stars">★</button>
+      </div>
+      <div id="rvwStarLabel"></div>
+
+      <!-- Comment -->
+      <textarea
+        id="rvwComment"
+        placeholder="Tell us what you love or what we can improve…"
+        maxlength="500"
+      ></textarea>
+      <div id="rvwCharCount">0 / 500</div>
+
+      <!-- Error -->
+      <div id="rvwFieldError"></div>
+
+      <!-- Submit -->
+      <button id="rvwSubmitBtn" type="button" disabled>
+        ✨ Submit Review
+      </button>
+
+      <div class="rvw-footer-note">🔒 Your review is saved securely</div>
+    </div>
+
+    <!-- Success state (shown after submit) -->
+    <div id="rvwSuccess">
+      <span class="rvw-success-icon">🎉</span>
+      <div class="rvw-success-title">Thank you for your review!</div>
+      <div class="rvw-success-sub">Your feedback means a lot to us.</div>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Config ── */
+  const SUBMIT_URL = window.location.origin + '/api/auth/review/submit/';
+
+  const STAR_LABELS = {
+    1: '😞 Poor',
+    2: '😐 Fair',
+    3: '🙂 Good',
+    4: '😊 Great',
+    5: '🤩 Excellent!',
+  };
+
+  /* ── Elements ── */
+  const overlay    = document.getElementById('rvwOverlay');
+  const card       = document.getElementById('rvwCard');
+  const closeBtn   = document.getElementById('rvwCloseBtn');
+  const stars      = document.querySelectorAll('.rvw-star');
+  const starLabel  = document.getElementById('rvwStarLabel');
+  const comment    = document.getElementById('rvwComment');
+  const charCount  = document.getElementById('rvwCharCount');
+  const fieldError = document.getElementById('rvwFieldError');
+  const submitBtn  = document.getElementById('rvwSubmitBtn');
+  const formEl     = document.getElementById('rvwForm');
+  const successEl  = document.getElementById('rvwSuccess');
+
+  /* ── State ── */
+  let selectedRating = 0;
+
+  /* ── CSRF ── */
+  function getCsrf() {
+    const m = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+    return m ? m[1] : '';
+  }
+
+  /* ── Open / Close ── */
+  function openReviewModal() {
+    resetModal();
+    overlay.classList.add('rvw-show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeReviewModal() {
+    overlay.classList.remove('rvw-show');
+    document.body.style.overflow = '';
+  }
+
+  function resetModal() {
+    selectedRating = 0;
+    comment.value  = '';
+    charCount.textContent = '0 / 500';
+    starLabel.textContent = '';
+    fieldError.style.display = 'none';
+    fieldError.textContent   = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = '✨ Submit Review';
+    formEl.style.display    = 'block';
+    successEl.style.display = 'none';
+    stars.forEach(s => s.classList.remove('rvw-active', 'rvw-hovered'));
+  }
+
+  /* ── Expose globally so any button can open it ── */
+  window.openReviewModal = openReviewModal;
+
+  /* ── Close triggers ── */
+  closeBtn.addEventListener('click', closeReviewModal);
+  overlay.addEventListener('click', function (e) {
+    if (!card.contains(e.target)) closeReviewModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('rvw-show')) {
+      closeReviewModal();
+    }
+  });
+
+  /* ── Stars: hover ── */
+  stars.forEach(function (star) {
+    star.addEventListener('mouseenter', function () {
+      const val = +this.dataset.val;
+      stars.forEach((s, i) => s.classList.toggle('rvw-hovered', i < val));
+      starLabel.textContent = STAR_LABELS[val] || '';
+    });
+    star.addEventListener('mouseleave', function () {
+      stars.forEach(s => s.classList.remove('rvw-hovered'));
+      starLabel.textContent = selectedRating ? STAR_LABELS[selectedRating] : '';
+    });
+  });
+
+  /* ── Stars: click ── */
+  stars.forEach(function (star) {
+    star.addEventListener('click', function () {
+      selectedRating = +this.dataset.val;
+      stars.forEach((s, i) => s.classList.toggle('rvw-active', i < selectedRating));
+      starLabel.textContent = STAR_LABELS[selectedRating];
+      updateSubmitBtn();
+    });
+  });
+
+  /* ── Comment: char count ── */
+  comment.addEventListener('input', function () {
+    charCount.textContent = `${this.value.length} / 500`;
+    updateSubmitBtn();
+  });
+
+  /* ── Enable/disable submit ── */
+  function updateSubmitBtn() {
+    submitBtn.disabled = !(selectedRating > 0 && comment.value.trim().length > 0);
+  }
+
+  /* ── Show error ── */
+  function showError(msg) {
+    fieldError.textContent    = msg;
+    fieldError.style.display  = 'block';
+  }
+  function hideError() {
+    fieldError.style.display  = 'none';
+    fieldError.textContent    = '';
+  }
+
+  /* ── Submit ── */
+  submitBtn.addEventListener('click', async function () {
+    hideError();
+
+    if (!selectedRating) {
+      showError('Please select a star rating.');
+      return;
+    }
+    if (!comment.value.trim()) {
+      showError('Please write a comment before submitting.');
+      return;
+    }
+
+    submitBtn.disabled    = true;
+    submitBtn.textContent = 'Submitting…';
+
+    const fd = new FormData();
+    fd.append('rating',  selectedRating);
+    fd.append('comment', comment.value.trim());
+
+    try {
+      const res  = await fetch(SUBMIT_URL, {
+        method:      'POST',
+        headers:     { 'X-CSRFToken': getCsrf() },
+        credentials: 'include',
+        body:        fd,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        /* ── Show success state ── */
+        formEl.style.display    = 'none';
+        successEl.style.display = 'block';
+
+        /* ── Auto-close after 2.5s ── */
+        setTimeout(closeReviewModal, 2500);
+      } else {
+        showError(data.error || 'Something went wrong. Please try again.');
+        submitBtn.disabled    = false;
+        submitBtn.textContent = '✨ Submit Review';
+      }
+
+    } catch (err) {
+      showError('Network error. Please try again.');
+      submitBtn.disabled    = false;
+      submitBtn.textContent = '✨ Submit Review';
+    }
+  });
+
+})();
+</script>

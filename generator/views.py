@@ -480,10 +480,25 @@ MAX_FILES_GUEST    = 1                    # guests: single PDF only
 # LABEL CROPPER PAGE  —  GET /label-cropper/
 # =============================================================================
 
+# def label_cropper(request):
+#     return render(request, "crop/label_cropper.html")
+
 def label_cropper(request):
-    return render(request, "crop/label_cropper.html")
-
-
+    context = {}
+    
+    if request.user.is_authenticated:
+        credit = get_user_credit(request.user)
+        username = request.user.username or "U"
+        initials = username[0].upper()
+        device_ctx = load_active_devices(request)
+        
+        context = {
+            "credits": credit.balance,
+            "initials": initials,
+            **device_ctx,
+        }
+    
+    return render(request, "crop/label_cropper.html", context)
 # =============================================================================
 # PROCESS LABELS  —  POST /process-labels/
 #

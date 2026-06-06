@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create account | AVTools</title>
+<script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -26,7 +27,6 @@ body::before{
   z-index:0;
 }
 
-/* Back to home link */
 .back-home{
   position:relative;
   z-index:2;
@@ -70,25 +70,20 @@ body::before{
 .logo img{height:50px;cursor:pointer;}
 
 h1{text-align:center;font-size:26px;font-weight:800;margin-bottom:6px;color:#1e293b;}
-
 .subtitle{text-align:center;font-size:14px;color:#64748b;margin-bottom:24px;}
-
-.divider{display:flex;align-items:center;margin:20px 0;color:#94a3b8;font-size:13px;font-weight:500;}
-.divider::before,.divider::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#e2e8f0,transparent);}
-.divider span{margin:0 14px;}
 
 .row{display:flex;gap:12px;}
 .row .form-group{flex:1;}
 
 .form-group{margin-bottom:16px;}
-
 label{font-size:13px;font-weight:700;margin-bottom:6px;display:block;color:#334155;}
 
 input[type="text"],
 input[type="email"],
 input[type="password"]{
-  width:100%;padding:12px 14px;border-radius:10px;border:2px solid #e2e8f0;
-  font-size:14px;transition:all 0.3s ease;background:#fff;color:#1e293b;
+  width:100%;padding:12px 14px;border-radius:10px;
+  border:2px solid #e2e8f0;font-size:14px;
+  transition:all 0.3s ease;background:#fff;color:#1e293b;
 }
 input[type="text"]:focus,
 input[type="email"]:focus,
@@ -98,11 +93,56 @@ input[type="password"]:focus{
 }
 input::placeholder{color:#94a3b8;}
 
-.checkbox-group{display:flex;align-items:flex-start;gap:8px;margin-bottom:20px;}
-.checkbox-group input[type="checkbox"]{margin-top:3px;width:16px;height:16px;cursor:pointer;accent-color:#3b82f6;flex-shrink:0;}
-.checkbox-group label{font-size:13px;font-weight:500;color:#475569;margin:0;cursor:pointer;line-height:1.5;}
-.checkbox-group a{color:#3b82f6;text-decoration:none;font-weight:600;transition:color 0.3s;}
+.checkbox-group{
+  display:flex;align-items:flex-start;
+  gap:8px;margin-bottom:20px;
+}
+.checkbox-group input[type="checkbox"]{
+  margin-top:3px;width:16px;height:16px;
+  cursor:pointer;accent-color:#3b82f6;flex-shrink:0;
+}
+.checkbox-group label{
+  font-size:13px;font-weight:500;
+  color:#475569;margin:0;cursor:pointer;line-height:1.5;
+}
+.checkbox-group a{
+  color:#3b82f6;text-decoration:none;
+  font-weight:600;transition:color 0.3s;
+}
 .checkbox-group a:hover{color:#2563eb;text-decoration:underline;}
+
+/* Device error block */
+.device-error-block{
+  display:none;
+  background:#fee2e2;
+  border:1.5px solid #fecaca;
+  border-radius:12px;
+  padding:16px 18px;
+  margin-bottom:16px;
+  text-align:center;
+}
+.device-error-block .dev-icon{font-size:28px;margin-bottom:6px;}
+.device-error-block .dev-title{
+  font-size:14px;font-weight:800;
+  color:#dc2626;margin-bottom:4px;
+}
+.device-error-block .dev-sub{
+  font-size:13px;color:#b91c1c;margin-bottom:10px;
+}
+.device-error-block a{
+  display:inline-block;
+  background:#dc2626;color:#fff;
+  padding:8px 20px;border-radius:8px;
+  font-size:13px;font-weight:700;
+  text-decoration:none;transition:background .2s;
+}
+.device-error-block a:hover{background:#b91c1c;}
+
+/* Password error */
+.field-error{
+  color:#ef4444;font-size:13px;
+  margin-top:6px;display:none;font-weight:600;
+}
 
 .btn-primary{
   width:100%;padding:14px;
@@ -112,27 +152,64 @@ input::placeholder{color:#94a3b8;}
   transition:all 0.3s ease;
   box-shadow:0 8px 24px rgba(59,130,246,0.3);
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(59,130,246,0.4);}
-.btn-primary:active{transform:translateY(0);}
+.btn-primary:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(59,130,246,0.4);
+}
+.btn-primary:disabled{
+  opacity:0.5;cursor:not-allowed;transform:none;
+}
 
-.footer-text{text-align:center;margin-top:20px;font-size:14px;color:#64748b;}
-.footer-text a{color:#3b82f6;text-decoration:none;font-weight:700;transition:color 0.3s;}
-.footer-text a:hover{color:#2563eb;}
-
-.secured{text-align:center;font-size:12px;color:#94a3b8;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:6px;}
-.secured::before{content:'🔒';font-size:13px;}
-
-.benefits{background:#f8fafc;border-radius:10px;padding:16px;margin-bottom:20px;}
+.benefits{
+  background:#f8fafc;border-radius:10px;
+  padding:16px;margin-bottom:20px;
+}
 .benefits h3{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px;}
 .benefits ul{list-style:none;padding:0;}
-.benefits li{font-size:13px;color:#475569;margin-bottom:6px;padding-left:20px;position:relative;}
-.benefits li::before{content:'✓';position:absolute;left:0;color:#3b82f6;font-weight:700;}
+.benefits li{
+  font-size:13px;color:#475569;
+  margin-bottom:6px;padding-left:20px;position:relative;
+}
+.benefits li::before{
+  content:'✓';position:absolute;
+  left:0;color:#3b82f6;font-weight:700;
+}
+
+.footer-text{
+  text-align:center;margin-top:20px;
+  font-size:14px;color:#64748b;
+}
+.footer-text a{
+  color:#3b82f6;text-decoration:none;
+  font-weight:700;transition:color 0.3s;
+}
+.footer-text a:hover{color:#2563eb;}
+
+.secured{
+  text-align:center;font-size:12px;
+  color:#94a3b8;margin-top:16px;
+  display:flex;align-items:center;
+  justify-content:center;gap:6px;
+}
+.secured::before{content:'🔒';font-size:13px;}
+
+/* Checking device loader */
+.device-checking{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;font-size:13px;color:#64748b;
+  margin-bottom:14px;
+}
+.device-checking .dot-spin{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid #e2e8f0;border-top-color:#3b82f6;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
 
 @media(max-width:480px){
   body{padding:24px 16px;}
   .auth-card{padding:28px 20px;}
   h1{font-size:22px;}
-  .subtitle{font-size:13px;}
   .row{flex-direction:column;gap:0;}
 }
 </style>
@@ -140,12 +217,12 @@ input::placeholder{color:#94a3b8;}
 <body>
 
 <div class="auth-container">
-  <!-- Back to home -->
   <a href="/" class="back-home">Back to AVTools</a>
 
   <div class="auth-card">
     <div class="logo">
-      <img src="{% static 'images/avtools.png' %}" alt="AVTools Logo" onclick="window.location.href='/'">
+      <img src="{% static 'images/avtools.png' %}" alt="AVTools Logo"
+           onclick="window.location.href='/'">
     </div>
 
     <h1>Create your account</h1>
@@ -160,7 +237,25 @@ input::placeholder{color:#94a3b8;}
       </ul>
     </div>
 
+    <!-- Device checking indicator -->
+    <div class="device-checking" id="deviceChecking">
+      <div class="dot-spin"></div>
+      <span>Checking device…</span>
+    </div>
+
+    <!-- Device already registered error -->
+    <div class="device-error-block" id="deviceError">
+      <div class="dev-icon">🚫</div>
+      <div class="dev-title">Device Already Registered</div>
+      <div class="dev-sub">
+        An account is already linked to this device.<br>
+        Please log in to continue.
+      </div>
+      <a href="/signin/">Log in to your account →</a>
+    </div>
+
     <form id="signupForm">
+
       <div class="row">
         <div class="form-group">
           <label>First name</label>
@@ -179,9 +274,10 @@ input::placeholder{color:#94a3b8;}
 
       <div class="form-group">
         <label>Password</label>
-        <input id="signupPassword" type="password" placeholder="Create a strong password" required>
-        <p id="passwordError" style="color:red;font-size:13px;margin-top:6px;display:none;">
-          Please enter minimum 6 character password
+        <input id="signupPassword" type="password"
+               placeholder="Create a strong password (min 6 chars)" required>
+        <p id="passwordError" class="field-error">
+          Please enter a minimum 6 character password.
         </p>
       </div>
 
@@ -195,39 +291,57 @@ input::placeholder{color:#94a3b8;}
         </label>
       </div>
 
-      <button id="signupBtn" type="submit" class="btn-primary">
+      <button id="signupBtn" type="submit" class="btn-primary" disabled>
         Create account →
       </button>
+
     </form>
 
     <p class="footer-text">
       Already have an account? <a href="/signin">Sign in</a>
     </p>
-
     <p class="secured">Secured by AVTools</p>
   </div>
 </div>
 
 <!-- Success Popup -->
 <div id="successPopup" style="
-  display:none;
-  position:fixed;
+  display:none;position:fixed;
   top:50%;left:50%;
   transform:translate(-50%,-50%);
-  background:white;
-  padding:18px 26px;
-  border-radius:14px;
-  box-shadow:0 15px 50px rgba(0,0,0,0.25);
+  background:#fff;padding:24px 32px;
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.2);
   font-size:16px;font-weight:700;
-  color:#16a34a;
-  z-index:9999;text-align:center;
+  color:#16a34a;z-index:9999;
+  text-align:center;
 ">
-  ✅ User created successfully!
+  ✅ Account created successfully!<br>
+  <span style="font-size:13px;font-weight:500;color:#64748b;">
+    Redirecting to dashboard…
+  </span>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
+  // WITH THIS — auto-detects local vs production
+  const BASE_URL         = window.location.origin;  // http://127.0.0.1:8000 or https://avtools.in
+  const API_REGISTER_URL = `${BASE_URL}/api/auth/register/`;
+  const DEVICE_CHECK_URL = `${BASE_URL}/api/auth/device/check/`;
+
+  const form            = document.getElementById("signupForm");
+  const btn             = document.getElementById("signupBtn");
+  const passwordInput   = document.getElementById("signupPassword");
+  const passwordError   = document.getElementById("passwordError");
+  const popup           = document.getElementById("successPopup");
+  const deviceError     = document.getElementById("deviceError");
+  const deviceChecking  = document.getElementById("deviceChecking");
+
+  let deviceFingerprint = "";
+  let deviceBlocked     = false;
+
+  // ── localStorage device_id (for mobile API) ──────────────────
   function getDeviceId() {
     let id = localStorage.getItem("device_id");
     if (!id) {
@@ -237,85 +351,124 @@ document.addEventListener("DOMContentLoaded", () => {
     return id;
   }
 
-  const API_REGISTER_URL = "https://avtools.in/api/auth/register/";
+  // ── FingerprintJS — generate + check on page load ─────────────
+  FingerprintJS.load()
+    .then(fp => fp.get())
+    .then(result => {
+      deviceFingerprint = result.visitorId;
+      console.log("🔑 Fingerprint:", deviceFingerprint);
 
-  const form = document.getElementById("signupForm");
-  const btn = document.getElementById("signupBtn");
-  const passwordInput = document.getElementById("signupPassword");
-  const passwordError = document.getElementById("passwordError");
-  const popup = document.getElementById("successPopup");
+      return fetch(`${DEVICE_CHECK_URL}?fingerprint=${deviceFingerprint}`);
+    })
+    .then(r => r.json())
+    .then(data => {
+      deviceChecking.style.display = "none";
 
-  if (!form || !btn || !passwordInput || !passwordError || !popup) {
-    console.log("❌ Missing HTML IDs. Please check signupForm, signupBtn, signupPassword, passwordError, successPopup");
-    return;
-  }
+      if (data.registered) {
+        // ── Block: show error, keep button disabled ──
+        deviceBlocked             = true;
+        deviceError.style.display = "block";
+        btn.disabled              = true;
+      } else {
+        // ── All clear: enable button ──
+        btn.disabled = false;
+      }
+    })
+    .catch(err => {
+      // Silent fail — allow signup if check errors
+      console.warn("⚠️ Device check failed:", err);
+      deviceChecking.style.display = "none";
+      btn.disabled = false;
+    });
 
+  // ── Form submit ───────────────────────────────────────────────
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // Double-check device block
+    if (deviceBlocked) {
+      deviceError.style.display = "block";
+      return;
+    }
+
+    // Validate terms checkbox
+    if (!document.getElementById("agreeTerms").checked) {
+      alert("Please agree to the Terms of Service and Privacy Policy.");
+      return;
+    }
+
+    // Validate password
     passwordError.style.display = "none";
-
-    const payload = {
-      first_name: document.getElementById("firstName").value.trim(),
-      last_name: document.getElementById("lastName").value.trim(),
-      email: document.getElementById("signupEmail").value.trim(),
-      password: passwordInput.value,
-      device_id: getDeviceId()
-    };
-
-    if (payload.password.length < 6) {
+    if (passwordInput.value.length < 6) {
       passwordError.style.display = "block";
       passwordInput.focus();
       return;
     }
 
-    btn.disabled = true;
-    btn.innerText = "Creating account...";
+    const payload = {
+      first_name:         document.getElementById("firstName").value.trim(),
+      last_name:          document.getElementById("lastName").value.trim(),
+      email:              document.getElementById("signupEmail").value.trim(),
+      password:           passwordInput.value,
+      device_id:          getDeviceId(),
+      device_fingerprint: deviceFingerprint,
+    };
+
+    btn.disabled  = true;
+    btn.innerText = "Creating account…";
 
     try {
-      const res = await fetch(API_REGISTER_URL, {
-        method: "POST",
+      const res  = await fetch(API_REGISTER_URL, {
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body:    JSON.stringify(payload),
       });
 
-      const text = await res.text();
       let data = {};
-
       try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.log("❌ Backend not JSON:", text);
-        alert("❌ Server Error (not JSON response)");
+        data = await res.json();
+      } catch {
+        alert("❌ Server error — please try again.");
         return;
       }
 
       if (res.ok) {
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-        }
+        // ── Success ──
+        if (data.token) localStorage.setItem("token", data.token);
         popup.style.display = "block";
         setTimeout(() => {
           popup.style.display = "none";
           window.location.href = "/dashboard/";
         }, 2000);
+
       } else {
-        let errorMessage = "Signup failed. Please try again.";
+        // ── Error from server ──
+        let msg = "Signup failed. Please try again.";
+
         if (data.error) {
-          if (typeof data.error === "string") errorMessage = data.error;
-          else if (data.error.email) errorMessage = data.error.email[0];
-          else if (data.error.password) errorMessage = data.error.password[0];
+          if (typeof data.error === "string") {
+            msg = data.error;
+            // Device blocked server-side (race condition)
+            if (data.error.toLowerCase().includes("device")) {
+              deviceBlocked             = true;
+              deviceError.style.display = "block";
+              btn.disabled              = true;
+              return;
+            }
+          } else if (data.error.email)    msg = data.error.email[0];
+          else if (data.error.password)   msg = data.error.password[0];
+          else if (data.error.username)   msg = data.error.username[0];
         }
-        if (data.email) errorMessage = data.email[0];
-        if (data.password) errorMessage = data.password[0];
-        alert("❌ " + errorMessage);
+
+        alert("❌ " + msg);
+        btn.disabled  = false;
+        btn.innerText = "Create account →";
       }
 
     } catch (err) {
-      console.log("❌ Network Error:", err);
-      alert("❌ Network Error: " + err.message);
-    } finally {
-      btn.disabled = false;
+      console.error("❌ Network error:", err);
+      alert("❌ Network error. Please try again.");
+      btn.disabled  = false;
       btn.innerText = "Create account →";
     }
   });

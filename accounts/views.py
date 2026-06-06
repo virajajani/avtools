@@ -8,7 +8,7 @@ from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from .models import User, UserDevice
+from .models import User, UserDevice, DeviceRegistration, ProductReview
 from .serializers import RegisterSerializer, LoginSerializer
 from .utils import token_expiry_time
 import random
@@ -17,7 +17,17 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from django.shortcuts import render, redirect
-from .models import ContactSupport
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
+from .models import ContactSupport, UserCredit, CreditHistory
+from datetime import timedelta
+
+
+# ═══════════════════════════════════════════════
+# REGISTER API — with device block
+# ═══════════════════════════════════════════════
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RegisterAPI(APIView):
@@ -25,10 +35,22 @@ class RegisterAPI(APIView):
     permission_classes = []
 
     def post(self, request):
-        print(f"📥 Received data: {request.data}")  # Debug
+        print(f"📥 Received data: {request.data}")
 
+        # ── Device fingerprint check ──────────────────────────────────
+        fingerprint = request.data.get("device_fingerprint", "").strip()
+        ip          = request.META.get("REMOTE_ADDR")
+        ua          = request.META.get("HTTP_USER_AGENT", "")
+
+        if fingerprint:
+            if DeviceRegistration.objects.filter(device_fingerprint=fingerprint).exists():
+                return Response(
+                    {"error": "An account is already registered on this device. Please log in instead."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        # ── Validate serializer ───────────────────────────────────────
         serializer = RegisterSerializer(data=request.data)
-
         if not serializer.is_valid():
             print(f"❌ Validation errors: {serializer.errors}")
             return Response(
@@ -36,17 +58,15 @@ class RegisterAPI(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # ✅ Create user
+        # ── Create user ───────────────────────────────────────────────
         user = serializer.save()
-
-        # ✅ No OTP: Directly verify user
         user.is_email_verified = True
         user.save()
 
-        # ✅ Create token
+        # ── Create auth token ─────────────────────────────────────────
         token, _ = Token.objects.get_or_create(user=user)
 
-        # ✅ Save device info
+        # ── Save device_id (mobile app) ───────────────────────────────
         device_id = request.data.get("device_id")
         if device_id:
             UserDevice.objects.update_or_create(
@@ -54,21 +74,58 @@ class RegisterAPI(APIView):
                 device_id=device_id,
                 defaults={
                     "token_expiry": token_expiry_time(),
-                    "last_login": timezone.now()
+                    "last_login":   timezone.now()
                 }
             )
 
+        # ── Save device fingerprint (web browser) ─────────────────────
+        if fingerprint:
+            DeviceRegistration.objects.get_or_create(
+                device_fingerprint=fingerprint,
+                defaults={
+                    "user":       user,
+                    "ip_address": ip,
+                    "user_agent": ua,
+                }
+            )
+
+        # ── Give 10 free credits (get_or_create prevents duplicate) ───
+        credit, created = UserCredit.objects.get_or_create(
+            user=user,
+            defaults={
+                "balance":    10,
+                "expires_at": timezone.now() + timedelta(days=365),
+            }
+        )
+
+        # Only log credit history if we actually created a new row
+        if created:
+            CreditHistory.objects.create(
+                user=user,
+                credits=10,
+                transaction_type="ADD",
+                previous_balance=0,
+                current_balance=10,
+                description="Welcome bonus — 10 free credits",
+            )
+        else:
+            print(f"⚠️ UserCredit already existed for {user.email} with balance {credit.balance}")
+
         return Response({
-            "message": "Account created successfully!",
-            "token": token.key,
+            "message":    "Account created successfully!",
+            "token":      token.key,
             "expires_at": token_expiry_time(),
             "user": {
-                "email": user.email,
+                "email":      user.email,
                 "first_name": user.first_name,
-                "last_name": user.last_name
+                "last_name":  user.last_name
             }
         }, status=status.HTTP_201_CREATED)
 
+
+# ═══════════════════════════════════════════════
+# LOGIN API
+# ═══════════════════════════════════════════════
 
 @method_decorator(csrf_exempt, name="dispatch")
 class LoginAPI(APIView):
@@ -87,10 +144,6 @@ class LoginAPI(APIView):
         if not user:
             return Response({"error": "Invalid credentials"}, status=400)
 
-        # ✅ No OTP check anymore (optional)
-        # if not user.is_email_verified:
-        #     return Response({"error": "Email not verified"}, status=403)
-
         token, _ = Token.objects.get_or_create(user=user)
 
         UserDevice.objects.update_or_create(
@@ -98,7 +151,7 @@ class LoginAPI(APIView):
             device_id=serializer.validated_data["device_id"],
             defaults={
                 "token_expiry": token_expiry_time(),
-                "last_login": timezone.now()
+                "last_login":   timezone.now()
             }
         )
 
@@ -106,14 +159,19 @@ class LoginAPI(APIView):
         user.save()
 
         return Response({
-            "token": token.key,
+            "token":      token.key,
             "expires_at": token_expiry_time(),
             "user": {
-                "email": user.email,
+                "email":      user.email,
                 "first_name": user.first_name,
-                "last_name": user.last_name
+                "last_name":  user.last_name
             }
         })
+
+
+# ═══════════════════════════════════════════════
+# FORGOT PASSWORD / OTP / RESET
+# ═══════════════════════════════════════════════
 
 @method_decorator(csrf_exempt, name="dispatch")
 class ForgotPasswordAPI(APIView):
@@ -122,22 +180,24 @@ class ForgotPasswordAPI(APIView):
 
     def post(self, request):
         email = request.data.get("email", "").strip().lower()
-
         if not email:
-            return Response({"message": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Email is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
-            return Response({"message": "Email not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "Email not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         otp = str(random.randint(100000, 999999))
-
-        # ✅ Save in session
         request.session["reset_email"] = user.email
-        request.session["reset_otp"] = otp
+        request.session["reset_otp"]   = otp
 
-        # ✅ Send OTP to email
         send_mail(
             subject="AVTools Password Reset OTP",
             message=f"Your OTP is: {otp}",
@@ -146,9 +206,10 @@ class ForgotPasswordAPI(APIView):
             fail_silently=False
         )
 
-        print("✅ OTP sent to email:", user.email)
-
-        return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "OTP sent successfully"},
+            status=status.HTTP_200_OK
+        )
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -158,13 +219,18 @@ class VerifyOTPAPI(APIView):
 
     def post(self, request):
         email = request.data.get("email", "").strip().lower()
-        otp = request.data.get("otp", "").strip()
+        otp   = request.data.get("otp", "").strip()
 
         if request.session.get("reset_email") != email:
-            return Response({"message": "Invalid email"}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(
+                {"message": "Invalid email"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         if request.session.get("reset_otp") != otp:
-            return Response({"message": "Invalid OTP"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Invalid OTP"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response({"message": "OTP verified"}, status=status.HTTP_200_OK)
 
@@ -175,65 +241,122 @@ class ResetPasswordAPI(APIView):
     permission_classes = []
 
     def post(self, request):
-        email = request.data.get("email", "").strip().lower()
+        email    = request.data.get("email", "").strip().lower()
         password = request.data.get("password", "").strip()
 
         if not password:
-            return Response({"message": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Password is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
-            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "User not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         user.password = make_password(password)
         user.save()
 
-        # clear session otp
         request.session.pop("reset_email", None)
-        request.session.pop("reset_otp", None)
+        request.session.pop("reset_otp",   None)
 
-        return Response({"message": "Password reset successful"}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "Password reset successful"},
+            status=status.HTTP_200_OK
+        )
 
+
+# ═══════════════════════════════════════════════
+# CONTACT SUPPORT
+# ═══════════════════════════════════════════════
 
 def contact_support(request):
     if request.method == "POST":
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
-        mobile = request.POST.get("mobile")
-        email = request.POST.get("email")
-        message = request.POST.get("message")
-
-        # Save to DB
         ContactSupport.objects.create(
-            first_name=first_name,
-            last_name=last_name,
-            mobile_number=mobile,
-            email=email,
-            message=message
+            first_name    = request.POST.get("first_name"),
+            last_name     = request.POST.get("last_name"),
+            mobile_number = request.POST.get("mobile"),
+            email         = request.POST.get("email"),
+            message       = request.POST.get("message"),
+        )
+        return render(request, "user/contact_success.html")
+    return render(request, "user/contact.html")
+
+
+# ═══════════════════════════════════════════════
+# DEVICE CHECK API
+# ═══════════════════════════════════════════════
+
+def check_device(request):
+    """AJAX — returns whether this browser fingerprint is already registered."""
+    fingerprint = request.GET.get("fingerprint", "").strip()
+    if not fingerprint:
+        return JsonResponse({"registered": False})
+    exists = DeviceRegistration.objects.filter(
+        device_fingerprint=fingerprint
+    ).exists()
+    return JsonResponse({"registered": exists})
+
+
+# ═══════════════════════════════════════════════
+# REVIEW APIs
+# ═══════════════════════════════════════════════
+
+@login_required(login_url='generator:signin')
+@require_POST
+def submit_review(request):
+    rating  = request.POST.get("rating")
+    comment = request.POST.get("comment", "").strip()
+
+    try:
+        rating = int(rating)
+        if rating < 1 or rating > 5:
+            raise ValueError
+    except (TypeError, ValueError):
+        return JsonResponse(
+            {"error": "Rating must be between 1 and 5."},
+            status=400
         )
 
-        # Send Email
-        # email_subject = "New Contact Support Message - AVTools"
-        # email_body = f"""
-        #     New support message received:
+    if not comment:
+        return JsonResponse({"error": "Please write a comment."}, status=400)
 
-        #     Name: {first_name} {last_name}
-        #     Mobile: {mobile}
-        #     Email: {email}
+    review, created = ProductReview.objects.update_or_create(
+        user=request.user,
+        defaults={
+            "rating":  rating,
+            "comment": comment,
+        }
+    )
 
-        #     Message:
-        #     {message}
-        #     """
+    return JsonResponse({
+        "success": True,
+        "message": "Review submitted!" if created else "Review updated!",
+        "review": {
+            "rating":     review.rating,
+            "comment":    review.comment,
+            "created_at": review.created_at.strftime("%d %b %Y"),
+        }
+    })
 
-        # send_mail(
-        #     email_subject,
-        #     email_body,
-        #     settings.DEFAULT_FROM_EMAIL,
-        #     ["avtools.in@gmail.com"],  # YOUR SUPPORT EMAIL
-        #     fail_silently=False,
-        # )
 
-        return render(request, "user/contact_success.html")
+def get_reviews(request):
+    """Public — returns all visible reviews."""
+    reviews = ProductReview.objects.filter(
+        is_visible=True
+    ).select_related("user")
 
-    return render(request, "user/contact.html")
+    data = [
+        {
+            "user":       r.user.get_full_name() or r.user.username,
+            "rating":     r.rating,
+            "comment":    r.comment,
+            "created_at": r.created_at.strftime("%d %b %Y"),
+        }
+        for r in reviews
+    ]
+    return JsonResponse({"reviews": data})

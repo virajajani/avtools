@@ -106,3 +106,34 @@ class CreditHistory(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.transaction_type} - {self.credits}"
+    
+class DeviceRegistration(models.Model):
+    device_fingerprint = models.CharField(max_length=255, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='devices')
+    registered_at = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = "Device Registration"
+
+    def __str__(self):
+        return f"{self.user.email} — {self.device_fingerprint[:20]}"
+    
+
+class ProductReview(models.Model):
+    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]  # 1 to 5
+
+    user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    rating     = models.PositiveSmallIntegerField(choices=RATING_CHOICES)
+    comment    = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_visible = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Product Review"
+
+    def __str__(self):
+        return f"{self.user.email} — {self.rating}★"

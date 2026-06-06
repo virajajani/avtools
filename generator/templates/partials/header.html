@@ -1,97 +1,11 @@
-{% comment %} {% load static %}
-
-<nav class="navbar">
-
-  <div class="logo">
-    <img src="{% static 'images/avtools.png' %}" alt="AVTools">
-  </div>
-
-  <div class="nav-links">
-    <a href="{% url 'generator:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-      Home
-    </a>
-
-    <a href="{% url 'generator:meesho_image_generator' %}" class="{% if request.resolver_match.url_name == 'meesho_image_generator' %}active{% endif %}">
-      Meesho Image Generator
-    </a>
-
-    <a href="{% url 'generator:label_cropper' %}" class="{% if request.resolver_match.url_name == 'label_cropper' %}active{% endif %}">
-      Shipping Label Export
-    </a>
-  </div>
-
-  <div class="user-menu">
-    <div class="credits-badge">⚡ {{ credits }} Credits</div>
-
-    <!-- ✅ Avatar + Dropdown -->
-    <div class="profile-dropdown">
-
-      <button class="avatar-btn" id="avatarBtn" type="button">
-        <span class="avatar-circle">{{ initials }}</span>
-      </button>
-
-      <!-- ✅ Dropdown Panel -->
-      <div class="dropdown-panel" id="dropdownCard">
-
-        <div class="dropdown-user">
-          <div class="dropdown-user-left">
-            <div class="dropdown-avatar">{{ initials }}</div>
-
-            <div class="dropdown-user-text">
-              <div class="dropdown-username">
-  {% if request.user.get_full_name %}
-    {{ request.user.get_full_name }}
-  {% else %}
-    {{ request.user.username }}
-  {% endif %}
-</div>
-<div class="dropdown-email">{{ request.user.email }}</div>
-
-            </div>
-          </div>
-        </div>
-
-        <div class="dropdown-divider"></div>
-
-        <button class="dropdown-link" type="button" onclick="openAccountModal()">
-          <span class="dropdown-ic">⚙️</span>
-          <span>Manage account</span>
-        </button>
-
-        <a class="dropdown-link logout" href="{% url 'generator:logout' %}">
-          <span class="dropdown-ic">↪</span>
-          <span>Sign out</span>
-        </a>
-
-        <div class="dropdown-footer">
-          Secured by <b>AVTools</b>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-</nav> {% endcomment %}
 {% load static %}
 
-<!-- Favicon — rendered once here since app pages may not share base.html <head> -->
+<!-- Favicon -->
 <link rel="icon"           type="image/png" href="{% static 'images/avtools_fev.png' %}">
 <link rel="shortcut icon"                   href="{% static 'images/avtools_fev.png' %}">
 <link rel="apple-touch-icon"                href="{% static 'images/avtools_fev.png' %}">
-<!-- ══════════════════════════════════════════════════════════════
-     partials/header.html  — APP NAVBAR (authenticated pages)
-     · Fully self-contained CSS + JS
-     · All drawer elements use highly specific IDs/classes
-       prefixed with "avh-" to prevent ANY bleed from other navbars
-     · Account modal wired on DOMContentLoaded (no polling)
-══════════════════════════════════════════════════════════════ -->
 
 <style>
-/* ════════════════════════════════════════════════════
-   HARD RESET scoped only to our elements
-   Prevents public navbar / global CSS from touching them
-════════════════════════════════════════════════════ */
 #avhNav,
 #avhNav *,
 #avhDrawer,
@@ -101,9 +15,6 @@
   padding: 0;
 }
 
-/* ════════════════════════════════════════════════════
-   NAVBAR
-════════════════════════════════════════════════════ */
 #avhNav {
   background: #fff;
   border-bottom: 1px solid #e2e8f0;
@@ -120,11 +31,9 @@
 }
 #avhNav.avh-scrolled { box-shadow: 0 4px 20px rgba(15,23,42,.1); }
 
-/* logo */
 #avhNav .avh-logo { text-decoration: none; display: flex; align-items: center; }
 #avhNav .avh-logo img { height: 34px; display: block; }
 
-/* center nav links */
 #avhNav .avh-center { display: flex; align-items: center; gap: 4px; }
 
 #avhNav .avh-link {
@@ -150,10 +59,8 @@
   text-transform: uppercase; letter-spacing: .07em;
 }
 
-/* right cluster */
 #avhNav .avh-right { display: flex; align-items: center; gap: 12px; }
 
-/* credits badge */
 #avhNav .avh-credits {
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   color: #fff;
@@ -165,7 +72,6 @@
   cursor: default;
 }
 
-/* avatar wrapper */
 #avhNav .avh-profile-wrap { position: relative; }
 
 #avhNav .avh-avatar-btn {
@@ -236,6 +142,11 @@
   background: #eef2ff;
   display: flex; align-items: center; justify-content: center; font-size: 14px;
 }
+
+/* ── Rate Us icon — yellow tint ── */
+#avhDropdown .avh-dd-link.avh-review .avh-dd-icon { background: #fef9c3; }
+#avhDropdown .avh-dd-link.avh-review:hover { background: #fefce8; color: #b45309; }
+
 #avhDropdown .avh-dd-link.avh-logout       { color: #dc2626; }
 #avhDropdown .avh-dd-link.avh-logout:hover { background: #fef2f2; color: #b91c1c; }
 #avhDropdown .avh-dd-link.avh-logout .avh-dd-icon { background: #fee2e2; }
@@ -262,7 +173,6 @@
 #avhHamburger.avh-open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 #avhHamburger.avh-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* auth links */
 #avhNav .avh-auth-login {
   text-decoration: none; color: #2563eb;
   font-weight: 700; font-size: 14px;
@@ -282,14 +192,12 @@
 }
 #avhNav .avh-auth-signup:hover { opacity: .88; }
 
-/* ════════════════════════════════════════════════════
-   MOBILE DRAWER
-════════════════════════════════════════════════════ */
+/* ════════════ MOBILE DRAWER ════════════ */
 #avhDrawer {
-  display: none;       /* hidden until JS adds avh-active */
+  display: none;
   position: fixed;
   inset: 0;
-  z-index: 900;        /* above content, below account modal (2000) */
+  z-index: 900;
 }
 #avhDrawer.avh-active { display: block; }
 
@@ -317,7 +225,6 @@
 }
 #avhDrawer.avh-open #avhPanel { transform: translateY(0); }
 
-/* drawer head row */
 #avhHead {
   display: flex;
   justify-content: space-between;
@@ -328,14 +235,10 @@
 }
 #avhHead img { height: 30px; display: block; }
 
-/* ── THE SINGLE CLOSE BUTTON — ID-targeted only, zero inheritance ── */
 #avhCloseBtn {
-  /* reset everything */
   all: unset;
-  /* our styles */
   box-sizing: border-box;
-  width: 36px;
-  height: 36px;
+  width: 36px; height: 36px;
   background: #f1f5f9;
   border-radius: 8px;
   cursor: pointer;
@@ -350,7 +253,6 @@
 }
 #avhCloseBtn:hover { background: #e2e8f0; color: #0f172a; }
 
-/* user strip in drawer */
 #avhUserStrip {
   background: #f8fafc; border-radius: 14px;
   padding: 14px; display: flex; align-items: center; gap: 12px;
@@ -373,10 +275,7 @@
   margin: 4px 0 12px; width: fit-content;
 }
 
-/* nav links inside drawer */
-#avhLinks {
-  display: flex; flex-direction: column;
-}
+#avhLinks { display: flex; flex-direction: column; }
 #avhLinks .avh-dlink {
   text-decoration: none; color: #1e293b;
   font-size: 16px; font-weight: 600;
@@ -389,7 +288,6 @@
 #avhLinks .avh-dlink .avh-arr { color: #94a3b8; font-size: 16px; }
 #avhLinks .avh-dlink.active { color: #2563eb; font-weight: 700; }
 
-/* drawer action buttons */
 #avhActions {
   display: flex; flex-direction: column; gap: 8px;
   margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0;
@@ -409,6 +307,21 @@
 }
 #avhBtnAccount:hover { background: #dbeafe; }
 
+/* ── Rate Us button in drawer ── */
+#avhBtnReview {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 13px 20px; border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700; font-size: 15px;
+  text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: #fef9c3; color: #b45309;
+  cursor: pointer; transition: background .2s;
+}
+#avhBtnReview:hover { background: #fde68a; }
+
 #avhBtnLogout {
   display: block; width: 100%;
   padding: 13px 20px; border-radius: 12px;
@@ -419,7 +332,6 @@
 }
 #avhBtnLogout:hover { background: #fecaca; }
 
-/* unauthenticated drawer buttons */
 .avh-drawer-auth-login {
   display: block; text-decoration: none;
   padding: 13px 20px; border-radius: 12px;
@@ -435,16 +347,12 @@
   box-shadow: 0 4px 14px rgba(37,99,235,.3);
 }
 
-/* ════════════════════════════════════════════════════
-   RESPONSIVE
-════════════════════════════════════════════════════ */
 @media (max-width: 960px) {
-  #avhNav .avh-center    { display: none; }
-  #avhNav .avh-credits   { display: none; }
+  #avhNav .avh-center       { display: none; }
+  #avhNav .avh-credits      { display: none; }
   #avhNav .avh-profile-wrap { display: none; }
-  #avhHamburger          { display: flex; }
+  #avhHamburger             { display: flex; }
 }
-
 @media (max-width: 480px) {
   #avhNav { padding: 0 5%; height: 58px; }
   #avhNav .avh-logo img { height: 28px; }
@@ -497,13 +405,26 @@
               </div>
             </div>
           </div>
+
           <div class="avh-dd-div"></div>
+
+          <!-- Manage account -->
           <button class="avh-dd-link" type="button" id="avhDesktopAccountBtn" role="menuitem">
             <span class="avh-dd-icon">⚙️</span> Manage account
           </button>
+
+          <!-- ⭐ Rate Us — desktop dropdown -->
+          <button class="avh-dd-link avh-review" type="button" id="avhDesktopReviewBtn" role="menuitem">
+            <span class="avh-dd-icon">⭐</span> Rate AVTools
+          </button>
+
+          <div class="avh-dd-div"></div>
+
+          <!-- Sign out -->
           <a class="avh-dd-link avh-logout" href="{% url 'generator:logout' %}" role="menuitem">
             <span class="avh-dd-icon">↪</span> Sign out
           </a>
+
           <div class="avh-dd-footer">Secured by <b>AVTools</b></div>
         </div>
       </div>
@@ -528,7 +449,6 @@
 
     <div id="avhHead">
       <img src="{% static 'images/avtools.png' %}" alt="AVTools">
-      <!-- ID-only styled — impossible for any other CSS to accidentally target -->
       <button id="avhCloseBtn" aria-label="Close menu" type="button">✕</button>
     </div>
 
@@ -563,6 +483,10 @@
     <div id="avhActions">
       {% if request.user.is_authenticated %}
         <button id="avhBtnAccount" type="button">⚙️ Manage Account</button>
+
+        <!-- ⭐ Rate Us — mobile drawer -->
+        <button id="avhBtnReview" type="button">⭐ Rate AVTools</button>
+
         <a id="avhBtnLogout" href="{% url 'generator:logout' %}">↪ Sign Out</a>
       {% else %}
         <a href="{% url 'generator:signin' %}" class="avh-drawer-auth-login">Log In</a>
@@ -575,13 +499,6 @@
 
 
 <script>
-/*
- * header.html — inline script
- * Uses only IDs to reference elements (no class queries that could
- * accidentally match the public navbar's elements).
- * Account modal wired on DOMContentLoaded — guaranteed after
- * account_modal.html's script has run.
- */
 (function () {
   'use strict';
 
@@ -594,8 +511,8 @@
   /* ════════════════════════════════════════════
      DESKTOP DROPDOWN
   ════════════════════════════════════════════ */
-  var avatarBtn  = document.getElementById('avhAvatarBtn');
-  var dropdown   = document.getElementById('avhDropdown');
+  var avatarBtn = document.getElementById('avhAvatarBtn');
+  var dropdown  = document.getElementById('avhDropdown');
 
   function closeDropdown() {
     if (dropdown) dropdown.classList.remove('avh-show');
@@ -629,7 +546,6 @@
   function openDrawer() {
     if (!drawer) return;
     drawer.classList.add('avh-active');
-    /* force reflow so CSS transition runs on first open */
     void drawer.offsetWidth;
     drawer.classList.add('avh-open');
     if (hamburger) {
@@ -647,7 +563,6 @@
       hamburger.setAttribute('aria-expanded', 'false');
     }
     document.body.style.overflow = '';
-    /* hide after slide-up transition completes */
     setTimeout(function () {
       if (drawer && !drawer.classList.contains('avh-open')) {
         drawer.classList.remove('avh-active');
@@ -657,7 +572,6 @@
 
   if (hamburger) hamburger.addEventListener('click', openDrawer);
 
-  /* close button — addEventListener only, no onclick attr */
   if (closeBtn) {
     closeBtn.addEventListener('click', function (e) {
       e.preventDefault();
@@ -668,7 +582,6 @@
 
   if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
-  /* close on nav link click */
   var links = document.getElementById('avhLinks');
   if (links) {
     links.querySelectorAll('.avh-dlink').forEach(function (a) {
@@ -682,40 +595,62 @@
     }
   });
 
-  /* expose for account_modal.html to call if needed */
   window._avhCloseDrawer = closeDrawer;
 
   /* ════════════════════════════════════════════
-     ACCOUNT MODAL WIRING
-     DOMContentLoaded fires after ALL partials are parsed,
-     so window.openAccountModal from account_modal.html exists.
+     DOMContentLoaded — wire all modal buttons
   ════════════════════════════════════════════ */
   document.addEventListener('DOMContentLoaded', function () {
 
+    /* ── Account modal ── */
     function callOpenAccountModal() {
       if (typeof window.openAccountModal === 'function') {
         window.openAccountModal();
       } else {
-        console.error('[AVTools] openAccountModal not found. Is account_modal.html included?');
+        console.error('[AVTools] openAccountModal not found.');
       }
     }
 
-    /* Desktop dropdown → "Manage account" */
-    var desktopBtn = document.getElementById('avhDesktopAccountBtn');
-    if (desktopBtn) {
-      desktopBtn.addEventListener('click', function () {
+    var desktopAccountBtn = document.getElementById('avhDesktopAccountBtn');
+    if (desktopAccountBtn) {
+      desktopAccountBtn.addEventListener('click', function () {
         closeDropdown();
         callOpenAccountModal();
       });
     }
 
-    /* Mobile drawer → "Manage Account" */
-    var drawerBtn = document.getElementById('avhBtnAccount');
-    if (drawerBtn) {
-      drawerBtn.addEventListener('click', function () {
+    var drawerAccountBtn = document.getElementById('avhBtnAccount');
+    if (drawerAccountBtn) {
+      drawerAccountBtn.addEventListener('click', function () {
         closeDrawer();
-        /* slight delay so drawer slides away before modal appears */
         setTimeout(callOpenAccountModal, 60);
+      });
+    }
+
+    /* ── Review modal ── */
+    function callOpenReviewModal() {
+      if (typeof window.openReviewModal === 'function') {
+        window.openReviewModal();
+      } else {
+        console.error('[AVTools] openReviewModal not found. Is review_modal.html included?');
+      }
+    }
+
+    /* Desktop dropdown → Rate AVTools */
+    var desktopReviewBtn = document.getElementById('avhDesktopReviewBtn');
+    if (desktopReviewBtn) {
+      desktopReviewBtn.addEventListener('click', function () {
+        closeDropdown();
+        callOpenReviewModal();
+      });
+    }
+
+    /* Mobile drawer → Rate AVTools */
+    var drawerReviewBtn = document.getElementById('avhBtnReview');
+    if (drawerReviewBtn) {
+      drawerReviewBtn.addEventListener('click', function () {
+        closeDrawer();
+        setTimeout(callOpenReviewModal, 60);
       });
     }
 

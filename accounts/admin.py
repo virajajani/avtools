@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import (
     CreditHistory,
+    DeviceRegistration,
+    ProductReview,
     User,
     UserDevice,
     UserCredit,
@@ -138,4 +140,43 @@ class CreditHistoryAdmin(admin.ModelAdmin):
 
     readonly_fields = (
         "created_at",
+    )
+
+@admin.register(DeviceRegistration)
+class DeviceRegistrationAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "device_fingerprint",
+        "registered_at",
+    )
+    search_fields = (
+        "device_fingerprint",
+        "user__email",
+    )
+    list_filter = ("registered_at",)
+    ordering = ("-registered_at",)
+    readonly_fields = ("registered_at",)
+
+
+@admin.register(ProductReview)
+class ProductReviewAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "rating",
+        "is_visible",
+        "created_at",
+    )
+    search_fields = (
+        "user__email",
+        "comment",
+    )
+    list_filter = (
+        "rating",
+        "is_visible",
+        "created_at",
+    )
+    ordering = ("-created_at",)
+    readonly_fields = (
+        "created_at",
+        "updated_at",
     )
