@@ -172,7 +172,6 @@ class LoginAPI(APIView):
 # ═══════════════════════════════════════════════
 # FORGOT PASSWORD / OTP / RESET
 # ═══════════════════════════════════════════════
-
 @method_decorator(csrf_exempt, name="dispatch")
 class ForgotPasswordAPI(APIView):
     authentication_classes = []
@@ -198,19 +197,249 @@ class ForgotPasswordAPI(APIView):
         request.session["reset_email"] = user.email
         request.session["reset_otp"]   = otp
 
-        send_mail(
-            subject="AVTools Password Reset OTP",
-            message=f"Your OTP is: {otp}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False
+        # ── Beautiful HTML email ──────────────────────────────────────
+        first_name   = user.first_name or user.email.split("@")[0]
+        html_message = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Reset OTP</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Inter',Arial,sans-serif;">
+
+  <!-- Wrapper -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0"
+         style="background-color:#f1f5f9;padding:40px 20px;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table width="560" cellpadding="0" cellspacing="0" border="0"
+               style="max-width:560px;width:100%;background:#ffffff;
+                      border-radius:24px;overflow:hidden;
+                      box-shadow:0 20px 60px rgba(15,23,42,0.10);">
+
+          <!-- ── HEADER GRADIENT ── -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);
+                       padding:36px 40px;text-align:center;">
+
+              <!-- Logo placeholder — replace src with your hosted logo -->
+              <div style="font-size:28px;font-weight:900;color:#ffffff;
+                          letter-spacing:-0.5px;margin-bottom:6px;">
+                ⚡ AVTools
+              </div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.80);
+                          font-weight:500;">
+                Empowering Your Vision
+              </div>
+            </td>
+          </tr>
+
+          <!-- ── BODY ── -->
+          <tr>
+            <td style="padding:40px 40px 32px;">
+
+              <!-- Icon -->
+              <div style="text-align:center;margin-bottom:24px;">
+                <div style="display:inline-block;width:72px;height:72px;
+                            background:linear-gradient(135deg,#eff6ff,#f5f3ff);
+                            border-radius:50%;line-height:72px;font-size:32px;
+                            border:2px solid #e0e7ff;">
+                  🔐
+                </div>
+              </div>
+
+              <!-- Greeting -->
+              <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;
+                         color:#0f172a;text-align:center;letter-spacing:-0.3px;">
+                Password Reset Request
+              </h1>
+              <p style="margin:0 0 28px;font-size:15px;color:#64748b;
+                        text-align:center;line-height:1.6;">
+                Hi <strong style="color:#0f172a;">{first_name}</strong>, we received a request
+                to reset your AVTools password. Use the code below.
+              </p>
+
+              <!-- OTP Box -->
+              <div style="background:linear-gradient(135deg,#f8fafc,#f1f5f9);
+                          border:2px dashed #c7d2fe;border-radius:16px;
+                          padding:28px 24px;text-align:center;margin-bottom:28px;">
+                <p style="margin:0 0 10px;font-size:12px;font-weight:700;
+                           color:#6366f1;text-transform:uppercase;
+                           letter-spacing:0.1em;">
+                  Your Verification Code
+                </p>
+
+                <!-- OTP Digits -->
+                <div style="display:inline-block;">
+                  {''.join([
+                    f'<span style="display:inline-block;width:44px;height:52px;'
+                    f'background:#ffffff;border:2px solid #e0e7ff;'
+                    f'border-radius:10px;font-size:26px;font-weight:900;'
+                    f'color:#2563eb;line-height:52px;text-align:center;'
+                    f'margin:0 3px;box-shadow:0 2px 8px rgba(99,102,241,0.12);">'
+                    f'{digit}</span>'
+                    for digit in otp
+                  ])}
+                </div>
+
+                <p style="margin:14px 0 0;font-size:12px;color:#94a3b8;
+                           font-weight:500;">
+                  ⏰ This code expires in <strong style="color:#ef4444;">10 minutes</strong>
+                </p>
+              </div>
+
+              <!-- Warning -->
+              <div style="background:#fff7ed;border:1px solid #fed7aa;
+                          border-radius:12px;padding:14px 18px;
+                          margin-bottom:28px;">
+                <p style="margin:0;font-size:13px;color:#92400e;
+                           line-height:1.6;">
+                  🔒 <strong>Security notice:</strong> If you did not request
+                  this code, please ignore this email. Your account remains
+                  secure. Do not share this code with anyone.
+                </p>
+              </div>
+
+              <!-- Steps -->
+              <p style="margin:0 0 12px;font-size:13px;font-weight:700;
+                         color:#334155;">
+                How to reset your password:
+              </p>
+              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td style="padding:6px 0;">
+                    <span style="display:inline-block;width:22px;height:22px;
+                                 background:#eff6ff;border-radius:50%;
+                                 font-size:11px;font-weight:800;color:#2563eb;
+                                 text-align:center;line-height:22px;
+                                 margin-right:10px;vertical-align:middle;">1</span>
+                    <span style="font-size:13px;color:#475569;vertical-align:middle;">
+                      Go back to the AVTools password reset page
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 0;">
+                    <span style="display:inline-block;width:22px;height:22px;
+                                 background:#eff6ff;border-radius:50%;
+                                 font-size:11px;font-weight:800;color:#2563eb;
+                                 text-align:center;line-height:22px;
+                                 margin-right:10px;vertical-align:middle;">2</span>
+                    <span style="font-size:13px;color:#475569;vertical-align:middle;">
+                      Enter the 6-digit code shown above
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 0;">
+                    <span style="display:inline-block;width:22px;height:22px;
+                                 background:#eff6ff;border-radius:50%;
+                                 font-size:11px;font-weight:800;color:#2563eb;
+                                 text-align:center;line-height:22px;
+                                 margin-right:10px;vertical-align:middle;">3</span>
+                    <span style="font-size:13px;color:#475569;vertical-align:middle;">
+                      Create your new secure password
+                    </span>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- ── DIVIDER ── -->
+          <tr>
+            <td style="padding:0 40px;">
+              <div style="height:1px;background:#e2e8f0;"></div>
+            </td>
+          </tr>
+
+          <!-- ── FOOTER ── -->
+          <tr>
+            <td style="padding:24px 40px 32px;text-align:center;">
+              <p style="margin:0 0 8px;font-size:12px;color:#94a3b8;
+                         line-height:1.6;">
+                This email was sent to
+                <strong style="color:#64748b;">{email}</strong>
+                because a password reset was requested for your AVTools account.
+              </p>
+              <p style="margin:0 0 16px;font-size:12px;color:#94a3b8;">
+                If you didn't request this, no action is needed.
+              </p>
+
+              <!-- Footer links -->
+              <p style="margin:0 0 12px;">
+                <a href="https://avtools.in"
+                   style="color:#3b82f6;text-decoration:none;
+                          font-size:12px;font-weight:600;margin:0 8px;">
+                  avtools.in
+                </a>
+                <span style="color:#e2e8f0;">|</span>
+                <a href="https://avtools.in/privacy/"
+                   style="color:#3b82f6;text-decoration:none;
+                          font-size:12px;font-weight:600;margin:0 8px;">
+                  Privacy Policy
+                </a>
+                <span style="color:#e2e8f0;">|</span>
+                <a href="https://avtools.in/contact/"
+                   style="color:#3b82f6;text-decoration:none;
+                          font-size:12px;font-weight:600;margin:0 8px;">
+                  Support
+                </a>
+              </p>
+
+              <p style="margin:0;font-size:11px;color:#cbd5e1;">
+                © 2026 AVTools. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+        """
+
+        # ── Plain text fallback ───────────────────────────────────────
+        plain_message = (
+            f"Hi {first_name},\n\n"
+            f"Your AVTools password reset code is: {otp}\n\n"
+            f"This code expires in 10 minutes.\n\n"
+            f"If you did not request this, please ignore this email.\n\n"
+            f"— AVTools Team"
         )
+
+        # ── Send email ────────────────────────────────────────────────
+        try:
+            send_mail(
+                subject     = "🔐 Your AVTools Password Reset Code",
+                message     = plain_message,
+                from_email  = settings.DEFAULT_FROM_EMAIL,
+                recipient_list = [user.email],
+                html_message   = html_message,
+                fail_silently  = False,
+            )
+            print(f"✅ OTP email sent to {user.email}")
+        except Exception as e:
+            print(f"❌ Email send failed: {e}")
+            return Response(
+                {"message": "Failed to send email. Please try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
         return Response(
             {"message": "OTP sent successfully"},
             status=status.HTTP_200_OK
         )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class VerifyOTPAPI(APIView):
