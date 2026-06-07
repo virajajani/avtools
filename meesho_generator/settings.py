@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'import_export',
     'django_filters',
-    
+
     # Local apps
     'generator',
     'accounts',
@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'meesho_generator.wsgi.application'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # optional
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -97,7 +97,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'generator.context_processors.account_modal_data',  # add this
+                'generator.context_processors.account_modal_data',
             ],
         },
     },
@@ -116,6 +116,7 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'connect_timeout': 10,
         },
     }
 }
@@ -147,19 +148,17 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
 # --------------------------------------------------
 # DEFAULT PRIMARY KEY
 # --------------------------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --------------------------------------------------
-# DJANGO REST FRAMEWORK (OPTIONAL DEFAULTS)
+# DJANGO REST FRAMEWORK
 # --------------------------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -168,20 +167,25 @@ REST_FRAMEWORK = {
 }
 
 # --------------------------------------------------
-# EMAIL CONFIGURATION (OTP / SMTP)
+# EMAIL CONFIGURATION
 # --------------------------------------------------
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
-EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
-
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_BACKEND      = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST         = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT         = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS      = os.getenv("EMAIL_USE_TLS", "True") == "True"
+EMAIL_HOST_USER    = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_TIMEOUT      = 10   # ← KEY FIX: kills hung SMTP after 10 seconds
 
 # --------------------------------------------------
-# SECURITY SETTINGS (PRODUCTION SAFE)
+# SESSION
+# --------------------------------------------------
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 86400  # 1 day
+
+# --------------------------------------------------
+# SECURITY SETTINGS (PRODUCTION)
 # --------------------------------------------------
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -191,10 +195,14 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
 
+# --------------------------------------------------
+# UPLOAD SIZE LIMITS
+# --------------------------------------------------
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600   # 100 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600   # 100 MB
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600
-FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600
-
-
-RAZORPAY_API_KEY = config("RAZORPAY_API_KEY")
+# --------------------------------------------------
+# RAZORPAY
+# --------------------------------------------------
+RAZORPAY_API_KEY        = config("RAZORPAY_API_KEY")
 RAZORPAY_API_SECRET_KEY = config("RAZORPAY_API_SECRET_KEY")
