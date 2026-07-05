@@ -167,16 +167,16 @@ REST_FRAMEWORK = {
 }
 
 # --------------------------------------------------
-# EMAIL CONFIGURATION
+# EMAIL CONFIGURATION (Mailtrap)
 # --------------------------------------------------
-EMAIL_BACKEND      = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST         = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT         = int(os.getenv("EMAIL_PORT", 587))
-EMAIL_USE_TLS      = os.getenv("EMAIL_USE_TLS", "True") == "True"
-EMAIL_HOST_USER    = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_TIMEOUT      = 10   # ← KEY FIX: kills hung SMTP after 10 seconds
+EMAIL_BACKEND       = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST          = os.getenv("EMAIL_HOST", "live.smtp.mailtrap.io")
+EMAIL_PORT          = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS       = os.getenv("EMAIL_USE_TLS", "True") == "True"
+EMAIL_HOST_USER     = os.getenv("EMAIL_HOST_USER", "api")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")   # Your Mailtrap API token
+DEFAULT_FROM_EMAIL  = os.getenv("DEFAULT_FROM_EMAIL", "noreply@avtools.in")
+EMAIL_TIMEOUT       = 10
 
 # --------------------------------------------------
 # SESSION
