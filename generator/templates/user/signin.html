@@ -128,6 +128,38 @@ input::placeholder{color:#94a3b8;}
 
 .input-error{border-color:#ef4444 !important;}
 
+/* ── Password field with eye toggle ── */
+.password-wrapper{
+  position:relative;
+}
+.password-wrapper input{
+  padding-right:44px; /* room for the eye icon */
+}
+.toggle-password{
+  position:absolute;
+  top:50%;
+  right:12px;
+  transform:translateY(-50%);
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#94a3b8;
+  transition:color 0.2s;
+}
+.toggle-password:hover{ color:#3b82f6; }
+.toggle-password svg{
+  width:20px;
+  height:20px;
+  display:block;
+}
+.toggle-password .icon-eye-off{ display:none; }
+.toggle-password.is-visible .icon-eye{ display:none; }
+.toggle-password.is-visible .icon-eye-off{ display:block; }
+
 .forgot-password{
   text-align:right;margin-top:-10px;margin-bottom:18px;
 }
@@ -214,7 +246,19 @@ input::placeholder{color:#94a3b8;}
 
       <div class="form-group">
         <label>Password</label>
-        <input id="loginPassword" name="password" type="password" placeholder="Enter your password" required>
+        <div class="password-wrapper">
+          <input id="loginPassword" name="password" type="password" placeholder="Enter your password" required>
+          <button type="button" class="toggle-password" data-target="loginPassword" aria-label="Show password">
+            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.68 19.68 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a19.7 19.7 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
         <p id="passwordError" class="error-text">Email or password is incorrect</p>
       </div>
 
@@ -280,6 +324,24 @@ loginForm.addEventListener("submit", async (e) => {
   } catch (err) {
     showPasswordError("Server error. Please try again.");
   }
+});
+
+/* ══════════════════════════════════════════════
+   PASSWORD SHOW/HIDE TOGGLE (works for any number
+   of .toggle-password buttons on the page)
+══════════════════════════════════════════════ */
+document.querySelectorAll(".toggle-password").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    const targetId = btn.getAttribute("data-target");
+    const input = document.getElementById(targetId);
+    if (!input) return;
+
+    const isPassword = input.type === "password";
+    input.type = isPassword ? "text" : "password";
+
+    btn.classList.toggle("is-visible", isPassword);
+    btn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+  });
 });
 </script>
 

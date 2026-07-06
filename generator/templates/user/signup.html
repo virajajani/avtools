@@ -25,7 +25,7 @@ body::before{
   content:'';
   position:fixed;
   top:0;left:0;right:0;bottom:0;
-  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   opacity:0.4;
   z-index:0;
 }
@@ -95,6 +95,38 @@ input[type="password"]:focus{
   box-shadow:0 0 0 3px rgba(59,130,246,0.1);
 }
 input::placeholder{color:#94a3b8;}
+
+/* ── Password field with eye toggle ── */
+.password-wrapper{
+  position:relative;
+}
+.password-wrapper input{
+  padding-right:44px; /* room for the eye icon */
+}
+.toggle-password{
+  position:absolute;
+  top:50%;
+  right:12px;
+  transform:translateY(-50%);
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#94a3b8;
+  transition:color 0.2s;
+}
+.toggle-password:hover{ color:#3b82f6; }
+.toggle-password svg{
+  width:20px;
+  height:20px;
+  display:block;
+}
+.toggle-password .icon-eye-off{ display:none; }
+.toggle-password.is-visible .icon-eye{ display:none; }
+.toggle-password.is-visible .icon-eye-off{ display:block; }
 
 .checkbox-group{
   display:flex;align-items:flex-start;
@@ -277,8 +309,20 @@ input::placeholder{color:#94a3b8;}
 
       <div class="form-group">
         <label>Password</label>
-        <input id="signupPassword" type="password"
-               placeholder="Create a strong password (min 6 chars)" required>
+        <div class="password-wrapper">
+          <input id="signupPassword" type="password"
+                 placeholder="Create a strong password (min 6 chars)" required>
+          <button type="button" class="toggle-password" data-target="signupPassword" aria-label="Show password">
+            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.68 19.68 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a19.7 19.7 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
         <p id="passwordError" class="field-error">
           Please enter a minimum 6 character password.
         </p>
@@ -474,6 +518,23 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.disabled  = false;
       btn.innerText = "Create account →";
     }
+  });
+
+  /* ══════════════════════════════════════════════
+     PASSWORD SHOW/HIDE TOGGLE
+  ══════════════════════════════════════════════ */
+  document.querySelectorAll(".toggle-password").forEach(function (toggleBtn) {
+    toggleBtn.addEventListener("click", function () {
+      const targetId = toggleBtn.getAttribute("data-target");
+      const input = document.getElementById(targetId);
+      if (!input) return;
+
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+
+      toggleBtn.classList.toggle("is-visible", isPassword);
+      toggleBtn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+    });
   });
 
 });
