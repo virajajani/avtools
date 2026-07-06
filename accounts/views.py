@@ -473,9 +473,9 @@ class ResetPasswordAPI(APIView):
         email    = request.data.get("email", "").strip().lower()
         password = request.data.get("password", "").strip()
 
-        if not password:
+        if not password or len(password) < 8:
             return Response(
-                {"message": "Password is required"},
+                {"message": "Password must be at least 8 characters."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -487,8 +487,15 @@ class ResetPasswordAPI(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        user.password = make_password(password)
-        user.save()
+        # ✅ Use set_password() — never assign make_password() to .password manually.
+        # This guarantees exactly one hashing pass regardless of any custom
+        # save()/signal logic on the User model.
+        user.set_password(password)
+        user.save(update_fields=["password"])
+
+        # Optional but recommended: invalidate any existing auth tokens so old
+        # sessions/tokens can't be used with the stale credential state.
+        Token.objects.filter(user=user).delete()
 
         request.session.pop("reset_email", None)
         request.session.pop("reset_otp",   None)
