@@ -9,12 +9,13 @@ from .models import (
     EmailOTP,
     ContactSupport
 )
+from import_export.admin import ImportExportMixin
 
 # =========================
 # USER ADMIN
 # =========================
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = (
         "email",
         "username",
@@ -33,7 +34,7 @@ class UserAdmin(admin.ModelAdmin):
 # USER DEVICE ADMIN
 # =========================
 @admin.register(UserDevice)
-class UserDeviceAdmin(admin.ModelAdmin):
+class UserDeviceAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = (
         "user",
         "device_id",
@@ -55,7 +56,7 @@ class UserDeviceAdmin(admin.ModelAdmin):
 # USER CREDIT ADMIN
 # =========================
 @admin.register(UserCredit)
-class UserCreditAdmin(admin.ModelAdmin):
+class UserCreditAdmin(ImportExportMixin, admin.ModelAdmin):
     list_display = (
         "user",
         "balance",

@@ -10,7 +10,7 @@ from .models import (
 
 
 @admin.register(PaymentTransaction)
-class PaymentTransactionAdmin(admin.ModelAdmin):
+class PaymentTransactionAdmin(ImportExportMixin, admin.ModelAdmin):
 
     list_display = (
         'id',
