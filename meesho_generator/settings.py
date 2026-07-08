@@ -25,14 +25,17 @@ CSRF_TRUSTED_ORIGINS = [
     "http://139.59.12.154",
     "http://localhost",
     "https://avtools.in",
-    "http://avtools.in"
+    "https://www.avtools.in",
+    "http://avtools.in",
+    "http://www.avtools.in",
 ]
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "139.59.12.154",
     "localhost",
-    "avtools.in"
+    "avtools.in",
+    "www.avtools.in",
 ]
 
 # --------------------------------------------------
@@ -198,8 +201,18 @@ if not DEBUG:
 # --------------------------------------------------
 # UPLOAD SIZE LIMITS
 # --------------------------------------------------
-DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600   # 100 MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600   # 100 MB
+# Aligned with nginx's `client_max_body_size 20M;` (host-level config at
+# /etc/nginx/sites-available/avtools). Any request nginx will accept should
+# also be accepted here — no point allowing more than nginx will ever forward,
+# and no point being stricter than nginx and confusing the 413 vs 400 errors.
+#
+# NOTE: process_labels() in views.py enforces its own per-file 50MB check
+# and a 20-file max for logged-in users. If you increase nginx's limit later
+# (e.g. to accommodate many large PDFs merged in one request), raise both
+# of these together, and also bump MAX_FILE_SIZE in views.py if needed.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024   # 20 MB — matches nginx client_max_body_size
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024   # 20 MB — matches nginx client_max_body_size
+DATA_UPLOAD_MAX_NUMBER_FILES = 100               # allows the 20-file logged-in upload plus headroom
 
 # --------------------------------------------------
 # RAZORPAY
