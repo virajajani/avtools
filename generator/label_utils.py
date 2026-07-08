@@ -269,7 +269,7 @@
 
 #             "shadowfax",
 
-#             "xpressbees",
+#             "xpress bees",
 
 #             "ecom express",
 
@@ -892,8 +892,7 @@ class MeeshoLabelCropper:
     # ── Detect courier partner ──────────────────────────────────────
     def get_courier_name(self, page: fitz.Page) -> str:
         text = page.get_text().lower()
-        for courier in ["delhivery", "valmo", "shadowfax",
-                        "xpressbees", "ecom express", "ekart"]:
+        for courier in ["delhivery", "valmo", "shadowfax", "xpress bees", "ecom express", "ekart", "bluedart", "jusda" , "loadshare", "fedex", "wow", "elasticrun", "dtdc"]:
             if courier in text:
                 return courier.title()
         return "Unknown"
