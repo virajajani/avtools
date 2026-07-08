@@ -456,7 +456,6 @@ def download_image(request):
 #         print(traceback.format_exc())
 #         return JsonResponse({'error': f'Error processing PDF: {str(e)}'}, status=500)
 
-
 import base64
 import traceback
 from datetime import datetime
@@ -467,10 +466,11 @@ from django.shortcuts import render
 from django.utils.timezone import now
 from django.views.decorators.http import require_POST
 
-from .label_utils import crop_meesho_labels_to_pdf, LABEL_SIZES, DEFAULT_SIZE
+from .label_utils import crop_meesho_labels_to_pdf, LABEL_SIZES, DEFAULT_SIZE, SORT_ONLY
 from .models import DailyLabelSummary, MonthlyLabelSummary
 
-ALLOWED_SIZES = set(LABEL_SIZES.keys())   # {"3x5", "4x4", "4x6", "A4"}
+# ALLOWED_SIZES = every fixed crop size PLUS the default sort_only mode
+ALLOWED_SIZES = set(LABEL_SIZES.keys()) | {SORT_ONLY}   # {"sort_only","3x5","4x4","4x6","A4"}
 MAX_FILE_SIZE = 50 * 1024 * 1024          # 50 MB per file
 MAX_FILES_LOGGEDIN = 20
 MAX_FILES_GUEST    = 1                    # guests: single PDF only
@@ -502,7 +502,7 @@ def label_cropper(request):
 # =============================================================================
 # PROCESS LABELS  —  POST /process-labels/
 #
-# Guest users  : max 1 PDF, all sizes
+# Guest users  : max 1 PDF, all sizes (default = sort_only, no crop/resize)
 # Logged-in    : max 20 PDFs (merged), all sizes
 # =============================================================================
 

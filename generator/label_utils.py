@@ -796,12 +796,15 @@
 #         pdf_file
 #     )
 
-
 # ============================================================
 # FILE: generator/label_utils.py
 # Meesho Label Cropper — size-aware crop + exact output size
 #
 # Crop boundary logic:
+#   • sort_only (DEFAULT) → no cropping/resizing at all. Pages are
+#             kept exactly as they are in the source PDF, only
+#             sorted courier-wise (and product-wise within each
+#             courier). Nothing is removed, nothing is scaled.
 #   • 3x5  → crop ABOVE TAX INVOICE (removed), page height fits
 #             content (thermal-printer safe, no fixed height)
 #   • 4x4 / 4x6 / A4 → fixed page size, include TAX INVOICE,
@@ -825,7 +828,11 @@ LABEL_SIZES = {
     "A4":  (210 * 2.83465, 297 * 2.83465), # 595.3 × 841.9 pt
 }
 
-DEFAULT_SIZE = "3x5"
+# Special mode: no crop, no resize — just courier-wise sorting.
+# This is the DEFAULT behaviour now.
+SORT_ONLY = "sort_only"
+
+DEFAULT_SIZE = SORT_ONLY
 
 # Sizes where TAX INVOICE section is EXCLUDED (crop above it)
 EXCLUDE_TAX_INVOICE_SIZES = {"3x5"}
@@ -859,21 +866,32 @@ def merge_pdf_files(pdf_file_list):
 
 class MeeshoLabelCropper:
     """
-    Crops Meesho shipping labels from one merged fitz.Document.
+    Crops (or, in sort_only mode, simply sorts) Meesho shipping labels
+    from one merged fitz.Document.
 
     Parameters
     ----------
-    label_size : str   — "3x5" | "4x4" | "4x6" | "A4"
+    label_size : str   — "sort_only" (default) | "3x5" | "4x4" | "4x6" | "A4"
     debug      : bool  — print progress to stdout
     """
 
     def __init__(self, label_size: str = DEFAULT_SIZE, debug: bool = True):
-        size_key = label_size if label_size in LABEL_SIZES else DEFAULT_SIZE
-        self.out_w, self.out_h = LABEL_SIZES[size_key]
-        self.size_key          = size_key
-        self.debug             = debug
-        self.labels_found      = 0
-        self.exclude_tax       = size_key in EXCLUDE_TAX_INVOICE_SIZES
+        if label_size == SORT_ONLY or label_size in LABEL_SIZES:
+            size_key = label_size
+        else:
+            size_key = DEFAULT_SIZE
+
+        self.size_key     = size_key
+        self.sort_only    = size_key == SORT_ONLY
+        self.debug        = debug
+        self.labels_found = 0
+
+        if self.sort_only:
+            self.out_w, self.out_h = None, None
+            self.exclude_tax = False
+        else:
+            self.out_w, self.out_h = LABEL_SIZES[size_key]
+            self.exclude_tax = size_key in EXCLUDE_TAX_INVOICE_SIZES
 
     # ── Skip extra tax / terms-only pages ──────────────────────────
     def should_skip_page(self, page: fitz.Page) -> bool:
@@ -892,7 +910,9 @@ class MeeshoLabelCropper:
     # ── Detect courier partner ──────────────────────────────────────
     def get_courier_name(self, page: fitz.Page) -> str:
         text = page.get_text().lower()
-        for courier in ["delhivery", "valmo", "shadowfax", "xpress bees", "ecom express", "ekart", "bluedart", "jusda" , "loadshare", "fedex", "wow", "elasticrun", "dtdc"]:
+        for courier in ["delhivery", "valmo", "shadowfax", "xpress bees",
+                        "ecom express", "ekart", "bluedart", "jusda",
+                        "loadshare", "fedex", "wow", "elasticrun", "dtdc"]:
             if courier in text:
                 return courier.title()
         return "Unknown"
@@ -918,6 +938,22 @@ class MeeshoLabelCropper:
             if val.lower() != "size":
                 return val
         return "Unknown Product"
+
+    # ==============================================================
+    # SORT-ONLY PATH (default) — no crop, no resize
+    # ==============================================================
+
+    def _copy_original_page(self, out_doc, in_doc, page_no):
+        """
+        Copies the page exactly as-is (no cropping, no scaling).
+        Used for the default sort_only mode.
+        """
+        out_doc.insert_pdf(in_doc, from_page=page_no, to_page=page_no)
+
+        if self.debug:
+            page = in_doc[page_no]
+            print(f"    original page kept: "
+                  f"{page.rect.width/72:.2f} x {page.rect.height/72:.2f} inch")
 
     # ==============================================================
     # 3x5  THERMAL PATH
@@ -1104,12 +1140,16 @@ class MeeshoLabelCropper:
         grouped_labels  = defaultdict(list)
 
         if self.debug:
-            tax_mode = "excluded — crop above TAX INVOICE (thermal)" \
-                       if self.exclude_tax \
-                       else "included — fit to page size"
+            if self.sort_only:
+                tax_mode = "kept as-is — no crop/resize (sort_only mode)"
+                size_label = "Original (sort only)"
+            else:
+                tax_mode = ("excluded — crop above TAX INVOICE (thermal)"
+                            if self.exclude_tax
+                            else "included — fit to page size")
+                size_label = f"{self.out_w:.0f} × {self.out_h:.0f} pt"
             print(f"\n{'='*70}")
-            print(f"📐 Output size : {self.size_key}  "
-                  f"({self.out_w:.0f} × {self.out_h:.0f} pt)")
+            print(f"📐 Output size : {self.size_key}  ({size_label})")
             print(f"🧾 TAX INVOICE : {tax_mode}")
             print(f"📄 Input pages : {len(input_doc)}")
             print(f"{'='*70}")
@@ -1135,7 +1175,11 @@ class MeeshoLabelCropper:
                 pno  = item["page_no"]
                 page = input_doc[pno]
 
-                if self.exclude_tax:
+                if self.sort_only:
+                    # ── DEFAULT: no crop, no resize, just sorted order ──
+                    self._copy_original_page(output_doc, input_doc, pno)
+
+                elif self.exclude_tax:
                     # ── 3x5 THERMAL PATH ──────────────────────────────
                     crop_y = self._find_crop_y_above_tax(page)
                     if crop_y <= 0:
@@ -1194,7 +1238,7 @@ class MeeshoLabelCropper:
 def crop_meesho_labels_to_pdf(pdf_file_list, label_size: str = DEFAULT_SIZE):
     """
     pdf_file_list : list[UploadedFile] or single UploadedFile
-    label_size    : "3x5" | "4x4" | "4x6" | "A4"
+    label_size    : "sort_only" (default) | "3x5" | "4x4" | "4x6" | "A4"
     """
     if not isinstance(pdf_file_list, (list, tuple)):
         pdf_file_list = [pdf_file_list]

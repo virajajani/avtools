@@ -74,10 +74,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .file-item-remove:hover{background:#fecaca;}
 
 /* SIZE SELECTOR */
-.size-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.size-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;}
 .size-option{position:relative;cursor:pointer;}
 .size-option input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
-.size-card{border:2px solid var(--border);border-radius:var(--radius);padding:16px 10px;text-align:center;transition:all 0.2s;background:#fff;}
+.size-card{border:2px solid var(--border);border-radius:var(--radius);padding:16px 10px;text-align:center;transition:all 0.2s;background:#fff;height:100%;display:flex;flex-direction:column;justify-content:center;}
 .size-card:hover{border-color:var(--primary-light);background:#f0f7ff;}
 .size-option input:checked + .size-card{border-color:var(--primary);background:#eff6ff;box-shadow:0 0 0 3px var(--primary-glow);}
 .size-icon{font-size:22px;margin-bottom:7px;display:block;}
@@ -163,8 +163,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   </div>
 
   <div class="feature-pills">
-    <span class="pill"><span>📐</span> Custom Print Sizes</span>
     <span class="pill"><span>🚚</span> Courier-wise Sorting</span>
+    <span class="pill"><span>📐</span> Custom Print Sizes</span>
     <span class="pill"><span>⚡</span> Instant Download</span>
     {% if request.user.is_authenticated %}
     <span class="pill"><span>📄</span> Multi-PDF Merge</span>
@@ -234,12 +234,21 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="size-grid">
 
         <label class="size-option">
-          <input type="radio" name="label_size" value="3x5" checked>
+          <input type="radio" name="label_size" value="sort_only" checked>
+          <div class="size-card">
+            <span class="size-icon">🚚</span>
+            <span class="size-name">Sort Only</span>
+            <span class="size-dims">Original size</span>
+            <span class="size-badge">Default</span>
+          </div>
+        </label>
+
+        <label class="size-option">
+          <input type="radio" name="label_size" value="3x5">
           <div class="size-card">
             <span class="size-icon">🖨️</span>
             <span class="size-name">3 × 5</span>
             <span class="size-dims">76 × 127 mm</span>
-            <span class="size-badge">Default</span>
           </div>
         </label>
 
@@ -278,9 +287,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <span id="processBtnLabel">Add a PDF to continue</span>
       </button>
 
-      <div class="process-hint">
-        💡 Labels are sorted courier-wise and cropped to your chosen size.
-        The TAX INVOICE section is automatically removed.
+      <div class="process-hint" id="processHint">
+        💡 Labels are sorted courier-wise. Choose a print size above to also crop/resize each label
+        (the TAX INVOICE section is removed only for the 3×5 size).
       </div>
 
     </form>
@@ -303,7 +312,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   <div class="loading-box">
     <div class="spinner"></div>
     <div class="loading-title" id="loadingTitle">Processing…</div>
-    <div class="loading-sub" id="loadingSub">Cropping labels</div>
+    <div class="loading-sub" id="loadingSub">Sorting labels</div>
     <div class="loading-progress"><div class="loading-bar" id="loadingBar"></div></div>
   </div>
 </div>
@@ -347,6 +356,7 @@ const fileInput    = document.getElementById("fileInput");
 const fileListEl   = document.getElementById("fileList");
 const processBtn   = document.getElementById("processBtn");
 const processBtnLb = document.getElementById("processBtnLabel");
+const processHint  = document.getElementById("processHint");
 const form         = document.getElementById("cropperForm");
 const loadingOvl   = document.getElementById("loadingOverlay");
 const loadingTitle = document.getElementById("loadingTitle");
@@ -429,15 +439,30 @@ function renderFileList(){
 
   processBtn.disabled = false;
   const n = selectedFiles.length;
-  const sizeLabel = document.querySelector("input[name=label_size]:checked")?.value || "3x5";
   processBtnLb.textContent = n > 1
     ? `Process ${n} PDFs → Download`
     : `Process & Download`;
 }
 
+/* ── Update hint text when size selection changes ── */
+function updateHint(){
+  const size = document.querySelector("input[name=label_size]:checked")?.value || "sort_only";
+  if(size === "sort_only"){
+    processHint.textContent = "💡 Labels are sorted courier-wise. No cropping or resizing is applied — pages stay exactly as in the source PDF.";
+  } else if(size === "3x5"){
+    processHint.textContent = "💡 Labels are sorted courier-wise and cropped to 3×5. The TAX INVOICE section is automatically removed.";
+  } else {
+    processHint.textContent = `💡 Labels are sorted courier-wise and fit to ${size.replace("x"," × ")}. The TAX INVOICE section is included.`;
+  }
+}
+
 document.querySelectorAll("input[name=label_size]").forEach(r =>
-  r.addEventListener("change", () => { if(selectedFiles.length) renderFileList(); })
+  r.addEventListener("change", () => {
+    updateHint();
+    if(selectedFiles.length) renderFileList();
+  })
 );
+updateHint();
 
 /* ── Progress bar ── */
 let progressTimer = null;
@@ -466,12 +491,12 @@ form.addEventListener("submit", async e => {
 
   if(!selectedFiles.length){ showError("Please add at least one PDF file."); return; }
 
-  const labelSize = document.querySelector("input[name=label_size]:checked")?.value || "3x5";
+  const labelSize = document.querySelector("input[name=label_size]:checked")?.value || "sort_only";
 
   loadingTitle.textContent = selectedFiles.length > 1
     ? `Processing ${selectedFiles.length} PDFs…` : "Processing PDF…";
   loadingSub.textContent   = selectedFiles.length > 1
-    ? "Merging then cropping labels" : "Cropping labels";
+    ? "Merging then sorting labels" : "Sorting labels";
   loadingOvl.classList.add("show");
   processBtn.disabled = true;
   startProgress();
@@ -521,7 +546,7 @@ form.addEventListener("submit", async e => {
     resetFileInputs();
 
     /* ── Success banner ── */
-    const sizeMap = {"3x5":"3×5 inch","4x4":"4×4 inch","4x6":"4×6 inch","A4":"A4"};
+    const sizeMap = {"sort_only":"original size (sorted only)","3x5":"3×5 inch","4x4":"4×4 inch","4x6":"4×6 inch","A4":"A4"};
     successTxt.textContent =
       `${data.total_labels} label${data.total_labels>1?"s":""} ` +
       `from ${fileCount} PDF${fileCount>1?"s":""} ` +
