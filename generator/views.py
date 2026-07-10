@@ -323,6 +323,9 @@ def results(request):
         "total_images": len(variations),
         "credits_left": credit.balance,
         "history":      history,
+        "credits": credit.balance,
+        "initials": request.user.username[0].upper() if request.user.username else "U",
+        **load_active_devices(request),
     })
 
 

@@ -389,13 +389,13 @@
         <button id="avhAvatarBtn" type="button"
                 class="avh-avatar-btn"
                 aria-expanded="false" aria-label="Account menu">
-          <span class="avh-avatar-circle">{{ initials|default:"U" }}</span>
+          <span class="avh-avatar-circle">{{ initials|default:"-" }}</span>
         </button>
 
         <div id="avhDropdown" role="menu">
           <div class="avh-dd-user">
             <div class="avh-dd-user-inner">
-              <div class="avh-dd-av">{{ initials|default:"U" }}</div>
+              <div class="avh-dd-av">{{ initials|default:"-" }}</div>
               <div>
                 <div class="avh-dd-name">
                   {% if request.user.get_full_name %}{{ request.user.get_full_name }}{% else %}{{ request.user.username }}{% endif %}
