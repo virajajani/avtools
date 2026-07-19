@@ -6,9 +6,35 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
+
+    AUTH_PROVIDER_CHOICES = (
+        ("EMAIL",  "Email / Password"),
+        ("GOOGLE", "Google"),
+    )
+
     email             = models.EmailField(unique=True)
     username          = models.CharField(max_length=150, unique=True)
     is_email_verified = models.BooleanField(default=False)
+
+    # ── Google / Firebase auth fields ──────────────────────────────
+    auth_provider = models.CharField(
+        max_length=10,
+        choices=AUTH_PROVIDER_CHOICES,
+        default="EMAIL",
+    )
+    google_uid = models.CharField(
+        max_length=128,
+        null=True,
+        blank=True,
+        unique=True,
+        help_text="Firebase UID for users who signed up/logged in via Google.",
+    )
+    profile_picture_url = models.URLField(
+        max_length=500,
+        null=True,
+        blank=True,
+        help_text="Google profile photo URL, if available.",
+    )
 
     USERNAME_FIELD  = "email"
     REQUIRED_FIELDS = ["username"]
@@ -72,7 +98,7 @@ class CreditHistory(models.Model):
         ("ADD",    "Add Credit"),
         ("DEDUCT", "Deduct Credit"),
         ("REFUND", "Refund Credit"),
-        ("EXPIRE", "Expire Credit"),   # ← new
+        ("EXPIRE", "Expire Credit"),
     )
 
     user = models.ForeignKey(
@@ -106,7 +132,8 @@ class CreditHistory(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.transaction_type} - {self.credits}"
-    
+
+
 class DeviceRegistration(models.Model):
     device_fingerprint = models.CharField(max_length=255, unique=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='devices')
@@ -119,10 +146,10 @@ class DeviceRegistration(models.Model):
 
     def __str__(self):
         return f"{self.user.email} — {self.device_fingerprint[:20]}"
-    
+
 
 class ProductReview(models.Model):
-    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]  # 1 to 5
+    RATING_CHOICES = [(i, str(i)) for i in range(1, 6)]
 
     user       = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     rating     = models.PositiveSmallIntegerField(choices=RATING_CHOICES)

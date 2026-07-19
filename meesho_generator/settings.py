@@ -219,3 +219,6 @@ DATA_UPLOAD_MAX_NUMBER_FILES = 100               # allows the 20-file logged-in 
 # --------------------------------------------------
 RAZORPAY_API_KEY        = config("RAZORPAY_API_KEY")
 RAZORPAY_API_SECRET_KEY = config("RAZORPAY_API_SECRET_KEY")
+
+#GOOGLE LOGIN
+FIREBASE_SERVICE_ACCOUNT_PATH = os.path.join(BASE_DIR, "firebase-service-account.json")

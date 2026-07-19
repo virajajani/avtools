@@ -17,4 +17,6 @@ urlpatterns = [
     # ── Review APIs ────────────────────────────────────────
     path("review/submit/", views.submit_review,  name="submit_review"),
     path("review/list/",   views.get_reviews,    name="get_reviews"),
+
+    path("api/auth/google/", views.GoogleAuthAPI.as_view(), name="google_auth"),
 ]

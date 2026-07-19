@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@4/dist/fp.min.js"></script>
 
   <!-- Favicon -->
   <link rel="shortcut icon" href="{% static 'images/avtools_fev.png' %}">
@@ -26,7 +27,7 @@ body::before{
   content:'';
   position:fixed;
   top:0;left:0;right:0;bottom:0;
-  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   opacity:0.4;
   z-index:0;
 }
@@ -92,6 +93,16 @@ h1{
   color:#64748b;
   margin-bottom:24px;
 }
+
+/* Google button */
+.btn-google{
+  width:100%;padding:12px;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:#fff;border:2px solid #e2e8f0;border-radius:12px;
+  font-size:14px;font-weight:700;color:#334155;cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-google:hover:not(:disabled){ border-color:#cbd5e1; }
+.btn-google:disabled{ opacity:0.5;cursor:not-allowed; }
 
 .divider{
   display:flex;
@@ -177,9 +188,12 @@ input::placeholder{color:#94a3b8;}
   transition:all 0.3s ease;
   box-shadow:0 8px 24px rgba(59,130,246,0.3);
 }
-.btn-primary:hover{
+.btn-primary:hover:not(:disabled){
   transform:translateY(-2px);
   box-shadow:0 12px 32px rgba(59,130,246,0.4);
+}
+.btn-primary:disabled{
+  opacity:0.5;cursor:not-allowed;transform:none;
 }
 
 .footer-text{
@@ -234,6 +248,17 @@ input::placeholder{color:#94a3b8;}
         </div>
       {% endfor %}
     {% endif %}
+
+    <!-- Google Sign-In -->
+    <button type="button" id="googleSignInBtn" class="btn-google" onclick="handleGoogleSignIn()">
+      <svg width="18" height="18" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.7-.4-4.5z"/>
+        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.4 0-13.8 4-17.7 10.7z"/>
+        <path fill="#4CAF50" d="M24 44c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.5 34.7 26.9 35.6 24 35.6c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.9 39.6 16.4 44 24 44z"/>
+        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.5 5.5C40.4 36.4 44 30.9 44 24c0-1.4-.1-2.7-.4-3.5z"/>
+      </svg>
+      Continue with Google
+    </button>
 
     <div class="divider"><span>Sign in with email</span></div>
 
@@ -327,8 +352,7 @@ loginForm.addEventListener("submit", async (e) => {
 });
 
 /* ══════════════════════════════════════════════
-   PASSWORD SHOW/HIDE TOGGLE (works for any number
-   of .toggle-password buttons on the page)
+   PASSWORD SHOW/HIDE TOGGLE
 ══════════════════════════════════════════════ */
 document.querySelectorAll(".toggle-password").forEach(function (btn) {
   btn.addEventListener("click", function () {
@@ -343,6 +367,93 @@ document.querySelectorAll(".toggle-password").forEach(function (btn) {
     btn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
   });
 });
+
+/* ══════════════════════════════════════════════
+   DEVICE FINGERPRINT (silent capture — login page
+   doesn't block on it, backend decides mismatch)
+══════════════════════════════════════════════ */
+window.__avtoolsFingerprint = "";
+
+FingerprintJS.load()
+  .then(fp => fp.get())
+  .then(result => {
+    window.__avtoolsFingerprint = result.visitorId;
+    console.log("🔑 Fingerprint captured");
+  })
+  .catch(err => {
+    console.warn("⚠️ Fingerprint capture failed:", err);
+  });
+
+function getDeviceId() {
+  let id = localStorage.getItem("device_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("device_id", id);
+  }
+  return id;
+}
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+  // 🔑 Replace with YOUR Firebase config from Project settings → General
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    appId: "YOUR_APP_ID",
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  window.handleGoogleSignIn = async function () {
+    const googleBtn = document.getElementById("googleSignInBtn");
+    if (googleBtn.disabled) return;
+
+    googleBtn.disabled = true;
+    const originalText = googleBtn.innerHTML;
+    googleBtn.innerText = "Connecting to Google…";
+
+    try {
+      const result  = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+
+      const BASE_URL = window.location.origin;
+      const res = await fetch(`${BASE_URL}/api/auth/google/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_token: idToken,
+          device_id: getDeviceId(),
+          device_fingerprint: window.__avtoolsFingerprint || "",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        if (data.token) localStorage.setItem("token", data.token);
+        window.location.href = "/dashboard/";
+      } else {
+        alert("❌ " + (data.error || "Google sign-in failed. Please try again."));
+        googleBtn.disabled = false;
+        googleBtn.innerHTML = originalText;
+      }
+    } catch (err) {
+      console.error("Google sign-in error:", err);
+      if (err.code !== "auth/popup-closed-by-user") {
+        alert("❌ Google sign-in was cancelled or failed.");
+      }
+      googleBtn.disabled = false;
+      googleBtn.innerHTML = originalText;
+    }
+  };
 </script>
 
 </body>

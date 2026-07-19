@@ -75,6 +75,30 @@ body::before{
 h1{text-align:center;font-size:26px;font-weight:800;margin-bottom:6px;color:#1e293b;}
 .subtitle{text-align:center;font-size:14px;color:#64748b;margin-bottom:24px;}
 
+/* Google button */
+.btn-google{
+  width:100%;padding:12px;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:#fff;border:2px solid #e2e8f0;border-radius:12px;
+  font-size:14px;font-weight:700;color:#334155;cursor:pointer;
+  transition:all 0.2s;margin-bottom:16px;
+}
+.btn-google:hover:not(:disabled){ border-color:#cbd5e1; }
+.btn-google:disabled{ opacity:0.5;cursor:not-allowed; }
+
+.divider{
+  display:flex;
+  align-items:center;
+  margin:20px 0;
+  color:#94a3b8;
+  font-size:13px;
+  font-weight:500;
+}
+.divider::before,.divider::after{
+  content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,#e2e8f0,transparent);
+}
+.divider span{margin:0 14px;}
+
 .row{display:flex;gap:12px;}
 .row .form-group{flex:1;}
 
@@ -101,7 +125,7 @@ input::placeholder{color:#94a3b8;}
   position:relative;
 }
 .password-wrapper input{
-  padding-right:44px; /* room for the eye icon */
+  padding-right:44px;
 }
 .toggle-password{
   position:absolute;
@@ -197,7 +221,7 @@ input::placeholder{color:#94a3b8;}
 
 .benefits{
   background:#f8fafc;border-radius:10px;
-  padding:16px;margin-bottom:20px;
+  padding:16px;margin-bottom:16px;
 }
 .benefits h3{font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px;}
 .benefits ul{list-style:none;padding:0;}
@@ -289,6 +313,19 @@ input::placeholder{color:#94a3b8;}
       <a href="/signin/">Log in to your account →</a>
     </div>
 
+    <!-- Google Sign-Up -->
+    <button type="button" id="googleSignInBtn" class="btn-google" onclick="handleGoogleSignIn()" disabled>
+      <svg width="18" height="18" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.7-.4-4.5z"/>
+        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.4 0-13.8 4-17.7 10.7z"/>
+        <path fill="#4CAF50" d="M24 44c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.5 34.7 26.9 35.6 24 35.6c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.9 39.6 16.4 44 24 44z"/>
+        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.5 5.5C40.4 36.4 44 30.9 44 24c0-1.4-.1-2.7-.4-3.5z"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider"><span>Or sign up with email</span></div>
+
     <form id="signupForm">
 
       <div class="row">
@@ -372,13 +409,13 @@ input::placeholder{color:#94a3b8;}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  // WITH THIS — auto-detects local vs production
-  const BASE_URL         = window.location.origin;  // http://127.0.0.1:8000 or https://avtools.in
+  const BASE_URL         = window.location.origin;
   const API_REGISTER_URL = `${BASE_URL}/api/auth/register/`;
   const DEVICE_CHECK_URL = `${BASE_URL}/api/auth/device/check/`;
 
   const form            = document.getElementById("signupForm");
   const btn             = document.getElementById("signupBtn");
+  const googleBtn       = document.getElementById("googleSignInBtn");
   const passwordInput   = document.getElementById("signupPassword");
   const passwordError   = document.getElementById("passwordError");
   const popup           = document.getElementById("successPopup");
@@ -388,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let deviceFingerprint = "";
   let deviceBlocked     = false;
 
-  // ── localStorage device_id (for mobile API) ──────────────────
+  // ── localStorage device_id (shared by email + Google flows) ───
   function getDeviceId() {
     let id = localStorage.getItem("device_id");
     if (!id) {
@@ -397,12 +434,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return id;
   }
+  window.getDeviceId = getDeviceId; // exposed for the Google module below
 
   // ── FingerprintJS — generate + check on page load ─────────────
   FingerprintJS.load()
     .then(fp => fp.get())
     .then(result => {
       deviceFingerprint = result.visitorId;
+      window.__avtoolsFingerprint = deviceFingerprint; // used by Google sign-in
       console.log("🔑 Fingerprint:", deviceFingerprint);
 
       return fetch(`${DEVICE_CHECK_URL}?fingerprint=${deviceFingerprint}`);
@@ -412,39 +451,39 @@ document.addEventListener("DOMContentLoaded", () => {
       deviceChecking.style.display = "none";
 
       if (data.registered) {
-        // ── Block: show error, keep button disabled ──
+        // ── Block both signup paths ──
         deviceBlocked             = true;
         deviceError.style.display = "block";
-        btn.disabled              = true;
+        btn.disabled               = true;
+        googleBtn.disabled         = true;
       } else {
-        // ── All clear: enable button ──
-        btn.disabled = false;
+        // ── All clear: enable both ──
+        btn.disabled       = false;
+        googleBtn.disabled = false;
       }
     })
     .catch(err => {
       // Silent fail — allow signup if check errors
       console.warn("⚠️ Device check failed:", err);
       deviceChecking.style.display = "none";
-      btn.disabled = false;
+      btn.disabled       = false;
+      googleBtn.disabled = false;
     });
 
-  // ── Form submit ───────────────────────────────────────────────
+  // ── Email/password form submit ──────────────────────────────────
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Double-check device block
     if (deviceBlocked) {
       deviceError.style.display = "block";
       return;
     }
 
-    // Validate terms checkbox
     if (!document.getElementById("agreeTerms").checked) {
       alert("Please agree to the Terms of Service and Privacy Policy.");
       return;
     }
 
-    // Validate password
     passwordError.style.display = "none";
     if (passwordInput.value.length < 6) {
       passwordError.style.display = "block";
@@ -480,7 +519,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (res.ok) {
-        // ── Success ──
         if (data.token) localStorage.setItem("token", data.token);
         popup.style.display = "block";
         setTimeout(() => {
@@ -489,17 +527,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 2000);
 
       } else {
-        // ── Error from server ──
         let msg = "Signup failed. Please try again.";
 
         if (data.error) {
           if (typeof data.error === "string") {
             msg = data.error;
-            // Device blocked server-side (race condition)
             if (data.error.toLowerCase().includes("device")) {
               deviceBlocked             = true;
               deviceError.style.display = "block";
               btn.disabled              = true;
+              googleBtn.disabled        = true;
               return;
             }
           } else if (data.error.email)    msg = data.error.email[0];
@@ -538,6 +575,72 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
+  // 🔑 Replace with YOUR Firebase config from Project settings → General
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    appId: "YOUR_APP_ID",
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  window.handleGoogleSignIn = async function () {
+    const googleBtn = document.getElementById("googleSignInBtn");
+    if (googleBtn.disabled) return;
+
+    googleBtn.disabled = true;
+    const originalHTML = googleBtn.innerHTML;
+    googleBtn.innerText = "Connecting to Google…";
+
+    try {
+      const result  = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
+
+      const BASE_URL = window.location.origin;
+      const res = await fetch(`${BASE_URL}/api/auth/google/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id_token: idToken,
+          device_id: window.getDeviceId(),
+          device_fingerprint: window.__avtoolsFingerprint || "",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        if (data.token) localStorage.setItem("token", data.token);
+        window.location.href = "/dashboard/";
+      } else {
+        if (data.error && data.error.toLowerCase().includes("device")) {
+          document.getElementById("deviceError").style.display = "block";
+          document.getElementById("signupBtn").disabled = true;
+        }
+        alert("❌ " + (data.error || "Google sign-in failed. Please try again."));
+        googleBtn.disabled = false;
+        googleBtn.innerHTML = originalHTML;
+      }
+    } catch (err) {
+      console.error("Google sign-in error:", err);
+      if (err.code !== "auth/popup-closed-by-user") {
+        alert("❌ Google sign-in was cancelled or failed.");
+      }
+      googleBtn.disabled = false;
+      googleBtn.innerHTML = originalHTML;
+    }
+  };
 </script>
 
 </body>
