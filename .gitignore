@@ -23,3 +23,7 @@ Thumbs.db
 
 # Data files
 categories.json
+
+# Firebase / secrets — NEVER commit these
+firebase-service-account.json
+*serviceAccountKey*.json
