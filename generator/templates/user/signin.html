@@ -228,6 +228,11 @@ input::placeholder{color:#94a3b8;}
 
 <body>
 
+<!-- ── Firebase config, injected from server-side env vars ── -->
+<script>
+  window.__firebaseConfig = {{ firebase_config_json|safe }};
+</script>
+
 <div class="auth-container">
   <!-- Back to home -->
   <a href="/" class="back-home">Back to AVTools</a>
@@ -400,13 +405,8 @@ function getDeviceId() {
     getAuth, GoogleAuthProvider, signInWithPopup
   } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-  // 🔑 Replace with YOUR Firebase config from Project settings → General
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    appId: "YOUR_APP_ID",
-  };
+  // ── Config comes from Django (env vars) — see window.__firebaseConfig above ──
+  const firebaseConfig = window.__firebaseConfig;
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -417,7 +417,7 @@ function getDeviceId() {
     if (googleBtn.disabled) return;
 
     googleBtn.disabled = true;
-    const originalText = googleBtn.innerHTML;
+    const originalHTML = googleBtn.innerHTML;
     googleBtn.innerText = "Connecting to Google…";
 
     try {
@@ -443,7 +443,7 @@ function getDeviceId() {
       } else {
         alert("❌ " + (data.error || "Google sign-in failed. Please try again."));
         googleBtn.disabled = false;
-        googleBtn.innerHTML = originalText;
+        googleBtn.innerHTML = originalHTML;
       }
     } catch (err) {
       console.error("Google sign-in error:", err);
@@ -451,7 +451,7 @@ function getDeviceId() {
         alert("❌ Google sign-in was cancelled or failed.");
       }
       googleBtn.disabled = false;
-      googleBtn.innerHTML = originalText;
+      googleBtn.innerHTML = originalHTML;
     }
   };
 </script>

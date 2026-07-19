@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db.models import Sum
+from django.conf import settings
 
 def account_modal_data(request):
     if not request.user.is_authenticated:
@@ -33,4 +34,9 @@ def account_modal_data(request):
         "total_purchases":  total_purchases,
         "is_expired":       is_expired,
         "days_left":        days_left,
+    }
+
+def firebase_config(request):
+    return {
+        "firebase_config_json": settings.FIREBASE_WEB_CONFIG
     }

@@ -275,6 +275,11 @@ input::placeholder{color:#94a3b8;}
 </head>
 <body>
 
+<!-- ── Firebase config, injected from server-side env vars ── -->
+<script>
+  window.__firebaseConfig = {{ firebase_config_json|safe }};
+</script>
+
 <div class="auth-container">
   <a href="/" class="back-home">Back to AVTools</a>
 
@@ -583,13 +588,8 @@ document.addEventListener("DOMContentLoaded", () => {
     getAuth, GoogleAuthProvider, signInWithPopup
   } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 
-  // 🔑 Replace with YOUR Firebase config from Project settings → General
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    appId: "YOUR_APP_ID",
-  };
+  // ── Config comes from Django (env vars) — see window.__firebaseConfig above ──
+  const firebaseConfig = window.__firebaseConfig;
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);

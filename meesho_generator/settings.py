@@ -101,6 +101,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'generator.context_processors.account_modal_data',
+                "generator.context_processors.firebase_config",
             ],
         },
     },
@@ -222,3 +223,12 @@ RAZORPAY_API_SECRET_KEY = config("RAZORPAY_API_SECRET_KEY")
 
 #GOOGLE LOGIN
 FIREBASE_SERVICE_ACCOUNT_PATH = os.path.join(BASE_DIR, "firebase-service-account.json")
+
+FIREBASE_WEB_CONFIG = {
+    "apiKey":            config("FIREBASE_API_KEY"),
+    "authDomain":        config("FIREBASE_AUTH_DOMAIN"),
+    "projectId":         config("FIREBASE_PROJECT_ID"),
+    "storageBucket":     config("FIREBASE_STORAGE_BUCKET"),
+    "messagingSenderId": config("FIREBASE_MESSAGING_SENDER_ID"),
+    "appId":             config("FIREBASE_APP_ID"),
+}
