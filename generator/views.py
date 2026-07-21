@@ -564,30 +564,29 @@ def process_labels(request):
         print(f"\n❌ Error: {e}\n{traceback.format_exc()}")
         return JsonResponse({"error": f"Error processing PDF: {e}"}, status=500)
 
-    # ── 5. Update summaries (only for logged-in users) ───────────────────────
+    # ── 5. Update summaries — ALWAYS, for every mode + every user type ────────
     daily_dict   = {}
     monthly_dict = {}
 
-    if is_auth:
-        try:
-            _now          = now()
-            current_date  = _now.date()
-            current_month = current_date.replace(day=1)
+    try:
+        _now          = now()
+        current_date  = _now.date()
+        current_month = current_date.replace(day=1)
 
-            daily, _   = DailyLabelSummary.objects.get_or_create(date=current_date)
-            daily.total_pdfs   += len(pdf_files)
-            daily.total_labels += total_labels
-            daily.save()
+        daily, _   = DailyLabelSummary.objects.get_or_create(date=current_date)
+        daily.total_pdfs   += len(pdf_files)
+        daily.total_labels += total_labels
+        daily.save()
 
-            monthly, _ = MonthlyLabelSummary.objects.get_or_create(month=current_month)
-            monthly.total_pdfs   += len(pdf_files)
-            monthly.total_labels += total_labels
-            monthly.save()
+        monthly, _ = MonthlyLabelSummary.objects.get_or_create(month=current_month)
+        monthly.total_pdfs   += len(pdf_files)
+        monthly.total_labels += total_labels
+        monthly.save()
 
-            daily_dict   = {"date": str(daily.date),  "total_pdfs": daily.total_pdfs,   "total_labels": daily.total_labels}
-            monthly_dict = {"month": str(monthly.month), "total_pdfs": monthly.total_pdfs, "total_labels": monthly.total_labels}
-        except Exception as e:
-            print(f"⚠ Summary update failed: {e}")
+        daily_dict   = {"date": str(daily.date),  "total_pdfs": daily.total_pdfs,   "total_labels": daily.total_labels}
+        monthly_dict = {"month": str(monthly.month), "total_pdfs": monthly.total_pdfs, "total_labels": monthly.total_labels}
+    except Exception as e:
+        print(f"⚠ Summary update failed: {e}")
 
     # ── 6. Encode & respond ──────────────────────────────────────────────────
     timestamp       = datetime.now().strftime("%H%M%S")
