@@ -839,6 +839,17 @@ body{
       <div class="form-group">
         <label class="form-label">Product Price (₹)</label>
         <input type="number" name="meesho_price" class="input" placeholder="e.g. 299" min="1" required>
+        <div class="pricing-disclaimer" style="margin-top:6px;font-size:12px;line-height:1.4;color:#8a6d00;background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:8px 10px;">
+          ⚠️ Shipping cost and profit estimates are approximate and may not exactly match your Meesho Supplier Panel figures. Always verify final rates before pricing your listing.
+        </div>
+      </div>
+
+      <!-- ACCURACY ACKNOWLEDGEMENT -->
+      <div class="form-group">
+        <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.4;cursor:pointer;">
+          <input type="checkbox" id="accuracyAck" name="accuracy_ack" required style="margin-top:2px;">
+          <span>I understand that shipping and pricing figures shown are estimates only, not official Meesho rates, and I'll confirm exact charges in my Supplier Panel before listing.</span>
+        </label>
       </div>
 
       <!-- SUBMIT -->
@@ -1208,6 +1219,12 @@ form.addEventListener("submit", e => {
     showFormError("cat", "⚠️ Category sync failed. Please remove and re-add your categories.");
     return;
   }
+  if(!document.getElementById("accuracyAck").checked){
+    e.preventDefault();
+    showFormError("ack", "⚠️ Please acknowledge the pricing accuracy note before continuing.");
+    document.getElementById("accuracyAck").focus();
+    return;
+  }
 
   clearFormErrors();
   submitBtn.disabled = true;
@@ -1222,8 +1239,10 @@ function showFormError(type, msg){
   div.textContent = msg;
   if(type === "cat"){
     document.getElementById("selectedChips").after(div);
-  } else {
+  } else if(type === "img"){
     filePreview.after(div);
+  } else if(type === "ack"){
+    document.getElementById("accuracyAck").closest(".form-group").after(div);
   }
   div.scrollIntoView({behavior:"smooth", block:"nearest"});
 }

@@ -11,23 +11,26 @@ import random
 
 # Meesho Accurate Shipping Rates (Based on 2025 data)
 SHIPPING_RATES = {
-    'local': [
-        {'min': 0, 'max': 500, 'rate': 35},
-        {'min': 501, 'max': 1000, 'rate': 40},
-        {'min': 1001, 'max': 2000, 'rate': 50},
-        {'min': 2001, 'max': 5000, 'rate': 70},
-    ],
-    'zonal': [
-        {'min': 0, 'max': 500, 'rate': 40},
-        {'min': 501, 'max': 1000, 'rate': 50},
-        {'min': 1001, 'max': 2000, 'rate': 63},
-        {'min': 2001, 'max': 5000, 'rate': 85},
-    ],
-    'national': [
-        {'min': 0, 'max': 500, 'rate': 45},
-        {'min': 501, 'max': 1000, 'rate': 60},
+    'local': [       # same city / within ~50km of pickup
+        {'min': 0, 'max': 250, 'rate': 53},
+        {'min': 251, 'max': 500, 'rate': 58},
+        {'min': 501, 'max': 1000, 'rate': 64},
         {'min': 1001, 'max': 2000, 'rate': 75},
-        {'min': 2001, 'max': 5000, 'rate': 100},
+        {'min': 2001, 'max': 5000, 'rate': 84},
+    ],
+    'zonal': [       # same state / region
+        {'min': 0, 'max': 250, 'rate': 53},
+        {'min': 251, 'max': 500, 'rate': 58},
+        {'min': 501, 'max': 1000, 'rate': 64},
+        {'min': 1001, 'max': 2000, 'rate': 75},
+        {'min': 2001, 'max': 5000, 'rate': 84},
+    ],
+    'national': [    # across India
+        {'min': 0, 'max': 250, 'rate': 53},
+        {'min': 251, 'max': 500, 'rate': 58},
+        {'min': 501, 'max': 1000, 'rate': 64},
+        {'min': 1001, 'max': 2000, 'rate': 75},
+        {'min': 2001, 'max': 5000, 'rate': 84},
     ]
 }
 
