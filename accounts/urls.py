@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import RegisterAPI, LoginAPI
-from .views import ForgotPasswordAPI, VerifyOTPAPI, ResetPasswordAPI
+from .views import  RegisterAPI, LoginAPI, ForgotPasswordAPI, VerifyOTPAPI, ResetPasswordAPI , VerifyRegistrationOTPAPI, ResendRegistrationOTPAPI 
 from accounts import views
 
 urlpatterns = [
@@ -10,6 +9,9 @@ urlpatterns = [
     path("forgot-password/", ForgotPasswordAPI.as_view(),  name="forgot_password"),
     path("verify-otp/",      VerifyOTPAPI.as_view(),       name="verify_otp"),
     path("reset-password/",  ResetPasswordAPI.as_view(),   name="reset_password"),
+
+    path("register/verify-otp/", VerifyRegistrationOTPAPI.as_view()),
+    path("register/resend-otp/", ResendRegistrationOTPAPI.as_view()),
 
     # ── Device check ───────────────────────────────────────
     path("device/check/",  views.check_device,  name="check_device"),

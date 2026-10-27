@@ -70,8 +70,11 @@ class UserCredit(models.Model):
 
 class EmailOTP(models.Model):
     user       = models.ForeignKey(User, on_delete=models.CASCADE)
-    otp        = models.CharField(max_length=6)
+    otp        = models.CharField(max_length=128)          # stores a HASH of the 6-digit code, never the plain code
     expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=timezone.now)  # used for the 60s resend cooldown
+    attempts   = models.PositiveSmallIntegerField(default=0) # wrong-code attempts (max 5)
+    is_used    = models.BooleanField(default=False)          # True once verified / replaced / locked
 
     def is_expired(self):
         return timezone.now() > self.expires_at

@@ -1,46 +1,43 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from django.contrib.auth import authenticate
-from django.utils import timezone
-from rest_framework.authtoken.models import Token
+# accounts/views.py  —  FULL FILE (email-OTP registration included)
 
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-
-from .models import User, UserDevice, DeviceRegistration, ProductReview
-from .serializers import RegisterSerializer, LoginSerializer
-from .utils import token_expiry_time
 import random
+from datetime import timedelta
+
+from django.conf import settings
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
-from django.conf import settings
-
-from django.shortcuts import render, redirect
+from django.db import transaction
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-
-from .models import ContactSupport, UserCredit, CreditHistory
-from datetime import timedelta
-
-from firebase_admin import auth as firebase_auth
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+from firebase_admin import auth as firebase_auth
+from rest_framework import status
 from rest_framework.authtoken.models import Token
-from django.utils import timezone
-from datetime import timedelta
-from accounts.models import DeviceRegistration, UserDevice
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-
+from .models import (
+    User, UserDevice, DeviceRegistration, ProductReview,
+    ContactSupport, UserCredit, CreditHistory,
+)
+from .serializers import RegisterSerializer, LoginSerializer
+from .utils import token_expiry_time
+from .otp_utils import (
+    issue_otp, verify_otp, validate_signup_email, gmail_alias_exists,
+    OTPThrottled, OTP_EXPIRY_MINUTES, OTP_RESEND_COOLDOWN,
+)
 
 
 # ═══════════════════════════════════════════════
-# REGISTER API — with device block
+# REGISTER API — step 1: create UNVERIFIED account + email OTP
+#   No token, no credits, no device lock until the OTP is verified.
 # ═══════════════════════════════════════════════
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -49,99 +46,235 @@ class RegisterAPI(APIView):
     permission_classes = []
 
     def post(self, request):
-        print(f"📥 Received data: {request.data}")
+        email       = (request.data.get("email") or "").strip().lower()
+        fingerprint = (request.data.get("device_fingerprint") or "").strip()
 
-        # ── Device fingerprint check ──────────────────────────────────
-        fingerprint = request.data.get("device_fingerprint", "").strip()
-        ip          = request.META.get("REMOTE_ADDR")
-        ua          = request.META.get("HTTP_USER_AGENT", "")
+        # ── 1) Email provider must be trusted (Gmail/Yahoo/Outlook…) ──────
+        email_error = validate_signup_email(email)
+        if email_error:
+            return Response({"error": {"email": [email_error]}},
+                            status=status.HTTP_400_BAD_REQUEST)
 
-        if fingerprint:
-            if DeviceRegistration.objects.filter(device_fingerprint=fingerprint).exists():
-                return Response(
-                    {"error": "An account is already registered on this device. Please log in instead."},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-        # ── Validate serializer ───────────────────────────────────────
-        serializer = RegisterSerializer(data=request.data)
-        if not serializer.is_valid():
-            print(f"❌ Validation errors: {serializer.errors}")
+        # ── 2) Gmail dot-variants of an already-registered inbox ───────────
+        if gmail_alias_exists(email):
             return Response(
-                {"error": serializer.errors},
+                {"error": {"email": ["An account with this Gmail address already exists. Please log in."]}},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # ── Create user ───────────────────────────────────────────────
-        user = serializer.save()
-        user.is_email_verified = True
-        user.save()
-
-        # ── Create auth token ─────────────────────────────────────────
-        token, _ = Token.objects.get_or_create(user=user)
-
-        # ── Save device_id (mobile app) ───────────────────────────────
-        device_id = request.data.get("device_id")
-        if device_id:
-            UserDevice.objects.update_or_create(
-                user=user,
-                device_id=device_id,
-                defaults={
-                    "token_expiry": token_expiry_time(),
-                    "last_login":   timezone.now()
-                }
+        # ── 3) Device already has an account → stop here. NO OTP is sent. ──
+        #    (only reached once the email provider has been accepted)
+        if fingerprint and DeviceRegistration.objects.filter(
+            device_fingerprint=fingerprint
+        ).exists():
+            return Response(
+                {"error": "An account is already registered on this device. Please log in instead."},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        # ── Save device fingerprint (web browser) ─────────────────────
-        if fingerprint:
-            DeviceRegistration.objects.get_or_create(
-                device_fingerprint=fingerprint,
-                defaults={
-                    "user":       user,
-                    "ip_address": ip,
-                    "user_agent": ua,
-                }
+        # ── 4) Email already registered? ───────────────────────────────────
+        existing = User.objects.filter(email__iexact=email).first()
+
+        # Fully verified account already owns this email
+        if existing and existing.is_email_verified:
+            return Response(
+                {"error": {"email": ["A user with this email already exists."]}},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        # ── Give 10 free credits (get_or_create prevents duplicate) ───
-        credit, created = UserCredit.objects.get_or_create(
-            user=user,
-            defaults={
-                "balance":    10,
-                "expires_at": timezone.now() + timedelta(days=30),
-            }
-        )
+        created_now = False
 
-        # Only log credit history if we actually created a new row
-        if created:
-            CreditHistory.objects.create(
-                user=user,
-                credits=10,
-                transaction_type="ADD",
-                previous_balance=0,
-                current_balance=10,
-                description="Welcome bonus — 10 free credits",
-            )
+        if existing:
+            # Leftover UNVERIFIED registration — let the person start over
+            # (fixes typos in name/password) without creating a second row.
+            password = request.data.get("password") or ""
+            if len(password) < 6:
+                return Response(
+                    {"error": {"password": ["Password must be at least 6 characters."]}},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            existing.first_name = (request.data.get("first_name") or "").strip()
+            existing.last_name  = (request.data.get("last_name") or "").strip()
+            existing.set_password(password)
+            existing.save()
+            user = existing
         else:
-            print(f"⚠️ UserCredit already existed for {user.email} with balance {credit.balance}")
+            data = request.data.copy()
+            data["email"] = email
+            serializer = RegisterSerializer(data=data)
+            if not serializer.is_valid():
+                return Response({"error": serializer.errors},
+                                status=status.HTTP_400_BAD_REQUEST)
+            user = serializer.save()
+            user.is_email_verified = False          # ← NOT verified yet
+            user.save(update_fields=["is_email_verified"])
+            created_now = True
 
-        # ── Send welcome email (non-blocking failure) ──────────────────
+        # ── 5) All checks passed → send the OTP ────────────────────────────
+        try:
+            issue_otp(user)
+        except OTPThrottled as e:
+            if e.retry_after <= OTP_RESEND_COOLDOWN + 1:
+                # a code was sent a moment ago — just move them to the OTP step
+                return Response({
+                    "message":              "A code was already sent. Check your inbox.",
+                    "pending_verification": True,
+                    "email":                email,
+                    "resend_after":         e.retry_after,
+                }, status=status.HTTP_200_OK)
+            return Response({"error": e.message, "retry_after": e.retry_after},
+                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+        except Exception as e:
+            print(f"❌ Verification email failed: {e}")
+            if created_now:
+                user.delete()      # nothing was delivered — let them retry cleanly
+            return Response(
+                {"error": "Could not send the verification email. Please check the address and try again."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response({
+            "message":              "Verification code sent. Check your email.",
+            "pending_verification": True,
+            "email":                email,
+            "otp_expires_in":       OTP_EXPIRY_MINUTES * 60,
+            "resend_after":         OTP_RESEND_COOLDOWN,
+        }, status=status.HTTP_201_CREATED)
+
+
+# ═══════════════════════════════════════════════
+# REGISTER API — step 2: verify OTP → account becomes active
+# ═══════════════════════════════════════════════
+
+@method_decorator(csrf_exempt, name='dispatch')
+class VerifyRegistrationOTPAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        email       = (request.data.get("email") or "").strip().lower()
+        otp         = (request.data.get("otp") or "").strip()
+        fingerprint = (request.data.get("device_fingerprint") or "").strip()
+        device_id   = request.data.get("device_id")
+
+        user = User.objects.filter(email__iexact=email, auth_provider="EMAIL").first()
+        if not user:
+            return Response({"error": "Invalid or expired code."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if user.is_email_verified:
+            return Response({"error": "This email is already verified. Please log in."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Device may have been claimed by another account since step 1
+        if fingerprint and DeviceRegistration.objects.filter(
+            device_fingerprint=fingerprint
+        ).exists():
+            return Response(
+                {"error": "An account is already registered on this device. Please log in instead."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        ok, message = verify_otp(user, otp)
+        if not ok:
+            return Response({"error": message}, status=status.HTTP_400_BAD_REQUEST)
+
+        # ── Verified — now (and only now) activate everything ─────────
+        ip = request.META.get("REMOTE_ADDR")
+        ua = request.META.get("HTTP_USER_AGENT", "")
+
+        with transaction.atomic():
+            user.is_email_verified = True
+            user.save(update_fields=["is_email_verified"])
+
+            token, _ = Token.objects.get_or_create(user=user)
+
+            if device_id:
+                UserDevice.objects.update_or_create(
+                    user=user,
+                    device_id=device_id,
+                    defaults={
+                        "token_expiry": token_expiry_time(),
+                        "last_login":   timezone.now(),
+                    }
+                )
+
+            if fingerprint:
+                DeviceRegistration.objects.get_or_create(
+                    device_fingerprint=fingerprint,
+                    defaults={"user": user, "ip_address": ip, "user_agent": ua},
+                )
+
+            credit, created = UserCredit.objects.get_or_create(
+                user=user,
+                defaults={
+                    "balance":    10,
+                    "expires_at": timezone.now() + timedelta(days=30),
+                }
+            )
+            if created:
+                CreditHistory.objects.create(
+                    user=user,
+                    credits=10,
+                    transaction_type="ADD",
+                    previous_balance=0,
+                    current_balance=10,
+                    description="Welcome bonus — 10 free credits",
+                )
+
         send_welcome_email(user, credits=credit.balance)
 
         return Response({
-            "message":    "Account created successfully!",
+            "message":    "Email verified. Account created successfully!",
             "token":      token.key,
             "expires_at": token_expiry_time(),
             "user": {
                 "email":      user.email,
                 "first_name": user.first_name,
-                "last_name":  user.last_name
+                "last_name":  user.last_name,
             }
-        }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_200_OK)
 
 
 # ═══════════════════════════════════════════════
-# LOGIN API
+# REGISTER API — resend OTP
+# ═══════════════════════════════════════════════
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ResendRegistrationOTPAPI(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        email = (request.data.get("email") or "").strip().lower()
+        user  = User.objects.filter(
+            email__iexact=email, auth_provider="EMAIL", is_email_verified=False
+        ).first()
+
+        # Same response whether or not the email exists (no account probing)
+        generic_ok = Response(
+            {"message": "If this email is awaiting verification, a new code has been sent.",
+             "resend_after": OTP_RESEND_COOLDOWN},
+            status=status.HTTP_200_OK
+        )
+        if not user:
+            return generic_ok
+
+        try:
+            issue_otp(user)
+        except OTPThrottled as e:
+            return Response({"error": e.message, "retry_after": e.retry_after},
+                            status=status.HTTP_429_TOO_MANY_REQUESTS)
+        except Exception as e:
+            print(f"❌ Resend OTP failed: {e}")
+            return Response({"error": "Could not send the email. Please try again."},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return generic_ok
+
+
+# ═══════════════════════════════════════════════
+# LOGIN API — unverified accounts cannot log in
 # ═══════════════════════════════════════════════
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -160,6 +293,21 @@ class LoginAPI(APIView):
 
         if not user:
             return Response({"error": "Invalid credentials"}, status=400)
+
+        # ── Block until the email has been verified ───────────────────
+        if not user.is_email_verified:
+            try:
+                issue_otp(user)          # send a fresh code (respects cooldown)
+            except OTPThrottled:
+                pass                     # a code was sent very recently
+            except Exception as e:
+                print(f"❌ Login-time OTP failed: {e}")
+
+            return Response({
+                "error":              "Please verify your email to continue. We've sent you a code.",
+                "needs_verification": True,
+                "email":              user.email,
+            }, status=status.HTTP_403_FORBIDDEN)
 
         token, _ = Token.objects.get_or_create(user=user)
 
@@ -187,7 +335,7 @@ class LoginAPI(APIView):
 
 
 # ═══════════════════════════════════════════════
-# FORGOT PASSWORD / OTP / RESET
+# FORGOT PASSWORD / OTP / RESET   (unchanged)
 # ═══════════════════════════════════════════════
 @method_decorator(csrf_exempt, name="dispatch")
 class ForgotPasswordAPI(APIView):
@@ -458,6 +606,7 @@ class ForgotPasswordAPI(APIView):
             status=status.HTTP_200_OK
         )
 
+
 @method_decorator(csrf_exempt, name="dispatch")
 class VerifyOTPAPI(APIView):
     authentication_classes = []
@@ -614,6 +763,11 @@ def get_reviews(request):
     ]
     return JsonResponse({"reviews": data})
 
+
+# ═══════════════════════════════════════════════
+# GOOGLE AUTH   (unchanged — Google already verifies the email)
+# ═══════════════════════════════════════════════
+
 @method_decorator(csrf_exempt, name="dispatch")
 class GoogleAuthAPI(APIView):
     authentication_classes = []
@@ -741,7 +895,11 @@ class GoogleAuthAPI(APIView):
                 "picture":    user.profile_picture_url,
             }
         }, status=status.HTTP_201_CREATED if is_new_user else status.HTTP_200_OK)
-    
+
+
+# ═══════════════════════════════════════════════
+# WELCOME EMAIL   (sent after the OTP is verified)
+# ═══════════════════════════════════════════════
 
 def send_welcome_email(user, credits=10):
     first_name = user.first_name or user.email.split("@")[0]

@@ -265,11 +265,84 @@ input::placeholder{color:#94a3b8;}
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%,60%{transform:translateX(-8px);}
+  40%,80%{transform:translateX(8px);}
+}
+.device-error-block.shake{animation:shake .45s ease;}
+.field-hint{font-size:12px;color:#94a3b8;margin-top:6px;line-height:1.4;}
+
+/* ══════════ OTP VERIFICATION STEP ══════════ */
+.otp-step{display:none;}
+.otp-step.show{display:block;animation:slideUp 0.4s ease;}
+
+.otp-icon{
+  width:72px;height:72px;margin:0 auto 18px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#eff6ff,#f5f3ff);
+  border:2px solid #e0e7ff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;
+}
+
+.otp-sent-to{
+  text-align:center;font-size:14px;color:#64748b;
+  line-height:1.6;margin-bottom:22px;
+}
+.otp-sent-to strong{color:#1e293b;word-break:break-all;}
+
+#otpInput{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:2px solid #e2e8f0;
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:12px;
+  text-align:center;
+  text-indent:12px;           /* balances trailing letter-spacing */
+  color:#2563eb;
+  background:#fff;
+  transition:all 0.3s ease;
+}
+#otpInput:focus{
+  outline:none;border-color:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,0.1);
+}
+#otpInput.has-error{border-color:#ef4444;}
+
+.otp-error{
+  display:none;
+  color:#dc2626;background:#fee2e2;
+  border:1px solid #fecaca;border-radius:10px;
+  padding:10px 14px;margin-top:12px;
+  font-size:13px;font-weight:700;text-align:center;
+}
+
+.otp-actions{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:16px 0 20px;gap:10px;flex-wrap:wrap;
+}
+.link-btn{
+  background:none;border:none;cursor:pointer;
+  font-size:13px;font-weight:700;color:#3b82f6;
+  padding:4px 0;transition:color .2s;
+}
+.link-btn:hover:not(:disabled){color:#2563eb;text-decoration:underline;}
+.link-btn:disabled{color:#94a3b8;cursor:not-allowed;}
+
+.otp-hint{
+  text-align:center;font-size:12px;color:#94a3b8;
+  margin-top:14px;line-height:1.5;
+}
+
 @media(max-width:480px){
   body{padding:24px 16px;}
   .auth-card{padding:28px 20px;}
   h1{font-size:22px;}
   .row{flex-direction:column;gap:0;}
+  #otpInput{font-size:24px;letter-spacing:8px;text-indent:8px;}
 }
 </style>
 </head>
@@ -289,102 +362,141 @@ input::placeholder{color:#94a3b8;}
            onclick="window.location.href='/'">
     </div>
 
-    <h1>Create your account</h1>
-    <p class="subtitle">Join thousands of Meesho sellers growing faster</p>
+    <h1 id="pageTitle">Create your account</h1>
+    <p class="subtitle" id="pageSubtitle">Join thousands of Meesho sellers growing faster</p>
 
-    <div class="benefits">
-      <h3>What you get:</h3>
-      <ul>
-        <li>10 free credits on signup</li>
-        <li>Advanced shipping optimization</li>
-        <li>Real-time profit calculator</li>
-      </ul>
-    </div>
+    <!-- ═════════ STEP 1: SIGN-UP FORM ═════════ -->
+    <div id="signupSection">
 
-    <!-- Device checking indicator -->
-    <div class="device-checking" id="deviceChecking">
-      <div class="dot-spin"></div>
-      <span>Checking device…</span>
-    </div>
-
-    <!-- Device already registered error -->
-    <div class="device-error-block" id="deviceError">
-      <div class="dev-icon">🚫</div>
-      <div class="dev-title">Device Already Registered</div>
-      <div class="dev-sub">
-        An account is already linked to this device.<br>
-        Please log in to continue.
+      <div class="benefits">
+        <h3>What you get:</h3>
+        <ul>
+          <li>10 free credits on signup</li>
+          <li>Advanced shipping optimization</li>
+          <li>Real-time profit calculator</li>
+        </ul>
       </div>
-      <a href="/signin/">Log in to your account →</a>
-    </div>
 
-    <!-- Google Sign-Up -->
-    {% comment %} <button type="button" id="googleSignInBtn" class="btn-google" onclick="handleGoogleSignIn()" disabled>
-      <svg width="18" height="18" viewBox="0 0 48 48">
-        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.7-.4-4.5z"/>
-        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.4 0-13.8 4-17.7 10.7z"/>
-        <path fill="#4CAF50" d="M24 44c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.5 34.7 26.9 35.6 24 35.6c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.9 39.6 16.4 44 24 44z"/>
-        <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.5 5.5C40.4 36.4 44 30.9 44 24c0-1.4-.1-2.7-.4-3.5z"/>
-      </svg>
-      Continue with Google
-    </button> {% endcomment %}
+      <!-- Device checking indicator -->
+      <div class="device-checking" id="deviceChecking">
+        <div class="dot-spin"></div>
+        <span>Checking device…</span>
+      </div>
 
-    <div class="divider"><span>Or sign up with email</span></div>
+      <!-- Device already registered error -->
+      <div class="device-error-block" id="deviceError">
+        <div class="dev-icon">🚫</div>
+        <div class="dev-title">Device Already Registered</div>
+        <div class="dev-sub">
+          An account is already linked to this device.<br>
+          Please log in to continue.
+        </div>
+        <a href="/signin/">Log in to your account →</a>
+      </div>
 
-    <form id="signupForm">
+      <!-- Google Sign-Up -->
+      {% comment %} <button type="button" id="googleSignInBtn" class="btn-google" onclick="handleGoogleSignIn()" disabled>
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.3 29.3 35 24 35c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 5.1 29.6 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.7-.4-4.5z"/>
+          <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4c-7.4 0-13.8 4-17.7 10.7z"/>
+          <path fill="#4CAF50" d="M24 44c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.5 34.7 26.9 35.6 24 35.6c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.9 39.6 16.4 44 24 44z"/>
+          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.5 5.5C40.4 36.4 44 30.9 44 24c0-1.4-.1-2.7-.4-3.5z"/>
+        </svg>
+        Continue with Google
+      </button> {% endcomment %}
 
-      <div class="row">
+      <div class="divider"><span>Or sign up with email</span></div>
+
+      <form id="signupForm">
+
+        <div class="row">
+          <div class="form-group">
+            <label>First name</label>
+            <input id="firstName" type="text" placeholder="John" required>
+          </div>
+          <div class="form-group">
+            <label>Last name</label>
+            <input id="lastName" type="text" placeholder="Doe" required>
+          </div>
+        </div>
+
         <div class="form-group">
-          <label>First name</label>
-          <input id="firstName" type="text" placeholder="John" required>
+          <label>Email address</label>
+          <input id="signupEmail" type="email" placeholder="you@example.com" required>
+          <p id="emailError" class="field-error"></p>
+          {% comment %} <p class="field-hint">Use Gmail, Yahoo, Outlook, iCloud or another major provider.</p> {% endcomment %}
         </div>
+
         <div class="form-group">
-          <label>Last name</label>
-          <input id="lastName" type="text" placeholder="Doe" required>
+          <label>Password</label>
+          <div class="password-wrapper">
+            <input id="signupPassword" type="password"
+                   placeholder="Create a strong password (min 6 chars)" required>
+            <button type="button" class="toggle-password" data-target="signupPassword" aria-label="Show password">
+              <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.68 19.68 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a19.7 19.7 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <p id="passwordError" class="field-error">
+            Please enter a minimum 6 character password.
+          </p>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>Email address</label>
-        <input id="signupEmail" type="email" placeholder="you@example.com" required>
-      </div>
-
-      <div class="form-group">
-        <label>Password</label>
-        <div class="password-wrapper">
-          <input id="signupPassword" type="password"
-                 placeholder="Create a strong password (min 6 chars)" required>
-          <button type="button" class="toggle-password" data-target="signupPassword" aria-label="Show password">
-            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.68 19.68 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a19.7 19.7 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
-            </svg>
-          </button>
+        <div class="checkbox-group">
+          <input id="agreeTerms" type="checkbox" required>
+          <label for="agreeTerms">
+            I agree to the
+            <a href="/terms" target="_blank">Terms of Service</a>
+            &amp;
+            <a href="/privacy" target="_blank">Privacy Policy</a>
+          </label>
         </div>
-        <p id="passwordError" class="field-error">
-          Please enter a minimum 6 character password.
+
+        <p class="otp-hint" style="margin:-8px 0 16px;">
+          📧 Use your real email — we'll send a verification code to it.
         </p>
+
+        <button id="signupBtn" type="submit" class="btn-primary" disabled>
+          Create account →
+        </button>
+
+      </form>
+    </div>
+
+    <!-- ═════════ STEP 2: EMAIL OTP VERIFICATION ═════════ -->
+    <div id="otpStep" class="otp-step">
+      <div class="otp-icon">📧</div>
+
+      <p class="otp-sent-to">
+        We've sent a 6-digit verification code to<br>
+        <strong id="otpEmail"></strong>
+      </p>
+
+      <input id="otpInput" type="text" inputmode="numeric" autocomplete="one-time-code"
+             maxlength="6" placeholder="······" aria-label="6-digit verification code">
+
+      <div id="otpError" class="otp-error" role="alert"></div>
+
+      <div class="otp-actions">
+        <button type="button" id="resendBtn" class="link-btn" disabled>Resend code</button>
+        <button type="button" id="changeEmailBtn" class="link-btn">← Change email</button>
       </div>
 
-      <div class="checkbox-group">
-        <input id="agreeTerms" type="checkbox" required>
-        <label for="agreeTerms">
-          I agree to the
-          <a href="/terms" target="_blank">Terms of Service</a>
-          &amp;
-          <a href="/privacy" target="_blank">Privacy Policy</a>
-        </label>
-      </div>
-
-      <button id="signupBtn" type="submit" class="btn-primary" disabled>
-        Create account →
+      <button id="verifyBtn" type="button" class="btn-primary" disabled>
+        Verify &amp; create account
       </button>
 
-    </form>
+      <p class="otp-hint">
+        Can't find it? Check your spam folder. The code expires in 10 minutes.<br>
+        Your account is only created after the code is verified.
+      </p>
+    </div>
 
     <p class="footer-text">
       Already have an account? <a href="/signin">Sign in</a>
@@ -405,7 +517,7 @@ input::placeholder{color:#94a3b8;}
   color:#16a34a;z-index:9999;
   text-align:center;
 ">
-  ✅ Account created successfully!<br>
+  ✅ Email verified — account created!<br>
   <span style="font-size:13px;font-weight:500;color:#64748b;">
     Redirecting to dashboard…
   </span>
@@ -416,19 +528,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const BASE_URL         = window.location.origin;
   const API_REGISTER_URL = `${BASE_URL}/api/auth/register/`;
+  const API_VERIFY_URL   = `${BASE_URL}/api/auth/register/verify-otp/`;
+  const API_RESEND_URL   = `${BASE_URL}/api/auth/register/resend-otp/`;
   const DEVICE_CHECK_URL = `${BASE_URL}/api/auth/device/check/`;
 
   const form            = document.getElementById("signupForm");
   const btn             = document.getElementById("signupBtn");
-  const googleBtn       = document.getElementById("googleSignInBtn");
+  const googleBtn       = document.getElementById("googleSignInBtn");   // may be null (button is commented out)
   const passwordInput   = document.getElementById("signupPassword");
   const passwordError   = document.getElementById("passwordError");
   const popup           = document.getElementById("successPopup");
   const deviceError     = document.getElementById("deviceError");
   const deviceChecking  = document.getElementById("deviceChecking");
 
+  // OTP step elements
+  const signupSection   = document.getElementById("signupSection");
+  const otpStep         = document.getElementById("otpStep");
+  const otpEmailEl      = document.getElementById("otpEmail");
+  const otpInput        = document.getElementById("otpInput");
+  const otpError        = document.getElementById("otpError");
+  const verifyBtn       = document.getElementById("verifyBtn");
+  const resendBtn       = document.getElementById("resendBtn");
+  const changeEmailBtn  = document.getElementById("changeEmailBtn");
+  const pageTitle       = document.getElementById("pageTitle");
+  const pageSubtitle    = document.getElementById("pageSubtitle");
+
   let deviceFingerprint = "";
   let deviceBlocked     = false;
+  let pendingEmail      = "";
+  let resendTimer       = null;
+
+  const setGoogleDisabled = (v) => { if (googleBtn) googleBtn.disabled = v; };
+
+  // Show the "Device Already Registered" block (and replay the shake so the
+  // user clearly sees it again after clicking Create account)
+  function showDeviceBlocked(scroll = true) {
+    deviceBlocked             = true;
+    deviceError.style.display = "block";
+    deviceError.classList.remove("shake");
+    void deviceError.offsetWidth;                // restart CSS animation
+    deviceError.classList.add("shake");
+    btn.disabled  = false;                       // stays clickable → click re-shows the block
+    btn.innerText = "Create account →";
+    setGoogleDisabled(true);
+    if (scroll) deviceError.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function showEmailError(msg) {
+    const el = document.getElementById("emailError");
+    el.textContent   = msg;
+    el.style.display = "block";
+    document.getElementById("signupEmail").focus();
+  }
+
+  function hideEmailError() {
+    document.getElementById("emailError").style.display = "none";
+  }
 
   // ── localStorage device_id (shared by email + Google flows) ───
   function getDeviceId() {
@@ -457,32 +612,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (data.registered) {
         // ── Block both signup paths ──
-        deviceBlocked             = true;
-        deviceError.style.display = "block";
-        btn.disabled               = true;
-        googleBtn.disabled         = true;
+        // Remember silently — the red block is shown ONLY when the user clicks
+        // "Create account" (nothing is revealed on page load).
+        deviceBlocked = true;
+        btn.disabled  = false;      // keep clickable so the click can show the block
+        setGoogleDisabled(true);
       } else {
         // ── All clear: enable both ──
-        btn.disabled       = false;
-        googleBtn.disabled = false;
+        btn.disabled = false;
+        setGoogleDisabled(false);
       }
     })
     .catch(err => {
       // Silent fail — allow signup if check errors
       console.warn("⚠️ Device check failed:", err);
       deviceChecking.style.display = "none";
-      btn.disabled       = false;
-      googleBtn.disabled = false;
+      btn.disabled = false;
+      setGoogleDisabled(false);
     });
 
-  // ── Email/password form submit ──────────────────────────────────
+  /* ══════════════════════════════════════════════
+     STEP 1 — email/password form submit → sends OTP
+  ══════════════════════════════════════════════ */
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    hideEmailError();
 
-    if (deviceBlocked) {
-      deviceError.style.display = "block";
-      return;
-    }
+    // Order of checks is decided by the SERVER:
+    //   1) email provider  →  2) device  →  3) send OTP
+    // (so a wrong email shows the email error, not the device box)
+    deviceError.style.display = "none";   // re-evaluated on every click
 
     if (!document.getElementById("agreeTerms").checked) {
       alert("Please agree to the Terms of Service and Privacy Policy.");
@@ -506,7 +665,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     btn.disabled  = true;
-    btn.innerText = "Creating account…";
+    btn.innerText = "Sending code…";
 
     try {
       const res  = await fetch(API_REGISTER_URL, {
@@ -520,6 +679,143 @@ document.addEventListener("DOMContentLoaded", () => {
         data = await res.json();
       } catch {
         alert("❌ Server error — please try again.");
+        btn.disabled  = false;
+        btn.innerText = "Create account →";
+        return;
+      }
+
+      // ── Success: account is PENDING — move to OTP step ──
+      if (res.ok && data.pending_verification) {
+        showOtpStep(data.email || payload.email, data.resend_after);
+        btn.disabled  = false;
+        btn.innerText = "Create account →";
+        return;
+      }
+
+      // ── Errors ──
+      let msg = "Signup failed. Please try again.";
+
+      if (data.error) {
+        if (typeof data.error === "string") {
+          msg = data.error;
+          if (data.error.toLowerCase().includes("device")) {
+            showDeviceBlocked();
+            return;
+          }
+        } else if (data.error.email)    msg = data.error.email[0];
+        else if (data.error.password)   msg = data.error.password[0];
+        else if (data.error.username)   msg = data.error.username[0];
+      }
+
+      if (data.error && typeof data.error === "object" && data.error.email) {
+        showEmailError(msg);
+      } else {
+        alert("❌ " + msg);
+      }
+      btn.disabled  = false;
+      btn.innerText = "Create account →";
+
+    } catch (err) {
+      console.error("❌ Network error:", err);
+      alert("❌ Network error. Please try again.");
+      btn.disabled  = false;
+      btn.innerText = "Create account →";
+    }
+  });
+
+  /* ══════════════════════════════════════════════
+     STEP 2 — OTP VERIFICATION
+  ══════════════════════════════════════════════ */
+  function showOtpStep(email, resendAfter) {
+    pendingEmail = email;
+    otpEmailEl.textContent = email;          // textContent → no HTML injection
+
+    signupSection.style.display = "none";
+    otpStep.classList.add("show");
+    pageTitle.textContent    = "Verify your email";
+    pageSubtitle.textContent = "One last step to protect your account";
+
+    otpInput.value = "";
+    hideOtpError();
+    verifyBtn.disabled = true;
+    startResendCountdown(resendAfter || 60);
+    otpInput.focus();
+  }
+
+  function showSignupStep() {
+    otpStep.classList.remove("show");
+    signupSection.style.display = "block";
+    pageTitle.textContent    = "Create your account";
+    pageSubtitle.textContent = "Join thousands of Meesho sellers growing faster";
+    clearInterval(resendTimer);
+  }
+
+  function showOtpError(msg) {
+    otpError.textContent   = msg;
+    otpError.style.display = "block";
+    otpInput.classList.add("has-error");
+  }
+
+  function hideOtpError() {
+    otpError.style.display = "none";
+    otpInput.classList.remove("has-error");
+  }
+
+  function startResendCountdown(seconds) {
+    clearInterval(resendTimer);
+    let left = seconds;
+    const tick = () => {
+      if (left > 0) {
+        resendBtn.disabled    = true;
+        resendBtn.textContent = `Resend code in ${left}s`;
+        left--;
+      } else {
+        clearInterval(resendTimer);
+        resendBtn.disabled    = false;
+        resendBtn.textContent = "Resend code";
+      }
+    };
+    tick();
+    resendTimer = setInterval(tick, 1000);
+  }
+
+  // digits only, enable button at 6 digits
+  otpInput.addEventListener("input", () => {
+    otpInput.value = otpInput.value.replace(/\D/g, "").slice(0, 6);
+    hideOtpError();
+    verifyBtn.disabled = otpInput.value.length !== 6;
+  });
+
+  otpInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !verifyBtn.disabled) verifyBtn.click();
+  });
+
+  verifyBtn.addEventListener("click", async () => {
+    if (otpInput.value.length !== 6) return;
+
+    verifyBtn.disabled  = true;
+    verifyBtn.innerText = "Verifying…";
+    hideOtpError();
+
+    try {
+      const res = await fetch(API_VERIFY_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email:              pendingEmail,
+          otp:                otpInput.value,
+          device_id:          getDeviceId(),
+          device_fingerprint: deviceFingerprint,
+        }),
+      });
+
+      // Read as text first so a non-JSON reply (404 / 500 HTML page) can be diagnosed
+      const raw = await res.text();
+      let data = {};
+      try { data = JSON.parse(raw); }
+      catch {
+        console.error("verify-otp returned non-JSON:", res.status, raw.slice(0, 500));
+        showOtpError(`Server error (HTTP ${res.status}). Please try again.`);
         return;
       }
 
@@ -530,37 +826,62 @@ document.addEventListener("DOMContentLoaded", () => {
           popup.style.display = "none";
           window.location.href = "/dashboard/";
         }, 2000);
+        return;
+      }
 
-      } else {
-        let msg = "Signup failed. Please try again.";
+      const msg = typeof data.error === "string" ? data.error : "Verification failed. Please try again.";
+      showOtpError(msg);
 
-        if (data.error) {
-          if (typeof data.error === "string") {
-            msg = data.error;
-            if (data.error.toLowerCase().includes("device")) {
-              deviceBlocked             = true;
-              deviceError.style.display = "block";
-              btn.disabled              = true;
-              googleBtn.disabled        = true;
-              return;
-            }
-          } else if (data.error.email)    msg = data.error.email[0];
-          else if (data.error.password)   msg = data.error.password[0];
-          else if (data.error.username)   msg = data.error.username[0];
-        }
-
-        alert("❌ " + msg);
-        btn.disabled  = false;
-        btn.innerText = "Create account →";
+      // Device claimed by another account in the meantime
+      if (msg.toLowerCase().includes("device")) {
+        deviceBlocked = true;
       }
 
     } catch (err) {
-      console.error("❌ Network error:", err);
-      alert("❌ Network error. Please try again.");
-      btn.disabled  = false;
-      btn.innerText = "Create account →";
+      console.error("❌ Verify error:", err);
+      showOtpError("Network error. Please try again.");
+    } finally {
+      verifyBtn.innerHTML = "Verify &amp; create account";
+      verifyBtn.disabled  = otpInput.value.length !== 6;
     }
   });
+
+  resendBtn.addEventListener("click", async () => {
+    resendBtn.disabled    = true;
+    resendBtn.textContent = "Sending…";
+    hideOtpError();
+
+    try {
+      const res  = await fetch(API_RESEND_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ email: pendingEmail }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        otpInput.value = "";
+        verifyBtn.disabled = true;
+        startResendCountdown(data.resend_after || 60);
+        otpInput.focus();
+      } else {
+        showOtpError(typeof data.error === "string" ? data.error : "Could not resend the code.");
+        startResendCountdown(data.retry_after && data.retry_after <= 120 ? data.retry_after : 60);
+      }
+    } catch {
+      showOtpError("Network error. Please try again.");
+      startResendCountdown(10);
+    }
+  });
+
+  changeEmailBtn.addEventListener("click", showSignupStep);
+
+  // Coming from the sign-in page with an unverified account:
+  //   /signup/?verify=user@example.com   (a code was already emailed at login)
+  const verifyParam = new URLSearchParams(window.location.search).get("verify");
+  if (verifyParam) {
+    showOtpStep(verifyParam, 60);
+  }
 
   /* ══════════════════════════════════════════════
      PASSWORD SHOW/HIDE TOGGLE
@@ -597,7 +918,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.handleGoogleSignIn = async function () {
     const googleBtn = document.getElementById("googleSignInBtn");
-    if (googleBtn.disabled) return;
+    if (!googleBtn || googleBtn.disabled) return;
 
     googleBtn.disabled = true;
     const originalHTML = googleBtn.innerHTML;
